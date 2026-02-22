@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Jefferson Alberto Carvajal Rios">
+    <title>Novedades de Bodega Digital | v25.0 Enterprise Nube</title>
+    
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #e30613; 
+            --primary-dark: #b91c1c;
+            --secondary: #f9a825;
+            --bg-dark: #1e293b; 
+            --bg-light: #f8fafc;
+            --text-main: #334155; 
+            --border: 1px solid #e2e8f0;
+            --shadow: 0 2px 4px rgba(0,0,0,0.05);
+            --ai-color: #10b981;
+        }
+
+        * { box-sizing: border-box; outline: none; user-select: none; }
+        
+        body { margin: 0; height: 100vh; background-color: var(--bg-light); color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 13px; display: flex; overflow: hidden; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        #sidebar { width: 260px; height: 100%; background-color: var(--bg-dark); color: #94a3b8; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 20; }
+        .brand { padding: 25px 15px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); }
+        .brand h1 { font-size: 1.6rem; color: #fff; margin: 0; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .brand small { font-size: 0.75rem; color: var(--secondary); font-weight: 600; display: block; margin-top: 8px; letter-spacing: 2px; text-transform: uppercase; }
+
+        .menu { flex: 1; overflow-y: auto; padding: 15px; }
+        .section-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin: 15px 0 8px 0; font-weight: 700; display: flex; align-items: center; gap: 5px; border-left: 2px solid var(--primary); padding-left: 8px; }
+
+        .file-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; margin-bottom: 4px; background: rgba(255,255,255,0.03); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
+        .file-row:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+        .f-name { font-size: 0.75rem; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .f-status { font-size: 0.65rem; color: #64748b; font-weight: 700; }
+        .led { width: 8px; height: 8px; border-radius: 50%; background: #475569; box-shadow: 0 0 0 1px rgba(255,255,255,0.1); transition: 0.3s; }
+        .led.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; border-color: #fff; }
+        input[type="file"] { display: none; }
+
+        .btn { width: 100%; padding: 8px 12px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; transition: 0.2s; text-align: left; text-transform: uppercase; }
+        .btn:hover { filter: brightness(1.15); transform: translateX(2px); }
+        .btn i { width: 15px; text-align: center; }
+
+        .b-blue { background: linear-gradient(to right, #2563eb, #1d4ed8); } 
+        .b-red { background: linear-gradient(to right, #dc2626, #b91c1c); }
+        .b-yellow { background: linear-gradient(to right, #d97706, #b45309); } 
+        .b-purple { background: linear-gradient(to right, #7c3aed, #6d28d9); }
+        .b-green { background: linear-gradient(to right, #16a34a, #15803d); } 
+        .b-dark { background: #374151; border: 1px solid #4b5563; }
+        .b-danger { background: linear-gradient(to right, #7f1d1d, #991b1b); border: 1px solid #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+        .b-cloud { background: linear-gradient(to right, #0284c7, #0369a1); border: 1px solid #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); animation: pulse 2s infinite; }
+
+        .export-bar { display: flex; gap: 5px; margin-top: 5px; }
+        .btn-sm { flex: 1; justify-content: center; padding: 6px; font-size: 0.7rem; font-weight: 800; }
+
+        #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f1f5f9; }
+        .header { height: 60px; background: #fff; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; box-shadow: var(--shadow); z-index: 10; }
+        .header-title h2 { font-size: 1.8rem; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .header-title span { font-size: 0.8rem; color: var(--ai-color); margin-left: 15px; border-left: 2px solid #cbd5e1; padding-left: 15px; font-weight: 800; }
+        .kpi { display: flex; gap: 20px; }
+        .k-box { display: flex; flex-direction: column; align-items: flex-end; }
+        .k-lbl { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+        .k-val { font-size: 1.2rem; font-weight: 800; color: #0f172a; font-family: 'Rajdhani', sans-serif; line-height: 1; }
+
+        .work { flex: 1; display: flex; padding: 15px; gap: 15px; overflow: hidden; }
+        .panel-left { flex: 1; background: #fff; border-radius: 8px; border: var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .tbl-ctrl { padding: 8px 15px; border-bottom: var(--border); background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
+        .search { position: relative; width: 300px; }
+        .search input { width: 100%; padding: 6px 10px 6px 30px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.8rem; background: #fff; }
+        .search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.8rem; }
+        .tbl-scroll { flex: 1; overflow: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        thead { position: sticky; top: 0; background: #f1f5f9; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        th { text-align: left; padding: 8px 12px; font-weight: 700; color: #475569; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; font-size: 0.7rem; }
+        td { padding: 6px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        tr:hover td { background: #f0fdf4; color: #000; }
+        .lnk { color: var(--primary); font-weight: 700; text-decoration: underline; cursor: pointer; }
+        .nowrap-col { white-space: nowrap; font-weight: 700; }
+        .tg { padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+        .tg-ok { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .tg-err { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .tg-war { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .tg-crit { background: #7f1d1d; color: #fff; border: 1px solid #ef4444; box-shadow: 0 0 5px rgba(239,68,68,0.5); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+
+        .panel-right { width: 260px; display: flex; flex-direction: column; gap: 15px; overflow: hidden; }
+        .card { background: #fff; padding: 15px; border-radius: 8px; border: var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .c-chart { display: flex; flex-direction: column; flex: 1; min-height: 200px; }
+        .chart-wrap { flex: 1; position: relative; width: 100%; height: 100%; }
+        .c-tit { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; text-align: center; }
+        .comp-val { font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1; }
+        .comp-txt { font-size: 0.8rem; color: #64748b; margin-top: 5px; }
+        .bar-bg { height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; background: #10b981; transition: 1s; }
+
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:none; justify-content:center; align-items:center; backdrop-filter:blur(2px); }
+        .m-360 { background:#fff; width:1100px; max-width:95%; height:95vh; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
+        .m-head { background: linear-gradient(135deg, #0f172a, #1e293b); padding:20px 30px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; border-bottom: 3px solid var(--ai-color); }
+        .m-head h3 { margin:0; font-size:1.5rem; font-weight:800; letter-spacing:1px; color:#f8fafc; }
+        .m-head p { margin:5px 0 0 0; color:#cbd5e1; font-size:0.95rem; max-width: 700px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight:600; }
+        .m-tag { background: rgba(16,185,129,0.2); border: 1px solid #10b981; padding: 5px 15px; border-radius: 20px; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-left: 20px; color: #34d399; }
+        .m-body { padding:25px; overflow-y:auto; flex:1; background:#f1f5f9; display: flex; flex-direction: column; gap: 20px; }
+        
+        .ai-box { background: linear-gradient(to right, #ecfdf5, #dcfce7); border: 1px solid #6ee7b7; border-radius: 10px; padding: 20px; display: flex; gap: 15px; box-shadow: 0 4px 10px rgba(16,185,129,0.1); }
+        .ai-icon { width: 50px; height: 50px; border-radius: 50%; background: #10b981; color: #fff; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; flex-shrink: 0; box-shadow: 0 0 10px rgba(16,185,129,0.5); }
+        .ai-content h4 { margin: 0 0 8px 0; color: #065f46; font-size: 0.95rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .ai-text { margin: 0; color: #064e3b; font-size: 0.95rem; line-height: 1.6; font-weight: 600; text-align: justify; }
+
+        .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; flex:1; }
+        .col { background:#fff; border:1px solid #e2e8f0; border-radius:8px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .col-h { padding:15px; font-size:0.8rem; font-weight:800; text-transform:uppercase; background:#f8fafc; color:#475569; border-bottom:2px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
+        .col-l { flex:1; overflow-y:auto; padding:10px; max-height: 250px; }
+        .itm { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:1px solid #f1f5f9; font-size:0.85rem; }
+        .itm:hover { background: #f8fafc; }
+        .phys-item { background: #f0f9ff; border: 1px solid #bae6fd; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; font-weight: 700; color: #0369a1; display: flex; justify-content: space-between; align-items: center; }
+        .phys-qty { background: #fff; padding: 2px 8px; border-radius: 10px; color: #0369a1; font-weight: 800; border: 1px solid #e0f2fe; }
+        .qty { background:#e2e8f0; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:800; min-width:35px; text-align:center; }
+        .qty.ok { background: #dcfce7; color: #166534; } .qty.bad { background: #fee2e2; color: #991b1b; }
+        .col-f { padding:15px; text-align:right; font-weight:800; font-size:1rem; border-top:1px solid #e2e8f0; background:#f8fafc; }
+        .port-bar { padding:20px 30px; background:#111827; color: #fff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+        .port-info { display: flex; flex-direction: column; }
+        .port-lbl { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .port-val { font-size: 1.8rem; font-weight: 800; color: #facc15; line-height: 1; }
+        .btn-erp { background: #2563eb; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-erp:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+        .m-std { background:#fff; width:500px; border-radius:8px; padding:25px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
+        .opt { padding:15px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; transition:0.2s; background:#f8fafc; }
+        .opt:hover { background:#fff; border-color:var(--primary); transform:translateY(-2px); box-shadow:0 4px 6px rgba(0,0,0,0.05); }
+        .opt b { display:block; font-size:0.85rem; color:#0f172a; margin-bottom:4px; }
+        .opt small { font-size:0.7rem; color:#64748b; line-height:1.2; display:block; }
+
+        #loader { position:fixed; top:0; left:0; width:100%; height:100%; background:#111827; z-index:9000; display:flex; justify-content:center; align-items:center; flex-direction:column; transition:opacity 0.5s; }
+        .spin { width:40px; height:40px; border:3px solid rgba(255,255,255,0.1); border-top:3px solid var(--primary); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:15px; }
+        @keyframes spin { 100% { transform:rotate(360deg); } }
+        #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:10px 25px; border-radius:30px; font-size:0.85rem; font-weight:600; z-index:9999; display:none; align-items:center; gap:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3); }
+        
+        /* LOGIN OVERLAY */
+        #login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #0f172a, #1e293b); z-index:100000; display:flex; justify-content:center; align-items:center; transition:opacity 0.5s ease; }
+        .login-box { background:#fff; width:400px; padding:45px 40px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); text-align:center; position:relative; }
+        .login-icon { width:70px; height:70px; background:var(--primary); color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:2rem; margin:0 auto 20px auto; box-shadow:0 10px 20px rgba(227, 6, 19, 0.3); }
+        .login-input { width:100%; padding:14px 15px; margin-bottom:15px; border:2px solid #e2e8f0; border-radius:8px; font-size:0.95rem; outline:none; font-family:'Inter', sans-serif; font-weight:600; text-align:center; transition:0.3s; }
+        .login-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(227, 6, 19, 0.1); }
+        .login-btn { width:100%; padding:14px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:1rem; font-weight:800; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 10px rgba(227, 6, 19, 0.3); transition:0.2s; margin-top:5px; }
+        .login-btn:hover { background:var(--primary-dark); transform:translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <div class="login-icon"><i class="fas fa-user-lock"></i></div>
+            <h2 style="margin:0 0 5px 0; color:#0f172a; font-weight:900; font-family:'Rajdhani', sans-serif; font-size:2rem; letter-spacing:1px;">BODEGA DIGITAL</h2>
+            <p style="color:#64748b; font-size:0.85rem; margin-bottom:30px; font-weight:700; letter-spacing:2px;">ACCESO RESTRINGIDO</p>
+            
+            <input type="text" id="log-id" class="login-input" placeholder="ID de Usuario" autocomplete="off" onkeypress="if(event.key==='Enter') document.getElementById('log-pass').focus();">
+            <input type="password" id="log-pass" class="login-input" placeholder="Contraseña" autocomplete="off" onkeypress="if(event.key==='Enter') Sys.login();">
+            
+            <div id="log-msg" style="color:#ef4444; font-size:0.85rem; font-weight:700; margin-bottom:15px; min-height:18px;"></div>
+            <button class="login-btn" onclick="Sys.login()"><i class="fas fa-sign-in-alt"></i> Ingresar al Sistema</button>
+        </div>
+    </div>
+
+    <div id="loader" style="display:none;">
+        <div class="spin"></div>
+        <div id="loader-txt" style="color:#fff; font-weight:700; letter-spacing:1px;">CARGANDO SISTEMA IA</div>
+    </div>
+    <div id="toast"></div>
+
+    <aside id="sidebar">
+        <div class="brand">
+            <h1>BODEGA DIGITAL<br><span style="color:#10b981;">SMART IA</span></h1>
+            <small>Alkosto Cali</small>
+        </div>
+
+        <div class="menu">
+            <div class="section-title"><i class="fas fa-cloud-download-alt"></i> NUBE / SERVIDOR</div>
+            <button class="btn b-cloud" onclick="Core.fetchServerData()"><i class="fas fa-sync-alt"></i> CARGAR DATOS DEL SERVIDOR</button>
+
+            <div class="section-title" style="margin-top:20px;"><i class="fas fa-database"></i> CARGA MANUAL (OPCIONAL)</div>
+            
+            <label class="file-row" for="f-restr">
+                <div style="width:90%"><div class="f-name">CK_IN_UBICAC_RESTRINGIDAS</div><div class="f-status" id="l-r">Pendiente</div></div>
+                <div class="led" id="led-r"></div>
+            </label>
+            <input type="file" id="f-restr" accept=".xlsx">
+
+            <label class="file-row" for="f-norestr">
+                <div style="width:90%"><div class="f-name">CK_IN_UBICAC_NO_RESTRINGIDAS</div><div class="f-status" id="l-n">Pendiente</div></div>
+                <div class="led" id="led-n"></div>
+            </label>
+            <input type="file" id="f-norestr" accept=".xlsx">
+
+            <label class="file-row" for="f-ver">
+                <div style="width:90%"><div class="f-name">VER_INVENTARIO</div><div class="f-status" id="l-v">Pendiente</div></div>
+                <div class="led" id="led-v"></div>
+            </label>
+            <input type="file" id="f-ver" accept=".xlsx">
+
+            <label class="file-row" for="f-tras">
+                <div style="width:90%"><div class="f-name">CK_GL_IN_TRASLADOS_POR_RECIBIR</div><div class="f-status" id="l-tr">Pendiente</div></div>
+                <div class="led" id="led-tr"></div>
+            </label>
+            <input type="file" id="f-tras" accept=".xlsx">
+
+            <label class="file-row" for="f-port">
+                <div style="width:90%"><div class="f-name">CK_IN_PORTAFOLIO</div><div class="f-status" id="l-p">Pendiente</div></div>
+                <div class="led" id="led-p"></div>
+            </label>
+            <input type="file" id="f-port" accept=".xlsx">
+
+            <div class="section-title"><i class="fas fa-calculator"></i> OPERACIONES</div>
+            <label class="file-row" style="border-color:#dc2626;" for="f-toma">
+                <div style="width:90%"><div class="f-name" style="color:#fca5a5;">TOMA_FISICA.csv</div><div class="f-status">Archivo Cruce</div></div>
+                <div class="led" id="led-t"></div>
+            </label>
+            <input type="file" id="f-toma" accept=".csv">
+
+            <button class="btn b-danger" onclick="Core.run('riesgo')"><i class="fas fa-radiation"></i> DIGITAL EN JDA</button> 
+            <button class="btn b-blue" onclick="UI.modal('m-toma-sel', true)"><i class="fas fa-search"></i> TOMA FÍSICA vs DIGI</button>
+            <button class="btn b-red" onclick="Core.run('negativos')"><i class="fas fa-arrow-down"></i> NEGATIVOS DIGITAL</button>
+            <button class="btn b-yellow" style="color:#000" onclick="UI.modal('m-almac',true)"><i class="fas fa-exchange-alt"></i> ALMACÉN</button>
+            <button class="btn b-purple" onclick="Core.run('prohibido')"><i class="fas fa-ban"></i> NO DEBE ESTAR EN DIGI</button> 
+            <button class="btn b-green" onclick="Core.run('nivelar')"><i class="fas fa-balance-scale"></i> DIGI EN ALMAC</button> 
+
+            <div class="section-title"><i class="fas fa-file-export"></i> EXPORTAR</div>
+            <div class="export-bar">
+                <button class="btn btn-sm b-dark" onclick="Exp.excel()">XLSX</button>
+                <button class="btn btn-sm b-dark" onclick="Exp.pdf()">PDF</button>
+            </div>
+            
+            <button class="btn b-red" style="margin-top:20px; background:transparent; border:1px solid #ef4444; color:#ef4444;" onclick="Sys.logout()"><i class="fas fa-power-off"></i> CERRAR SESIÓN SEGURA</button>
+        </div>
+    </aside>
+
+    <main id="main">
+        <header class="header">
+            <div class="header-title">
+                <h2>NOVEDADES DE BODEGA DIGITAL</h2>
+                <span>COMPACT PRO v25.0 | ENTERPRISE NUBE</span>
+            </div>
+            <div class="kpi">
+                <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
+                <div class="k-box"><span class="k-lbl" style="color:#ef4444">ERRORES</span><span id="k-err" class="k-val" style="color:#ef4444">0</span></div>
+                <div class="k-box"><span class="k-lbl">DIGI1</span><span id="k-tot" class="k-val" style="color:#0ea5e9">0</span></div>
+                <div class="k-box"><span class="k-lbl">% CUMP.</span><span id="k-cump-head" class="k-val">0%</span></div>
+            </div>
+        </header>
+
+        <div class="work">
+            <div class="panel-left">
+                <div class="tbl-ctrl">
+                    <span id="lbl-count" style="font-weight:700; font-size:0.8rem; color:#64748b;">0 REGISTROS</span>
+                    <div class="search"><i class="fas fa-search"></i><input type="text" id="search" placeholder="Buscar EAN, Ubicación..." onkeyup="Core.search()"></div>
+                </div>
+                <div class="tbl-scroll">
+                    <table id="tbl"><thead id="th"></thead><tbody id="tb"></tbody></table>
+                    <div id="empty" style="text-align:center; padding:80px; color:#cbd5e1;">
+                        <i class="fas fa-cloud fa-4x" style="margin-bottom:15px; color:#94a3b8;"></i>
+                        <p style="font-size:1.1rem; font-weight:700; color:#64748b;">Sistema en Blanco.</p>
+                        <p>Haga clic en <b>CARGAR DATOS DEL SERVIDOR</b> para obtener la última información.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-right">
+                <div class="card c-chart">
+                    <div class="c-tit">EFECTIVIDAD</div>
+                    <div class="chart-wrap"><canvas id="chart"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="c-tit">CUMPLIMIENTO</div>
+                    <div id="c-val" class="comp-val">0%</div>
+                    <div id="c-txt" class="comp-txt">Esperando datos...</div>
+                    <div class="bar-bg"><div id="c-bar" class="bar-fill"></div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="m-toma-sel" class="overlay">
+        <div class="m-std">
+            <i class="fas fa-times" onclick="UI.modal('m-toma-sel',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
+            <h3 style="margin-top:0;">Tipo de Toma</h3>
+            <div class="grid-2">
+                <div class="opt" onclick="Core.calcToma('General'); UI.modal('m-toma-sel',false)">
+                    <b style="color:#0ea5e9">GENERAL</b><small>Compara TODO DIGI1 contra tu archivo.</small>
+                </div>
+                <div class="opt" onclick="Core.calcToma('Selectivo'); UI.modal('m-toma-sel',false)">
+                    <b style="color:#22c55e">SELECTIVO</b><small>Solo compara los productos que cargaste.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="m-almac" class="overlay">
+        <div class="m-std">
+            <i class="fas fa-times" onclick="UI.modal('m-almac',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
+            <h3 style="margin-top:0;">Filtros Almacén</h3>
+            <div class="grid-2">
+                <div class="opt" onclick="Core.run('almac_digi0'); UI.modal('m-almac',false)">
+                    <b style="color:#dc2626">DIGITAL = 0</b><small>Existe en DIGI1 (0) pero hay en ALMAC.</small>
+                </div>
+                <div class="opt" onclick="Core.run('almac_almac0'); UI.modal('m-almac',false)">
+                    <b style="color:#d97706">ALMAC = 0</b><small>Agotado en ALMAC pero hay en DIGI1.</small>
+                </div>
+                <div class="opt" onclick="Core.run('almac_neg'); UI.modal('m-almac',false)">
+                    <b style="color:#7c3aed">NEGATIVOS</b><small>Saldo negativo en ALMAC.</small>
+                </div>
+                <div class="opt" onclick="Core.run('almac_sum0'); UI.modal('m-almac',false)">
+                    <b style="color:#059669">SUMA 0</b><small>Nivelación exacta.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="m-360" class="overlay">
+        <div class="m-360">
+            <div class="m-head">
+                <div>
+                    <div style="display:flex; align-items:center;">
+                        <h3 id="d360-ean">---</h3>
+                        <div id="d360-badge" class="m-tag">---</div>
+                    </div>
+                    <p id="d360-desc">---</p>
+                </div>
+                <i class="fas fa-times" onclick="AsistenteVoz.silenciar(); UI.modal('m-360',false)" style="cursor:pointer; font-size:1.5rem;"></i>
+            </div>
+            
+            <div class="m-body">
+                <div class="ai-box">
+                    <div class="ai-icon"><i class="fas fa-robot"></i></div>
+                    <div class="ai-content">
+                        <h4>Reporte Diagnóstico Inteligente <span style="font-size:0.7rem; background:#10b981; color:#fff; padding:2px 6px; border-radius:10px; font-weight:800;">AUTO-PLAY</span></h4>
+                        <p id="d360-ai-text" class="ai-text">Analizando parámetros...</p>
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div class="col">
+                        <div class="col-h"><i class="fas fa-map-marker-alt" style="color:#2563eb"></i> REALIDAD FÍSICA (VER_INV)</div>
+                        <div id="d360-phys" class="col-l"></div>
+                        <div class="col-f" style="color:#64748b;">UBICACIONES ENCONTRADAS</div>
+                    </div>
+                    <div class="col">
+                        <div class="col-h"><i class="fas fa-box-open" style="color:#059669"></i> SISTEMA PISO (DIGI1)</div>
+                        <div id="d360-nr" class="col-l"></div>
+                        <div class="col-f">Total: <span id="d360-nr-t" style="color:#059669;">0</span></div>
+                    </div>
+                    <div class="col">
+                        <div class="col-h"><i class="fas fa-warehouse" style="color:#dc2626"></i> SISTEMA BODEGA (RESTR)</div>
+                        <div id="d360-r" class="col-l"></div>
+                        <div class="col-f">Total: <span id="d360-r-t" style="color:#dc2626;">0</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="port-bar">
+                <div style="display:flex; gap:30px; align-items:center;">
+                    <div class="port-info"><span class="port-lbl">ESTADO PORTAFOLIO</span><div id="d360-st" style="font-weight:700; color:#fff; font-size:1.2rem;">---</div></div>
+                    <div class="port-info"><span class="port-lbl">TOTAL LIBROS</span><div id="d360-bk" class="port-val">---</div></div>
+                </div>
+                <div id="erp-action-area"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onerror = function() { document.getElementById('loader').style.display='none'; };
+
+        const DB_NAME="Siga_V25_0_Nube", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
+        const Cfg={
+            ok:["Accesorios Audio","Accesorio Camara","Videocamaras","Accesorios Informatica","Accesorios Telefonia","Accesorios Video","Computadores","Equipos Audio","Camaras","Otros Hardware","Telefonia Celular","Telefonia Fija","Deportes y Salud","Casa Inteligente y Redes","Videojuegos","Accesorios Energía","Audífonos y Auriculares","Drones y Juguetes Electrónicos","Accesorio Camara","Videocamaras"],
+            niv:["Telefonia Celular","Videocamaras","Camaras","Computadores"],
+            exc:["INFORMATICA","TELEFONIA","CAMARAS","VIDEOCAMARAS"],
+            despa:["DESPA01AKCAN","DESPA02AKCAN","DESPA03AKCAN","DESPA04AKCAN","DESPA05AKCAN","DESPA06AKCAN","DESPA07AKCAN","DESPA08AKCAN","DESPA09AKCAN","DESPA10AKCAN","DESPA11AKCAN","DESPA12AKCAN"]
+        };
+
+        const Sys = {
+            timer: null,
+            login: () => {
+                let user = document.getElementById('log-id').value.trim().toUpperCase();
+                let pass = document.getElementById('log-pass').value;
+                let msg = document.getElementById('log-msg');
+
+                if(user === 'ALKOSTO CALI NORTE' && pass === 'Alkosto01.') {
+                    document.getElementById('login-overlay').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('login-overlay').style.display = 'none';
+                        UI.toast("Acceso Autorizado", 1);
+                        Sys.startInactivityTimer();
+                    }, 500);
+                } else {
+                    msg.innerText = "Credenciales incorrectas. Verifique ID y contraseña.";
+                    setTimeout(() => msg.innerText = "", 3000);
+                }
+            },
+            logout: () => {
+                document.getElementById('login-overlay').style.display = 'flex';
+                setTimeout(() => document.getElementById('login-overlay').style.opacity = '1', 50);
+                document.getElementById('log-pass').value = '';
+                document.getElementById('log-id').value = '';
+                clearTimeout(Sys.timer);
+                UI.toast("Sesión Cerrada", 1);
+            },
+            startInactivityTimer: () => {
+                const reset = () => { clearTimeout(Sys.timer); Sys.timer = setTimeout(Sys.logout, 3600000); }; // 3600000 ms = 1 Hora
+                document.onmousemove = reset; document.onkeypress = reset; document.onclick = reset;
+                reset();
+            }
+        };
+
+        const Core = {
+            init: async () => {
+                try {
+                    await DB.init(); 
+                    ['r','n','v','p','tr'].forEach(k=>Core.load(k)); 
+                    const inputs={'r':'f-restr','n':'f-norestr','v':'f-ver','p':'f-port','t':'f-toma','tr':'f-tras'};
+                    Object.keys(inputs).forEach(k => { const el = document.getElementById(inputs[k]); if(el) el.addEventListener('change', e => Core.file(e,k)); });
+                } catch(e) { console.error("Error init", e); }
+            },
+            
+            // --- NUEVA FUNCIÓN PARA DESCARGAR DATOS DEL SERVIDOR AUTOMÁTICAMENTE ---
+            fetchServerData: async () => {
+                // Definimos las rutas de los archivos en el servidor (dentro de una carpeta "datos")
+                const filesMap = {
+                    'r': 'datos/restringidas.xlsx',
+                    'n': 'datos/norestringidas.xlsx',
+                    'v': 'datos/ver_inventario.xlsx',
+                    'tr': 'datos/traslados.xlsx',
+                    'p': 'datos/portafolio.xlsx'
+                };
+                
+                document.getElementById('loader').style.display='flex';
+                document.getElementById('loader-txt').innerText = "DESCARGANDO DATOS DEL SERVIDOR...";
+                
+                let successCount = 0;
+
+                for (let k of Object.keys(filesMap)) {
+                    try {
+                        let res = await fetch(filesMap[k]);
+                        if (res.ok) {
+                            let ab = await res.arrayBuffer();
+                            let wb = XLSX.read(new Uint8Array(ab), {type:'array'});
+                            let d = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                            
+                            Store[k] = d;
+                            DB.save(k, d);
+                            UI.led(k);
+                            let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
+                            if(statusId) {
+                                document.getElementById(statusId).innerText = "✅ EN NUBE"; 
+                                document.getElementById(statusId).style.color="#0ea5e9";
+                            }
+                            successCount++;
+                        }
+                    } catch(e) { 
+                        console.warn("No se encontró en servidor: " + filesMap[k]); 
+                    }
+                }
+                
+                if (Store.n.length > 0) Core.calc();
+                document.getElementById('loader').style.display='none';
+                
+                if(successCount > 0) {
+                    UI.toast(`¡Éxito! ${successCount} bases de datos cargadas de la nube.`, 1);
+                } else {
+                    UI.toast("No se detectaron archivos en el servidor. Revise la carpeta 'datos/'.", 0);
+                }
+            },
+
+            file: (e,k) => {
+                let f=e.target.files[0]; if(!f)return; UI.toast(`Cargando ${f.name}...`);
+                let r=new FileReader();
+                r.onload=ev=>{
+                    try {
+                        let d=[];
+                        if(k==='t') {
+                            let txt=new TextDecoder("utf-8").decode(new Uint8Array(ev.target.result));
+                            let lines = txt.split(/\r\n|\n/);
+                            d = lines.map(l => {
+                                let c = l.split(','); 
+                                if (c.length >= 5) {
+                                    let ean = String(c[2]).replace(/["\r]/g, "").trim();
+                                    let cant = parseFloat(String(c[4]).replace(/["\r]/g, "")) || 0;
+                                    if(ean && ean.length > 5 && !isNaN(cant)) return { EAN: ean, Cant: cant };
+                                }
+                                return null;
+                            }).filter(x => x);
+                        } else {
+                            let wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+                            d=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                        }
+                        Store[k]=d; if(k!=='t') DB.save(k,d);
+                        UI.led(k); if(k==='n') Core.calc();
+                        let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
+                        if(statusId) { document.getElementById(statusId).innerText = "✅ Manual"; document.getElementById(statusId).style.color="#22c55e"; }
+                        UI.toast("Carga Exitosa",1);
+                    } catch(er){ UI.toast("Error archivo",0); }
+                }; r.readAsArrayBuffer(f);
+            },
+            load: async(k)=>{ 
+                let d=await DB.get(k); 
+                if(d){ Store[k]=d; UI.led(k); if(k==='n') Core.calc(); let st = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k]; if(st) { document.getElementById(st).innerText="✅ Local"; document.getElementById(st).style.color="#f59e0b"; } } 
+            },
+            calc: ()=>{ let c=0; Store.n.forEach(r=>{if(Util.get(r,'Ubicación')==='DIGI1')c++}); Store.tot=c; UI.kpi(0,c); },
+
+            generarReporteIA: (ean, descrip) => {
+                let r = Store.view.find(x => String(x.EAN) === String(ean));
+                let msgText = `<strong>Análisis Activo:</strong> ${descrip}.<br><br>`;
+                let msgVoz = `El producto, ${descrip}. `;
+
+                let qtyNovedad = 0;
+                if (r) {
+                    if (r['Diferencia'] !== undefined && r['Diferencia'] !== 0) qtyNovedad = Math.abs(r['Diferencia']);
+                    else if (r['Cant DIGI1'] !== undefined && r['Cant DIGI1'] < 0) qtyNovedad = Math.abs(r['Cant DIGI1']);
+                    else if (r['Cant DIGI1'] !== undefined && r['Cant ALMAC'] === 0) qtyNovedad = Math.abs(r['Cant DIGI1']);
+                    else if (r['Stock ALMAC'] !== undefined) qtyNovedad = Math.abs(r['Stock ALMAC']);
+                    else qtyNovedad = Math.abs(r['Cant DIGI1'] || r['Cant Toma'] || 1);
+                }
+
+                let traslados = Store.tr.filter(x => String(Util.get(x,'Artículo')).trim() === ean);
+                let matchRealizado = false; let trasTarget = null;
+
+                if (traslados.length > 0) {
+                    for (let t of traslados) {
+                        let cantTraslado = Math.abs(parseFloat(Util.get(t, 'Cantidad', 'Cant', 'Recibido')) || 0);
+                        if (cantTraslado === qtyNovedad && qtyNovedad > 0) { matchRealizado = true; trasTarget = t; break; }
+                    }
+                }
+
+                if (matchRealizado && trasTarget) {
+                    let idIntUni = Util.get(trasTarget, 'ID IntUni') || 'Indeterminado';
+                    let fTrns = Util.get(trasTarget, 'F Trns') || 'Sin fecha';
+                    let nNotaRecep = Util.get(trasTarget, 'Nº Nota Recep') || 'Sin nota';
+                    
+                    if(typeof fTrns === 'number') fTrns = new Date((fTrns - 25569) * 86400 * 1000).toLocaleDateString('es-CO');
+                    else if (fTrns !== 'Sin fecha') fTrns = String(fTrns).split(' ')[0];
+
+                    let reporteCoincide = `El sistema ha detectado una coincidencia exacta con un traslado registrado. La cantidad de ${qtyNovedad} unidades comprometidas en la novedad corresponde al Traslado número ${idIntUni}, gestionado en la fecha ${fTrns}, y finalizado bajo el número de Recepción ${nNotaRecep}. Esto confirma que el inventario fue recepcionado correctamente, pero requiere ser validado y ubicado físicamente para cerrar la desviación de manera efectiva en la Bodega Digital.`;
+                    msgText += reporteCoincide; msgVoz += reporteCoincide;
+                } else {
+                    let reporteFallo = `Tras el cruce analítico, no se detectan coincidencias en cantidades con traslados recientes. Por lo tanto, se determina que es un movimiento de salida de Bodega Digital no registrado en la base de datos de los movimientos bin a bin del día anterior. Validar y realizar movimiento para actualizar nuestro inventario en la bodega digital.`;
+                    msgText += reporteFallo; msgVoz += reporteFallo;
+                }
+                return { text: msgText, voz: msgVoz };
+            },
+
+            calcToma: (type) => {
+                if(!Store.n.length) return UI.toast("Falta Base Maestra",0);
+                if(!Store.t.length) return UI.toast("Falta Toma CSV",0);
+                document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText="PROCESANDO...";
+                setTimeout(() => {
+                    try {
+                        let res=[], h=Util.get, sysMap = {};
+                        Store.n.forEach(r => { if(h(r,'Ubicación')==='DIGI1') { let e = String(h(r,'Artículo')); sysMap[e] = (sysMap[e]||0) + parseFloat(h(r,'Cant Base')||0); } });
+                        let csvMap = {}; Store.t.forEach(r => { let e = String(r.EAN); csvMap[e] = (csvMap[e]||0) + r.Cant; });
+                        let allEans = (type === 'Selectivo') ? Object.keys(csvMap) : [...new Set([...Object.keys(sysMap), ...Object.keys(csvMap)])];
+                        res = allEans.map(ean => {
+                            let sys = sysMap[ean] || 0; let csv = csvMap[ean] || 0; let diff = csv - sys;
+                            return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
+                        });
+                        Store.view = res; Store.full = res; UI.draw(res);
+                        let errCount = res.filter(x => x.Diferencia !== 0).length; UI.kpi(res.length, Store.tot, errCount); UI.chart(Store.tot, errCount);
+                        document.getElementById('loader').style.display='none'; UI.toast(`Análisis ${type} finalizado`, 1);
+                    } catch(e) { document.getElementById('loader').style.display='none'; alert("Error: " + e); }
+                }, 100);
+            },
+
+            run: (op) => {
+                if(!Store.n.length) return UI.toast("Falta Base Maestra",0);
+                document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText="EJECUTANDO ANÁLISIS...";
+                setTimeout(()=>{
+                    try {
+                        let res=[], h=Util.get;
+                        if(op === 'riesgo') {
+                            let physMap = {}; Store.v.forEach(r => { let e=String(h(r,'Producto')); if(!physMap[e]) physMap[e]=[]; physMap[e].push(h(r,'Ubicacion')); });
+                            Store.n.forEach(r => {
+                                if(h(r,'Ubicación') === 'DIGI1') {
+                                    let ean = String(h(r,'Artículo')), qty = parseFloat(h(r,'Cant Base')) || 0, locs = physMap[ean] || [];
+                                    if(locs.length > 0) {
+                                        let isNegative = qty < 0; let hasExcludedLoc = locs.some(l => { let u = l.trim().toUpperCase(); return u.startsWith('E') || Cfg.despa.includes(u); });
+                                        if(!hasExcludedLoc) {
+                                            let hasValidPiso = locs.some(l => !l.includes('BODEGA') && !l.includes('ALTOS'));
+                                            if(isNegative || !hasValidPiso) { res.push({ 'EAN': ean, 'Descripción': h(r,'Descr'), 'Cant DIGI1': qty, 'Ubic Físicas': locs.join(', '), 'Problema': isNegative ? "NEGATIVO REAL" : "FÍSICO EN BODEGA" }); }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        else if(op==='negativos'){
+                            let am={}; Store.n.forEach(r=>{ let u=h(r,'Ubicación'), e=String(h(r,'Artículo')), c=parseFloat(h(r,'Cant Base'))||0; if(u==='ALMAC') am[e]=c; });
+                            res = Store.n.filter(r => h(r,'Ubicación')==='DIGI1' && parseFloat(h(r,'Cant Base'))<0).map(r => {
+                                let e=String(h(r,'Artículo')), di=parseFloat(h(r,'Cant Base'))||0, al=am[e]||0;
+                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': di, 'Cant ALMAC': al, 'Acción': al>0 ? 'MOVER A PISO':'NOVEDAD' };
+                            });
+                        }
+                        else if(op.startsWith('almac')){
+                            let m={}; 
+                            Store.n.forEach(r=>{ 
+                                let e=String(h(r,'Artículo')).trim(); if(!m[e]) m[e]={e, d:h(r,'Descr'), s:h(r,'Sublinea')||"", di:0, al:0, exh:0, exdis:0, hd:false};
+                                let u=String(h(r,'Ubicación')).trim().toUpperCase(), q=parseFloat(h(r,'Cant Base'))||0; 
+                                if(u==='DIGI1'){ m[e].di+=q; m[e].hd=true; } if(u==='ALMAC') m[e].al+=q; if(u==='EXDIS') m[e].exdis+=q; if(u==='EXHIB') m[e].exh+=q; 
+                            });
+                            Store.r.forEach(r=>{
+                                let e=String(h(r,'Artículo')).trim(), u=String(h(r,'Ubicación')).trim().toUpperCase(), q=parseFloat(h(r,'Cant Base'))||0;
+                                if(u==='EXHIB'||u==='EXDIS') { if(!m[e]) m[e]={e, d:h(r,'Descr')||"", s:h(r,'Sublinea')||"", di:0, al:0, exh:0, exdis:0, hd:false}; if(u==='EXHIB') m[e].exh+=q; if(u==='EXDIS') m[e].exdis+=q; }
+                            });
+                            
+                            let arr=Object.values(m), norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase(), exc=Cfg.exc.map(norm);
+                            if(op==='almac_digi0') res=arr.filter(i=>i.hd && i.di===0 && i.al>0).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':0,'Cant ALMAC':i.al,Acción:'SURTIR'}));
+                            else if(op==='almac_almac0') {
+                                res=arr.filter(i=>{
+                                    if(i.al !== 0 || i.di <= 0) return false; 
+                                    let cat = norm(i.s); let pi = Store.p.find(p => String(h(p,'Artículo','EAN')).trim() === i.e); 
+                                    if(!cat && pi) cat = norm(h(pi,'Sublinea','Categoria')||"");
+                                    let flag = ""; 
+                                    if(pi) {
+                                        let rawFlag = h(pi, 'Flag Exhibicion', 'Flag_Exhibicion', 'FLAG EXHIBICION');
+                                        if (rawFlag !== undefined) {
+                                            let val = String(rawFlag).trim().toUpperCase();
+                                            if (val==='Y'||val==='S'||val.startsWith('Y')||val.startsWith('S')) flag='Y';
+                                            else if (val==='N'||val==='NO'||val.startsWith('N')) flag='N';
+                                        }
+                                    }
+                                    let tieneExhibicion = (i.exh > 0 || i.exdis > 0);
+                                    if (flag === 'Y' && tieneExhibicion) return false; 
+                                    if (flag === 'N' && !tieneExhibicion) return false; 
+                                    
+                                    let catFiltro = ["DRONES", "CELULAR", "PORTATIL", "TABLET", "DEPORTES", "PROYECTORES", "CONSOLAS"].map(norm);
+                                    if (catFiltro.some(c => cat.includes(c))) return true;
+                                    return !exc.some(e=>cat.includes(e));
+                                }).map(i=>({EAN:i.e, Descripción:i.d, 'Cant DIGI1':i.di, 'Cant ALMAC':0, Estado:'SOLO PISO'}));
+                            }
+                            else if(op==='almac_neg') res=arr.filter(i=>i.di>0 && i.al<0).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Estado:'NOVEDAD'}));
+                            else if(op==='almac_sum0') res=arr.filter(i=>(i.di+i.al)===0 && !(i.di===0&&i.al===0)).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Suma:0}));
+                        }
+                        else if(op==='prohibido'){
+                            let norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim(), ok=Cfg.ok.map(norm);
+                            res=Store.n.filter(r=>{ if(h(r,'Ubicación')!=='DIGI1')return false; return !ok.includes(norm(h(r,'Sublinea')||"")); }).map(r=>({EAN:h(r,'Artículo'),Descripción:h(r,'Descr'),Sublínea:h(r,'Sublinea'),'Cant DIGI1':h(r,'Cant Base'),Estado:'SACAR'}));
+                        }
+                        else if(op==='nivelar'){
+                            let ds=new Set(); Store.v.forEach(r=>{if(Cfg.despa.includes(h(r,'Ubicacion'))) ds.add(String(h(r,'Producto')))});
+                            let m={}; Store.n.forEach(r=>{ let e=String(h(r,'Artículo')); if(!m[e])m[e]={e,d:h(r,'Descr')||"",s:h(r,'Sublinea')||"",f:0,b:0}; let u=h(r,'Ubicación'),q=parseFloat(h(r,'Cant Base'))||0; if(u==='DIGI1'||u==='EXHIB')m[e].f+=q; if(u==='ALMAC')m[e].b+=q; });
+                            res=Object.values(m).filter(i=>{ if(ds.has(i.e)||i.b<=0||(i.f===0&&i.b===0))return false; let ok=Cfg.niv.some(c=>i.s.includes(c)), na=!i.s.toLowerCase().includes("accesorio"), no=!i.d.toUpperCase().includes("AIO"); return ok&&na&&no; }).map(i=>({EAN:i.e,Descripción:i.d,'Suma PISO':i.f,'Stock ALMAC':i.b,Acción:'MOVER A PISO'}));
+                        }
+                        
+                        Store.view=res; Store.full=res; UI.draw(res);
+                        let err = res.filter(x=>x.Estado==='NOVEDAD' || x.Diferencia!==0).length || res.length;
+                        UI.kpi(res.length, Store.tot, err); UI.chart(Store.tot, err);
+                        document.getElementById('loader').style.display='none'; UI.toast("Análisis finalizado",1);
+                    } catch(e) { document.getElementById('loader').style.display='none'; alert(e); }
+                }, 100);
+            },
+
+            search: ()=>{ let t=document.getElementById('search').value.toLowerCase(); UI.draw(Store.full.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(t)))); },
+            desc: (e)=>{ let i=Store.n.find(r=>String(Util.get(r,'Artículo'))===e); return i?Util.get(i,'Descr'):"Producto Desconocido"; },
+            openERP: (ean) => { navigator.clipboard.writeText(ean).then(() => { UI.toast("EAN copiado", 1); window.open('https://erp.colcomercio.com/psp/PROD_1/EMPLOYEE/ERP/c/MAINTAIN_INVENTORY.MATERIAL_TRANSFER.GBL?&skipcnav=1', '_blank'); }); }
+        };
+
+        const DB={
+            db:null, init:()=>new Promise(r=>{let q=indexedDB.open(DB_NAME,1); q.onupgradeneeded=e=>e.target.result.createObjectStore('f'); q.onsuccess=e=>{DB.db=e.target.result;r()}}),
+            save:(k,d)=>{if(DB.db)DB.db.transaction(['f'],'readwrite').objectStore('f').put(d,k)},
+            get:(k)=>new Promise(r=>{if(!DB.db)return r(null); let q=DB.db.transaction(['f'],'readonly').objectStore('f').get(k); q.onsuccess=e=>r(e.target.result)})
+        };
+
+        const AsistenteVoz = {
+            synth: window.speechSynthesis,
+            hablar: function(texto) {
+                if(this.synth.speaking) this.synth.cancel();
+                let msg = new SpeechSynthesisUtterance(texto); msg.lang = 'es-ES'; msg.rate = 1.05; msg.pitch = 1.0;
+                this.synth.speak(msg);
+            },
+            silenciar: function() { if(this.synth.speaking) this.synth.cancel(); }
+        };
+
+        const UI = {
+            toast: (m,t)=>{ let b=document.getElementById('toast'); b.innerHTML=`<i class="fas fa-${t?'check':'exclamation'}-circle"></i> ${m}`; b.style.display='flex'; setTimeout(()=>b.style.display='none',3000); },
+            led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
+            modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
+            
+            kpi: (v,t,e)=>{ 
+                document.getElementById('k-view').innerText=v; document.getElementById('k-tot').innerText=t; document.getElementById('k-err').innerText=e || 0;
+                let bar=document.getElementById('c-bar'), val=document.getElementById('c-val'), txt=document.getElementById('c-txt'), headCump=document.getElementById('k-cump-head');
+                let ok=t-(e||0), acc=t>0?((ok/t)*100).toFixed(1):0;
+                val.innerText=`${acc}%`; bar.style.width=`${acc}%`; headCump.innerText=`${acc}%`;
+                let col='', statusTxt='';
+                if(acc>=98){ col='#10b981'; statusTxt='Excelente'; } else if(acc>=90){ col='#f59e0b'; statusTxt='Aceptable'; } else { col='#ef4444'; statusTxt='Crítico'; }
+                val.style.color=col; bar.style.background=col; txt.innerText=statusTxt; headCump.style.color=col;
+            },
+            draw: (d)=>{
+                let th=document.getElementById('th'), tb=document.getElementById('tb'), em=document.getElementById('empty'), cnt=document.getElementById('lbl-count');
+                th.innerHTML=""; tb.innerHTML="";
+                if(!d.length){ em.style.display='block'; cnt.innerText="0 REGISTROS"; return; }
+                em.style.display='none'; cnt.innerText=`${d.length} REGISTROS`;
+                let cols=Object.keys(d[0]); th.innerHTML=`<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+                tb.innerHTML=d.map(r=>`<tr>${cols.map(c=>{
+                    let v=r[c];
+                    if(c==='EAN'||c==='Artículo') return `<td><span class="lnk" onclick="UI.s360('${v}')">${v}</span></td>`;
+                    if(c==='Acción' || c==='Acción Sugerida' || c==='Tipo Novedad') return `<td class="nowrap-col"><span class="tg tg-crit" style="background:var(--ai-color); border:none; box-shadow:none;">${v}</span></td>`;
+                    if(c==='Estado') return `<td class="nowrap-col"><span class="tg ${v==='OK'?'tg-ok':(v==='NOVEDAD'?'tg-err':'tg-war')}">${v}</span></td>`;
+                    return `<td>${v}</td>`;
+                }).join('')}</tr>`).join('');
+            },
+            chart: (tot,err)=>{
+                if(typeof Chart === 'undefined') return;
+                let ctx=document.getElementById('chart').getContext('2d'); if(Store.chart)Store.chart.destroy();
+                let ok=tot-err; if(ok<0)ok=0;
+                Store.chart=new Chart(ctx,{type:'doughnut',data:{labels:['OK','Error'],datasets:[{data:[ok,err],backgroundColor:['#10b981','#ef4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+            },
+            s360: (ean)=>{
+                ean=String(ean).trim(); UI.modal('m-360',true);
+                let nombreProd = Core.desc(ean); document.getElementById('d360-ean').innerText=ean; document.getElementById('d360-desc').innerText=nombreProd;
+                
+                let dataIA = Core.generarReporteIA(ean, nombreProd);
+                document.getElementById('d360-ai-text').innerHTML = dataIA.text; AsistenteVoz.hablar(dataIA.voz);
+
+                let physRows = Store.v.filter(r => String(Util.get(r,'Producto')) === ean); let locMap = {};
+                physRows.forEach(r => { let loc = Util.get(r,'Ubicacion'); let q = parseFloat(Util.get(r,'Cantidad','Cant','Unidades')) || 1; if(locMap[loc]) locMap[loc] += q; else locMap[loc] = q; });
+                let physHtml = ""; let hasDespa = false;
+                if (Object.keys(locMap).length > 0) {
+                    for (const [loc, qty] of Object.entries(locMap)) {
+                        let isDespa = Cfg.despa.includes(loc); if(isDespa) hasDespa = true;
+                        let color = isDespa ? "#ef4444" : "#2563eb"; let icon = isDespa ? "fa-truck" : "fa-map-marker-alt";
+                        physHtml += `<div class="phys-item" style="color:${color}; border-color:${color}40; background:${color}10;"><span><i class="fas ${icon}"></i> ${loc}</span><span class="phys-qty">${qty}</span></div>`;
+                    }
+                } else physHtml = '<span style="padding:10px; color:#9ca3af;">Sin ubicación física</span>';
+                document.getElementById('d360-phys').innerHTML = physHtml;
+
+                let f= (arr,id,totId)=>{ let h="", t=0; arr.filter(r=>String(Util.get(r,'Artículo'))===ean).forEach(r=>{ let u=Util.get(r,'Ubicación'), q=parseFloat(Util.get(r,'Cant Base'))||0; t+=q; h+=`<div class="itm"><span>${u}</span><span class="qty ${q>0?'ok':'bad'}">${q}</span></div>`; }); document.getElementById(id).innerHTML=h||'<span style="padding:10px; color:#aaa;">Sin stock</span>'; document.getElementById(totId).innerText=t; return t; };
+                let totalDigi = f(Store.n, 'd360-nr', 'd360-nr-t'); f(Store.r, 'd360-r', 'd360-r-t');
+                let p=Store.p.find(r=>String(Util.get(r,'Artículo','EAN'))===ean);
+                document.getElementById('d360-st').innerText=p?"ACTIVO":"NO LISTADO"; document.getElementById('d360-bk').innerText=p?Util.get(p,'Total Libros'):"---";
+                let badge = document.getElementById('d360-badge');
+                if (totalDigi > 0 && !hasDespa) { badge.innerText = "DISPONIBLE PARA VENTA"; badge.style.background = "#16a34a"; badge.style.color = "#fff"; } 
+                else if (hasDespa) { badge.innerText = "EN DESPACHO (NO VENDER)"; badge.style.background = "#dc2626"; badge.style.color = "#fff"; } 
+                else { badge.innerText = "NO DISPONIBLE"; badge.style.background = "#64748b"; badge.style.color = "#fff"; border: "none"; }
+                document.getElementById('erp-action-area').innerHTML = `<button class="btn-erp" onclick="Core.openERP('${ean}')"><i class="fas fa-external-link-alt"></i> REALIZAR MOVIMIENTO</button>`;
+            }
+        };
+
+        const Util = { get: (r,...k)=>{let ks=Object.keys(r); for(let x of k){let f=ks.find(y=>y.toUpperCase().trim()===x.toUpperCase().trim()); if(f)return r[f]} return undefined} };
+        const Exp = { excel:()=>{ let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Store.view),"Data"); XLSX.writeFile(wb,"Reporte.xlsx")}, pdf:()=>{ let d=new jspdf.jsPDF(); d.autoTable({head:[Object.keys(Store.view[0])],body:Store.view.map(Object.values)}); d.save("Reporte.pdf")} };
+
+        window.onload=Core.init;
+    </script>
+</body>
+</html>
