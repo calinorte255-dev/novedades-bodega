@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
     <title>Novedades de Bodega Digital | v25.0 Enterprise Nube</title>
     
@@ -16,6 +16,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
     <style>
+        /* ==========================================================================
+           DISEÑO COMPACT PRO v25.0 FULL RESPONSIVE + NUBE + LOGIN
+           ========================================================================== */
         :root {
             --primary: #e30613; 
             --primary-dark: #b91c1c;
@@ -37,7 +40,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        #sidebar { width: 260px; height: 100%; background-color: var(--bg-dark); color: #94a3b8; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 20; }
+        #sidebar { width: 260px; height: 100%; background-color: var(--bg-dark); color: #94a3b8; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 3000; flex-shrink: 0; }
         .brand { padding: 25px 15px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); }
         .brand h1 { font-size: 1.6rem; color: #fff; margin: 0; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .brand small { font-size: 0.75rem; color: var(--secondary); font-weight: 600; display: block; margin-top: 8px; letter-spacing: 2px; text-transform: uppercase; }
@@ -53,7 +56,7 @@
         .led.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; border-color: #fff; }
         input[type="file"] { display: none; }
 
-        .btn { width: 100%; padding: 8px 12px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; transition: 0.2s; text-align: left; text-transform: uppercase; }
+        .btn { width: 100%; padding: 8px 12px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 5px; transition: 0.2s; text-align: left; text-transform: uppercase; }
         .btn:hover { filter: brightness(1.15); transform: translateX(2px); }
         .btn i { width: 15px; text-align: center; }
 
@@ -69,26 +72,31 @@
         .export-bar { display: flex; gap: 5px; margin-top: 5px; }
         .btn-sm { flex: 1; justify-content: center; padding: 6px; font-size: 0.7rem; font-weight: 800; }
 
-        #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f1f5f9; }
-        .header { height: 60px; background: #fff; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; box-shadow: var(--shadow); z-index: 10; }
+        #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f1f5f9; width: 100%; }
+        
+        .header { height: 60px; background: #fff; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; box-shadow: var(--shadow); z-index: 10; flex-shrink: 0; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .menu-toggle { display: none; background: transparent; border: none; color: #0f172a; font-size: 1.5rem; cursor: pointer; padding: 0; }
         .header-title h2 { font-size: 1.8rem; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         .header-title span { font-size: 0.8rem; color: var(--ai-color); margin-left: 15px; border-left: 2px solid #cbd5e1; padding-left: 15px; font-weight: 800; }
-        .kpi { display: flex; gap: 20px; }
+        
+        .kpi { display: flex; gap: 20px; align-items: center; }
         .k-box { display: flex; flex-direction: column; align-items: flex-end; }
         .k-lbl { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
         .k-val { font-size: 1.2rem; font-weight: 800; color: #0f172a; font-family: 'Rajdhani', sans-serif; line-height: 1; }
 
         .work { flex: 1; display: flex; padding: 15px; gap: 15px; overflow: hidden; }
-        .panel-left { flex: 1; background: #fff; border-radius: 8px; border: var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .tbl-ctrl { padding: 8px 15px; border-bottom: var(--border); background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
-        .search { position: relative; width: 300px; }
+        .panel-left { flex: 1; background: #fff; border-radius: 8px; border: var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-width: 0; }
+        .tbl-ctrl { padding: 8px 15px; border-bottom: var(--border); background: #f8fafc; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .search { position: relative; width: 300px; max-width: 100%; }
         .search input { width: 100%; padding: 6px 10px 6px 30px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.8rem; background: #fff; }
         .search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.8rem; }
+        
         .tbl-scroll { flex: 1; overflow: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         thead { position: sticky; top: 0; background: #f1f5f9; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        th { text-align: left; padding: 8px 12px; font-weight: 700; color: #475569; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; font-size: 0.7rem; }
-        td { padding: 6px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        th { text-align: left; padding: 8px 12px; font-weight: 700; color: #475569; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; font-size: 0.7rem; white-space: nowrap; }
+        td { padding: 6px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; white-space: nowrap; }
         tr:hover td { background: #f0fdf4; color: #000; }
         .lnk { color: var(--primary); font-weight: 700; text-decoration: underline; cursor: pointer; }
         .nowrap-col { white-space: nowrap; font-weight: 700; }
@@ -99,70 +107,122 @@
         .tg-crit { background: #7f1d1d; color: #fff; border: 1px solid #ef4444; box-shadow: 0 0 5px rgba(239,68,68,0.5); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
 
-        .panel-right { width: 260px; display: flex; flex-direction: column; gap: 15px; overflow: hidden; }
+        .panel-right { width: 260px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; flex-shrink: 0; }
         .card { background: #fff; padding: 15px; border-radius: 8px; border: var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .c-chart { display: flex; flex-direction: column; flex: 1; min-height: 200px; }
-        .chart-wrap { flex: 1; position: relative; width: 100%; height: 100%; }
+        .chart-wrap { flex: 1; position: relative; width: 100%; height: 100%; min-height: 150px; }
         .c-tit { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; text-align: center; }
         .comp-val { font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1; }
         .comp-txt { font-size: 0.8rem; color: #64748b; margin-top: 5px; }
         .bar-bg { height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 10px; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; background: #10b981; transition: 1s; }
 
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:none; justify-content:center; align-items:center; backdrop-filter:blur(2px); }
-        .m-360 { background:#fff; width:1100px; max-width:95%; height:95vh; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
+        /* MODALES */
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:5000; display:none; justify-content:center; align-items:center; backdrop-filter:blur(2px); padding: 10px; }
+        .m-360 { background:#fff; width:1100px; max-width:100%; height:95vh; max-height: 100%; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
         .m-head { background: linear-gradient(135deg, #0f172a, #1e293b); padding:20px 30px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; border-bottom: 3px solid var(--ai-color); }
-        .m-head h3 { margin:0; font-size:1.5rem; font-weight:800; letter-spacing:1px; color:#f8fafc; }
-        .m-head p { margin:5px 0 0 0; color:#cbd5e1; font-size:0.95rem; max-width: 700px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight:600; }
-        .m-tag { background: rgba(16,185,129,0.2); border: 1px solid #10b981; padding: 5px 15px; border-radius: 20px; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-left: 20px; color: #34d399; }
-        .m-body { padding:25px; overflow-y:auto; flex:1; background:#f1f5f9; display: flex; flex-direction: column; gap: 20px; }
+        .m-head h3 { margin:0; font-size:1.5rem; font-weight:800; letter-spacing:1px; color:#f8fafc; word-break: break-all; }
+        .m-head p { margin:5px 0 0 0; color:#cbd5e1; font-size:0.95rem; font-weight:600; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; }
+        .m-tag { background: rgba(16,185,129,0.2); border: 1px solid #10b981; padding: 5px 15px; border-radius: 20px; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-left: 10px; color: #34d399; white-space: nowrap; }
+        .m-body { padding:20px; overflow-y:auto; flex:1; background:#f1f5f9; display: flex; flex-direction: column; gap: 20px; }
         
         .ai-box { background: linear-gradient(to right, #ecfdf5, #dcfce7); border: 1px solid #6ee7b7; border-radius: 10px; padding: 20px; display: flex; gap: 15px; box-shadow: 0 4px 10px rgba(16,185,129,0.1); }
         .ai-icon { width: 50px; height: 50px; border-radius: 50%; background: #10b981; color: #fff; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; flex-shrink: 0; box-shadow: 0 0 10px rgba(16,185,129,0.5); }
-        .ai-content h4 { margin: 0 0 8px 0; color: #065f46; font-size: 0.95rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .ai-content h4 { margin: 0 0 8px 0; color: #065f46; font-size: 0.95rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .ai-text { margin: 0; color: #064e3b; font-size: 0.95rem; line-height: 1.6; font-weight: 600; text-align: justify; }
 
-        .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; flex:1; }
+        .grid-3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; flex:1; }
         .col { background:#fff; border:1px solid #e2e8f0; border-radius:8px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .col-h { padding:15px; font-size:0.8rem; font-weight:800; text-transform:uppercase; background:#f8fafc; color:#475569; border-bottom:2px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
         .col-l { flex:1; overflow-y:auto; padding:10px; max-height: 250px; }
         .itm { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:1px solid #f1f5f9; font-size:0.85rem; }
         .itm:hover { background: #f8fafc; }
-        .phys-item { background: #f0f9ff; border: 1px solid #bae6fd; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; font-weight: 700; color: #0369a1; display: flex; justify-content: space-between; align-items: center; }
+        .phys-item { background: #f0f9ff; border: 1px solid #bae6fd; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; font-weight: 700; color: #0369a1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
         .phys-qty { background: #fff; padding: 2px 8px; border-radius: 10px; color: #0369a1; font-weight: 800; border: 1px solid #e0f2fe; }
         .qty { background:#e2e8f0; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:800; min-width:35px; text-align:center; }
         .qty.ok { background: #dcfce7; color: #166534; } .qty.bad { background: #fee2e2; color: #991b1b; }
         .col-f { padding:15px; text-align:right; font-weight:800; font-size:1rem; border-top:1px solid #e2e8f0; background:#f8fafc; }
-        .port-bar { padding:20px 30px; background:#111827; color: #fff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+        
+        .port-bar { padding:20px 30px; background:#111827; color: #fff; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; flex-wrap: wrap; gap: 15px; }
         .port-info { display: flex; flex-direction: column; }
         .port-lbl { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         .port-val { font-size: 1.8rem; font-weight: 800; color: #facc15; line-height: 1; }
-        .btn-erp { background: #2563eb; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-erp { background: #2563eb; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .btn-erp:hover { background: #1d4ed8; transform: translateY(-2px); }
 
-        .m-std { background:#fff; width:500px; border-radius:8px; padding:25px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .m-std { background:#fff; width:500px; max-width: 100%; border-radius:8px; padding:25px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
         .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
         .opt { padding:15px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; transition:0.2s; background:#f8fafc; }
         .opt:hover { background:#fff; border-color:var(--primary); transform:translateY(-2px); box-shadow:0 4px 6px rgba(0,0,0,0.05); }
         .opt b { display:block; font-size:0.85rem; color:#0f172a; margin-bottom:4px; }
         .opt small { font-size:0.7rem; color:#64748b; line-height:1.2; display:block; }
 
-        #loader { position:fixed; top:0; left:0; width:100%; height:100%; background:#111827; z-index:9000; display:flex; justify-content:center; align-items:center; flex-direction:column; transition:opacity 0.5s; }
+        #loader { position:fixed; top:0; left:0; width:100%; height:100%; background:#111827; z-index:90000; display:flex; justify-content:center; align-items:center; flex-direction:column; transition:opacity 0.5s; }
         .spin { width:40px; height:40px; border:3px solid rgba(255,255,255,0.1); border-top:3px solid var(--primary); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:15px; }
         @keyframes spin { 100% { transform:rotate(360deg); } }
-        #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:10px 25px; border-radius:30px; font-size:0.85rem; font-weight:600; z-index:9999; display:none; align-items:center; gap:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3); }
+        #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:12px 25px; border-radius:30px; font-size:0.85rem; font-weight:600; z-index:99999; display:none; align-items:center; gap:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3); text-align: center; max-width: 90%; }
         
         /* LOGIN OVERLAY */
-        #login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #0f172a, #1e293b); z-index:100000; display:flex; justify-content:center; align-items:center; transition:opacity 0.5s ease; }
-        .login-box { background:#fff; width:400px; padding:45px 40px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); text-align:center; position:relative; }
+        #login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #0f172a, #1e293b); z-index:100000; display:flex; justify-content:center; align-items:center; transition:opacity 0.5s ease; padding: 15px; }
+        .login-box { background:#fff; width:400px; max-width: 100%; padding:40px 30px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); text-align:center; position:relative; }
         .login-icon { width:70px; height:70px; background:var(--primary); color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:2rem; margin:0 auto 20px auto; box-shadow:0 10px 20px rgba(227, 6, 19, 0.3); }
         .login-input { width:100%; padding:14px 15px; margin-bottom:15px; border:2px solid #e2e8f0; border-radius:8px; font-size:0.95rem; outline:none; font-family:'Inter', sans-serif; font-weight:600; text-align:center; transition:0.3s; }
         .login-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(227, 6, 19, 0.1); }
         .login-btn { width:100%; padding:14px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:1rem; font-weight:800; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 10px rgba(227, 6, 19, 0.3); transition:0.2s; margin-top:5px; }
         .login-btn:hover { background:var(--primary-dark); transform:translateY(-2px); }
+
+        /* OVERLAY OSCURO PARA EL MENÚ EN MÓVILES */
+        #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; backdrop-filter: blur(2px); }
+
+        /* ==========================================================================
+           MEDIA QUERIES (RESPONSIVE PARA TABLETS Y CELULARES)
+           ========================================================================== */
+        
+        /* Pantallas medianas (Tablets) */
+        @media (max-width: 1024px) {
+            .work { flex-direction: column; overflow-y: auto; }
+            .panel-left { min-height: 500px; flex: none; }
+            .panel-right { width: 100%; flex-direction: row; flex-wrap: wrap; }
+            .card { flex: 1; min-width: 250px; }
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* Pantallas pequeñas (Celulares) */
+        @media (max-width: 768px) {
+            .header { padding: 10px 15px; height: auto; flex-direction: column; align-items: flex-start; gap: 10px; }
+            .header-left { width: 100%; }
+            .menu-toggle { display: block; }
+            .header-title h2 { font-size: 1.3rem; }
+            .header-title span { display: block; margin-left: 0; padding-left: 0; border-left: none; margin-top: 2px; }
+            
+            .kpi { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+            .k-val { font-size: 1rem; }
+            
+            /* Menú Lateral Oculto (Off-Canvas) */
+            #sidebar { position: fixed; left: -280px; top: 0; width: 280px; transition: 0.3s ease; }
+            #sidebar.open { left: 0; }
+            #sidebar-overlay.open { display: block; }
+
+            .tbl-ctrl { flex-direction: column; align-items: stretch; gap: 10px; }
+            
+            .grid-3 { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            
+            .m-head { flex-direction: column; align-items: flex-start; gap: 15px; position: relative; }
+            .m-head i.fa-times { position: absolute; top: 20px; right: 20px; }
+            .m-head > div > div { flex-wrap: wrap; gap: 10px; }
+            .m-tag { margin-left: 0; }
+
+            .ai-box { flex-direction: column; align-items: center; text-align: center; }
+            
+            .port-bar { flex-direction: column; align-items: stretch; text-align: center; }
+            .port-bar > div { flex-direction: column; justify-content: center; }
+        }
     </style>
 </head>
 <body>
+
+    <div id="sidebar-overlay" onclick="UI.toggleMenu()"></div>
 
     <div id="login-overlay">
         <div class="login-box">
@@ -180,7 +240,7 @@
 
     <div id="loader" style="display:none;">
         <div class="spin"></div>
-        <div id="loader-txt" style="color:#fff; font-weight:700; letter-spacing:1px;">CARGANDO SISTEMA IA</div>
+        <div id="loader-txt" style="color:#fff; font-weight:700; letter-spacing:1px; text-align:center; padding:0 20px;">CARGANDO SISTEMA IA</div>
     </div>
     <div id="toast"></div>
 
@@ -192,7 +252,7 @@
 
         <div class="menu">
             <div class="section-title"><i class="fas fa-cloud-download-alt"></i> NUBE / SERVIDOR</div>
-            <button class="btn b-cloud" onclick="Core.fetchServerData()"><i class="fas fa-sync-alt"></i> CARGAR DATOS DEL SERVIDOR</button>
+            <button class="btn b-cloud" onclick="Core.fetchServerData(); UI.toggleMenu(true);"><i class="fas fa-sync-alt"></i> CARGAR DATOS NUBE</button>
 
             <div class="section-title" style="margin-top:20px;"><i class="fas fa-database"></i> CARGA MANUAL (OPCIONAL)</div>
             
@@ -233,12 +293,12 @@
             </label>
             <input type="file" id="f-toma" accept=".csv">
 
-            <button class="btn b-danger" onclick="Core.run('riesgo')"><i class="fas fa-radiation"></i> DIGITAL EN JDA</button> 
-            <button class="btn b-blue" onclick="UI.modal('m-toma-sel', true)"><i class="fas fa-search"></i> TOMA FÍSICA vs DIGI</button>
-            <button class="btn b-red" onclick="Core.run('negativos')"><i class="fas fa-arrow-down"></i> NEGATIVOS DIGITAL</button>
-            <button class="btn b-yellow" style="color:#000" onclick="UI.modal('m-almac',true)"><i class="fas fa-exchange-alt"></i> ALMACÉN</button>
-            <button class="btn b-purple" onclick="Core.run('prohibido')"><i class="fas fa-ban"></i> NO DEBE ESTAR EN DIGI</button> 
-            <button class="btn b-green" onclick="Core.run('nivelar')"><i class="fas fa-balance-scale"></i> DIGI EN ALMAC</button> 
+            <button class="btn b-danger" onclick="Core.run('riesgo'); UI.toggleMenu(true);"><i class="fas fa-radiation"></i> DIGITAL EN JDA</button> 
+            <button class="btn b-blue" onclick="UI.modal('m-toma-sel', true); UI.toggleMenu(true);"><i class="fas fa-search"></i> TOMA FÍSICA vs DIGI</button>
+            <button class="btn b-red" onclick="Core.run('negativos'); UI.toggleMenu(true);"><i class="fas fa-arrow-down"></i> NEGATIVOS DIGITAL</button>
+            <button class="btn b-yellow" style="color:#000" onclick="UI.modal('m-almac',true); UI.toggleMenu(true);"><i class="fas fa-exchange-alt"></i> ALMACÉN</button>
+            <button class="btn b-purple" onclick="Core.run('prohibido'); UI.toggleMenu(true);"><i class="fas fa-ban"></i> NO DEBE ESTAR EN DIGI</button> 
+            <button class="btn b-green" onclick="Core.run('nivelar'); UI.toggleMenu(true);"><i class="fas fa-balance-scale"></i> DIGI EN ALMAC</button> 
 
             <div class="section-title"><i class="fas fa-file-export"></i> EXPORTAR</div>
             <div class="export-bar">
@@ -246,15 +306,18 @@
                 <button class="btn btn-sm b-dark" onclick="Exp.pdf()">PDF</button>
             </div>
             
-            <button class="btn b-red" style="margin-top:20px; background:transparent; border:1px solid #ef4444; color:#ef4444;" onclick="Sys.logout()"><i class="fas fa-power-off"></i> CERRAR SESIÓN SEGURA</button>
+            <button class="btn b-red" style="margin-top:20px; background:transparent; border:1px solid #ef4444; color:#ef4444;" onclick="Sys.logout(); UI.toggleMenu(true);"><i class="fas fa-power-off"></i> CERRAR SESIÓN SEGURA</button>
         </div>
     </aside>
 
     <main id="main">
         <header class="header">
-            <div class="header-title">
-                <h2>NOVEDADES DE BODEGA DIGITAL</h2>
-                <span>COMPACT PRO v25.0 | ENTERPRISE NUBE</span>
+            <div class="header-left">
+                <button class="menu-toggle" onclick="UI.toggleMenu()"><i class="fas fa-bars"></i></button>
+                <div class="header-title">
+                    <h2>NOVEDADES BODEGA DIGITAL</h2>
+                    <span>COMPACT PRO v25.0 | ENTERPRISE NUBE</span>
+                </div>
             </div>
             <div class="kpi">
                 <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
@@ -267,15 +330,15 @@
         <div class="work">
             <div class="panel-left">
                 <div class="tbl-ctrl">
-                    <span id="lbl-count" style="font-weight:700; font-size:0.8rem; color:#64748b;">0 REGISTROS</span>
+                    <span id="lbl-count" style="font-weight:700; font-size:0.8rem; color:#64748b; white-space:nowrap;">0 REGISTROS</span>
                     <div class="search"><i class="fas fa-search"></i><input type="text" id="search" placeholder="Buscar EAN, Ubicación..." onkeyup="Core.search()"></div>
                 </div>
                 <div class="tbl-scroll">
                     <table id="tbl"><thead id="th"></thead><tbody id="tb"></tbody></table>
-                    <div id="empty" style="text-align:center; padding:80px; color:#cbd5e1;">
+                    <div id="empty" style="text-align:center; padding:80px 20px; color:#cbd5e1;">
                         <i class="fas fa-cloud fa-4x" style="margin-bottom:15px; color:#94a3b8;"></i>
                         <p style="font-size:1.1rem; font-weight:700; color:#64748b;">Sistema en Blanco.</p>
-                        <p>Haga clic en <b>CARGAR DATOS DEL SERVIDOR</b> para obtener la última información.</p>
+                        <p>Abre el menú y haz clic en <b>CARGAR DATOS NUBE</b> para obtener la información.</p>
                     </div>
                 </div>
             </div>
@@ -297,7 +360,7 @@
 
     <div id="m-toma-sel" class="overlay">
         <div class="m-std">
-            <i class="fas fa-times" onclick="UI.modal('m-toma-sel',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
+            <i class="fas fa-times" onclick="UI.modal('m-toma-sel',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa; font-size:1.2rem;"></i>
             <h3 style="margin-top:0;">Tipo de Toma</h3>
             <div class="grid-2">
                 <div class="opt" onclick="Core.calcToma('General'); UI.modal('m-toma-sel',false)">
@@ -312,7 +375,7 @@
 
     <div id="m-almac" class="overlay">
         <div class="m-std">
-            <i class="fas fa-times" onclick="UI.modal('m-almac',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
+            <i class="fas fa-times" onclick="UI.modal('m-almac',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa; font-size:1.2rem;"></i>
             <h3 style="margin-top:0;">Filtros Almacén</h3>
             <div class="grid-2">
                 <div class="opt" onclick="Core.run('almac_digi0'); UI.modal('m-almac',false)">
@@ -354,28 +417,28 @@
                 </div>
                 <div class="grid-3">
                     <div class="col">
-                        <div class="col-h"><i class="fas fa-map-marker-alt" style="color:#2563eb"></i> REALIDAD FÍSICA (VER_INV)</div>
+                        <div class="col-h"><i class="fas fa-map-marker-alt" style="color:#2563eb"></i> FÍSICO (VER_INV)</div>
                         <div id="d360-phys" class="col-l"></div>
                         <div class="col-f" style="color:#64748b;">UBICACIONES ENCONTRADAS</div>
                     </div>
                     <div class="col">
-                        <div class="col-h"><i class="fas fa-box-open" style="color:#059669"></i> SISTEMA PISO (DIGI1)</div>
+                        <div class="col-h"><i class="fas fa-box-open" style="color:#059669"></i> PISO (DIGI1)</div>
                         <div id="d360-nr" class="col-l"></div>
                         <div class="col-f">Total: <span id="d360-nr-t" style="color:#059669;">0</span></div>
                     </div>
                     <div class="col">
-                        <div class="col-h"><i class="fas fa-warehouse" style="color:#dc2626"></i> SISTEMA BODEGA (RESTR)</div>
+                        <div class="col-h"><i class="fas fa-warehouse" style="color:#dc2626"></i> BODEGA (RESTR)</div>
                         <div id="d360-r" class="col-l"></div>
                         <div class="col-f">Total: <span id="d360-r-t" style="color:#dc2626;">0</span></div>
                     </div>
                 </div>
             </div>
             <div class="port-bar">
-                <div style="display:flex; gap:30px; align-items:center;">
+                <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap; justify-content:center;">
                     <div class="port-info"><span class="port-lbl">ESTADO PORTAFOLIO</span><div id="d360-st" style="font-weight:700; color:#fff; font-size:1.2rem;">---</div></div>
                     <div class="port-info"><span class="port-lbl">TOTAL LIBROS</span><div id="d360-bk" class="port-val">---</div></div>
                 </div>
-                <div id="erp-action-area"></div>
+                <div id="erp-action-area" style="width:100%; max-width:300px;"></div>
             </div>
         </div>
     </div>
@@ -383,7 +446,7 @@
     <script>
         window.onerror = function() { document.getElementById('loader').style.display='none'; };
 
-        const DB_NAME="Siga_V25_0_Nube", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
+        const DB_NAME="Siga_V25_0_Responsive", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
         const Cfg={
             ok:["Accesorios Audio","Accesorio Camara","Videocamaras","Accesorios Informatica","Accesorios Telefonia","Accesorios Video","Computadores","Equipos Audio","Camaras","Otros Hardware","Telefonia Celular","Telefonia Fija","Deportes y Salud","Casa Inteligente y Redes","Videojuegos","Accesorios Energía","Audífonos y Auriculares","Drones y Juguetes Electrónicos","Accesorio Camara","Videocamaras"],
             niv:["Telefonia Celular","Videocamaras","Camaras","Computadores"],
@@ -419,8 +482,8 @@
                 UI.toast("Sesión Cerrada", 1);
             },
             startInactivityTimer: () => {
-                const reset = () => { clearTimeout(Sys.timer); Sys.timer = setTimeout(Sys.logout, 3600000); }; // 3600000 ms = 1 Hora
-                document.onmousemove = reset; document.onkeypress = reset; document.onclick = reset;
+                const reset = () => { clearTimeout(Sys.timer); Sys.timer = setTimeout(Sys.logout, 3600000); }; 
+                document.onmousemove = reset; document.onkeypress = reset; document.onclick = reset; document.ontouchstart = reset;
                 reset();
             }
         };
@@ -435,53 +498,29 @@
                 } catch(e) { console.error("Error init", e); }
             },
             
-            // --- NUEVA FUNCIÓN PARA DESCARGAR DATOS DEL SERVIDOR AUTOMÁTICAMENTE ---
             fetchServerData: async () => {
-                // Definimos las rutas de los archivos en el servidor (dentro de una carpeta "datos")
-                const filesMap = {
-                    'r': 'datos/restringidas.xlsx',
-                    'n': 'datos/norestringidas.xlsx',
-                    'v': 'datos/ver_inventario.xlsx',
-                    'tr': 'datos/traslados.xlsx',
-                    'p': 'datos/portafolio.xlsx'
-                };
-                
-                document.getElementById('loader').style.display='flex';
-                document.getElementById('loader-txt').innerText = "DESCARGANDO DATOS DEL SERVIDOR...";
-                
+                const filesMap = { 'r': 'datos/restringidas.xlsx', 'n': 'datos/norestringidas.xlsx', 'v': 'datos/ver_inventario.xlsx', 'tr': 'datos/traslados.xlsx', 'p': 'datos/portafolio.xlsx' };
+                document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText = "DESCARGANDO DATOS...";
                 let successCount = 0;
 
                 for (let k of Object.keys(filesMap)) {
                     try {
                         let res = await fetch(filesMap[k]);
                         if (res.ok) {
-                            let ab = await res.arrayBuffer();
-                            let wb = XLSX.read(new Uint8Array(ab), {type:'array'});
+                            let ab = await res.arrayBuffer(); let wb = XLSX.read(new Uint8Array(ab), {type:'array'});
                             let d = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                            
-                            Store[k] = d;
-                            DB.save(k, d);
-                            UI.led(k);
+                            Store[k] = d; DB.save(k, d); UI.led(k);
                             let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
-                            if(statusId) {
-                                document.getElementById(statusId).innerText = "✅ EN NUBE"; 
-                                document.getElementById(statusId).style.color="#0ea5e9";
-                            }
+                            if(statusId) { document.getElementById(statusId).innerText = "✅ EN NUBE"; document.getElementById(statusId).style.color="#0ea5e9"; }
                             successCount++;
                         }
-                    } catch(e) { 
-                        console.warn("No se encontró en servidor: " + filesMap[k]); 
-                    }
+                    } catch(e) { console.warn("No se encontró: " + filesMap[k]); }
                 }
                 
                 if (Store.n.length > 0) Core.calc();
                 document.getElementById('loader').style.display='none';
-                
-                if(successCount > 0) {
-                    UI.toast(`¡Éxito! ${successCount} bases de datos cargadas de la nube.`, 1);
-                } else {
-                    UI.toast("No se detectaron archivos en el servidor. Revise la carpeta 'datos/'.", 0);
-                }
+                if(successCount > 0) UI.toast(`¡Éxito! ${successCount} bases cargadas.`, 1);
+                else UI.toast("No hay archivos en el servidor.", 0);
             },
 
             file: (e,k) => {
@@ -690,6 +729,12 @@
         };
 
         const UI = {
+            toggleMenu: (forceClose = false) => {
+                let sb = document.getElementById('sidebar');
+                let ov = document.getElementById('sidebar-overlay');
+                if (forceClose) { sb.classList.remove('open'); ov.classList.remove('open'); return; }
+                sb.classList.toggle('open'); ov.classList.toggle('open');
+            },
             toast: (m,t)=>{ let b=document.getElementById('toast'); b.innerHTML=`<i class="fas fa-${t?'check':'exclamation'}-circle"></i> ${m}`; b.style.display='flex'; setTimeout(()=>b.style.display='none',3000); },
             led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
             modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
@@ -721,7 +766,7 @@
                 if(typeof Chart === 'undefined') return;
                 let ctx=document.getElementById('chart').getContext('2d'); if(Store.chart)Store.chart.destroy();
                 let ok=tot-err; if(ok<0)ok=0;
-                Store.chart=new Chart(ctx,{type:'doughnut',data:{labels:['OK','Error'],datasets:[{data:[ok,err],backgroundColor:['#10b981','#ef4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+                Store.chart=new Chart(ctx,{type:'doughnut',data:{labels:['OK','Error'],datasets:[{data:[ok,err],backgroundColor:['#10b981','#ef4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{label: function(c){return " "+c.label+": "+c.raw}}}}}});
             },
             s360: (ean)=>{
                 ean=String(ean).trim(); UI.modal('m-360',true);
@@ -739,18 +784,18 @@
                         let color = isDespa ? "#ef4444" : "#2563eb"; let icon = isDespa ? "fa-truck" : "fa-map-marker-alt";
                         physHtml += `<div class="phys-item" style="color:${color}; border-color:${color}40; background:${color}10;"><span><i class="fas ${icon}"></i> ${loc}</span><span class="phys-qty">${qty}</span></div>`;
                     }
-                } else physHtml = '<span style="padding:10px; color:#9ca3af;">Sin ubicación física</span>';
+                } else physHtml = '<span style="padding:10px; color:#9ca3af; font-size:0.8rem;">Sin ubicación física</span>';
                 document.getElementById('d360-phys').innerHTML = physHtml;
 
-                let f= (arr,id,totId)=>{ let h="", t=0; arr.filter(r=>String(Util.get(r,'Artículo'))===ean).forEach(r=>{ let u=Util.get(r,'Ubicación'), q=parseFloat(Util.get(r,'Cant Base'))||0; t+=q; h+=`<div class="itm"><span>${u}</span><span class="qty ${q>0?'ok':'bad'}">${q}</span></div>`; }); document.getElementById(id).innerHTML=h||'<span style="padding:10px; color:#aaa;">Sin stock</span>'; document.getElementById(totId).innerText=t; return t; };
+                let f= (arr,id,totId)=>{ let h="", t=0; arr.filter(r=>String(Util.get(r,'Artículo'))===ean).forEach(r=>{ let u=Util.get(r,'Ubicación'), q=parseFloat(Util.get(r,'Cant Base'))||0; t+=q; h+=`<div class="itm"><span>${u}</span><span class="qty ${q>0?'ok':'bad'}">${q}</span></div>`; }); document.getElementById(id).innerHTML=h||'<span style="padding:10px; color:#aaa; font-size:0.8rem;">Sin stock</span>'; document.getElementById(totId).innerText=t; return t; };
                 let totalDigi = f(Store.n, 'd360-nr', 'd360-nr-t'); f(Store.r, 'd360-r', 'd360-r-t');
                 let p=Store.p.find(r=>String(Util.get(r,'Artículo','EAN'))===ean);
                 document.getElementById('d360-st').innerText=p?"ACTIVO":"NO LISTADO"; document.getElementById('d360-bk').innerText=p?Util.get(p,'Total Libros'):"---";
                 let badge = document.getElementById('d360-badge');
-                if (totalDigi > 0 && !hasDespa) { badge.innerText = "DISPONIBLE PARA VENTA"; badge.style.background = "#16a34a"; badge.style.color = "#fff"; } 
-                else if (hasDespa) { badge.innerText = "EN DESPACHO (NO VENDER)"; badge.style.background = "#dc2626"; badge.style.color = "#fff"; } 
-                else { badge.innerText = "NO DISPONIBLE"; badge.style.background = "#64748b"; badge.style.color = "#fff"; border: "none"; }
-                document.getElementById('erp-action-area').innerHTML = `<button class="btn-erp" onclick="Core.openERP('${ean}')"><i class="fas fa-external-link-alt"></i> REALIZAR MOVIMIENTO</button>`;
+                if (totalDigi > 0 && !hasDespa) { badge.innerText = "DISPONIBLE"; badge.style.background = "#16a34a"; badge.style.color = "#fff"; } 
+                else if (hasDespa) { badge.innerText = "DESPACHO"; badge.style.background = "#dc2626"; badge.style.color = "#fff"; } 
+                else { badge.innerText = "NO DISP."; badge.style.background = "#64748b"; badge.style.color = "#fff"; border: "none"; }
+                document.getElementById('erp-action-area').innerHTML = `<button class="btn-erp" onclick="Core.openERP('${ean}')"><i class="fas fa-external-link-alt"></i> MOVER EN ERP</button>`;
             }
         };
 
