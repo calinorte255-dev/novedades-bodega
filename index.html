@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Novedades de Bodega Digital | v25.0 Enterprise Nube</title>
+    <title>Novedades de Bodega Digital | v26.0 Enterprise Nube</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -16,9 +16,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
     <style>
-        /* ==========================================================================
-           DISEÑO COMPACT PRO v25.0 FULL RESPONSIVE + NUBE + LOGIN
-           ========================================================================== */
         :root {
             --primary: #e30613; 
             --primary-dark: #b91c1c;
@@ -117,7 +114,6 @@
         .bar-bg { height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 10px; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; background: #10b981; transition: 1s; }
 
-        /* MODALES */
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:5000; display:none; justify-content:center; align-items:center; backdrop-filter:blur(2px); padding: 10px; }
         .m-360 { background:#fff; width:1100px; max-width:100%; height:95vh; max-height: 100%; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
         .m-head { background: linear-gradient(135deg, #0f172a, #1e293b); padding:20px 30px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; border-bottom: 3px solid var(--ai-color); }
@@ -162,7 +158,6 @@
         @keyframes spin { 100% { transform:rotate(360deg); } }
         #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:12px 25px; border-radius:30px; font-size:0.85rem; font-weight:600; z-index:99999; display:none; align-items:center; gap:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3); text-align: center; max-width: 90%; }
         
-        /* LOGIN OVERLAY */
         #login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #0f172a, #1e293b); z-index:100000; display:flex; justify-content:center; align-items:center; transition:opacity 0.5s ease; padding: 15px; }
         .login-box { background:#fff; width:400px; max-width: 100%; padding:40px 30px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); text-align:center; position:relative; }
         .login-icon { width:70px; height:70px; background:var(--primary); color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:2rem; margin:0 auto 20px auto; box-shadow:0 10px 20px rgba(227, 6, 19, 0.3); }
@@ -171,14 +166,8 @@
         .login-btn { width:100%; padding:14px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:1rem; font-weight:800; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 10px rgba(227, 6, 19, 0.3); transition:0.2s; margin-top:5px; }
         .login-btn:hover { background:var(--primary-dark); transform:translateY(-2px); }
 
-        /* OVERLAY OSCURO PARA EL MENÚ EN MÓVILES */
         #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; backdrop-filter: blur(2px); }
 
-        /* ==========================================================================
-           MEDIA QUERIES (RESPONSIVE PARA TABLETS Y CELULARES)
-           ========================================================================== */
-        
-        /* Pantallas medianas (Tablets) */
         @media (max-width: 1024px) {
             .work { flex-direction: column; overflow-y: auto; }
             .panel-left { min-height: 500px; flex: none; }
@@ -187,34 +176,25 @@
             .grid-3 { grid-template-columns: 1fr 1fr; }
         }
 
-        /* Pantallas pequeñas (Celulares) */
         @media (max-width: 768px) {
             .header { padding: 10px 15px; height: auto; flex-direction: column; align-items: flex-start; gap: 10px; }
             .header-left { width: 100%; }
             .menu-toggle { display: block; }
             .header-title h2 { font-size: 1.3rem; }
             .header-title span { display: block; margin-left: 0; padding-left: 0; border-left: none; margin-top: 2px; }
-            
             .kpi { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
             .k-val { font-size: 1rem; }
-            
-            /* Menú Lateral Oculto (Off-Canvas) */
             #sidebar { position: fixed; left: -280px; top: 0; width: 280px; transition: 0.3s ease; }
             #sidebar.open { left: 0; }
             #sidebar-overlay.open { display: block; }
-
             .tbl-ctrl { flex-direction: column; align-items: stretch; gap: 10px; }
-            
             .grid-3 { grid-template-columns: 1fr; }
             .grid-2 { grid-template-columns: 1fr; }
-            
             .m-head { flex-direction: column; align-items: flex-start; gap: 15px; position: relative; }
             .m-head i.fa-times { position: absolute; top: 20px; right: 20px; }
             .m-head > div > div { flex-wrap: wrap; gap: 10px; }
             .m-tag { margin-left: 0; }
-
             .ai-box { flex-direction: column; align-items: center; text-align: center; }
-            
             .port-bar { flex-direction: column; align-items: stretch; text-align: center; }
             .port-bar > div { flex-direction: column; justify-content: center; }
         }
@@ -316,7 +296,7 @@
                 <button class="menu-toggle" onclick="UI.toggleMenu()"><i class="fas fa-bars"></i></button>
                 <div class="header-title">
                     <h2>NOVEDADES BODEGA DIGITAL</h2>
-                    <span>COMPACT PRO v25.0 | ENTERPRISE NUBE</span>
+                    <span>COMPACT PRO v26.0 | ENTERPRISE NUBE</span>
                 </div>
             </div>
             <div class="kpi">
@@ -446,7 +426,7 @@
     <script>
         window.onerror = function() { document.getElementById('loader').style.display='none'; };
 
-        const DB_NAME="Siga_V25_0_Responsive", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
+        const DB_NAME="Siga_V26_0_Responsive", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
         const Cfg={
             ok:["Accesorios Audio","Accesorio Camara","Videocamaras","Accesorios Informatica","Accesorios Telefonia","Accesorios Video","Computadores","Equipos Audio","Camaras","Otros Hardware","Telefonia Celular","Telefonia Fija","Deportes y Salud","Casa Inteligente y Redes","Videojuegos","Accesorios Energía","Audífonos y Auriculares","Drones y Juguetes Electrónicos","Accesorio Camara","Videocamaras"],
             niv:["Telefonia Celular","Videocamaras","Camaras","Computadores"],
@@ -461,7 +441,7 @@
                 let pass = document.getElementById('log-pass').value;
                 let msg = document.getElementById('log-msg');
 
-                if(user === 'ALKOSTO CALI NORTE' && pass === 'Alkosto01.') {
+                if(user === 'ALKOSTO CALI NORTE' && pass === '30486') {
                     document.getElementById('login-overlay').style.opacity = '0';
                     setTimeout(() => {
                         document.getElementById('login-overlay').style.display = 'none';
@@ -627,6 +607,7 @@
                 setTimeout(()=>{
                     try {
                         let res=[], h=Util.get;
+                        
                         if(op === 'riesgo') {
                             let physMap = {}; Store.v.forEach(r => { let e=String(h(r,'Producto')); if(!physMap[e]) physMap[e]=[]; physMap[e].push(h(r,'Ubicacion')); });
                             Store.n.forEach(r => {
@@ -642,13 +623,47 @@
                                 }
                             });
                         }
+                        
+                        // --- NUEVA LÓGICA DE NEGATIVOS (CRUZADO BODEGA DIGITAL VS ALMACÉN) ---
                         else if(op==='negativos'){
-                            let am={}; Store.n.forEach(r=>{ let u=h(r,'Ubicación'), e=String(h(r,'Artículo')), c=parseFloat(h(r,'Cant Base'))||0; if(u==='ALMAC') am[e]=c; });
-                            res = Store.n.filter(r => h(r,'Ubicación')==='DIGI1' && parseFloat(h(r,'Cant Base'))<0).map(r => {
-                                let e=String(h(r,'Artículo')), di=parseFloat(h(r,'Cant Base'))||0, al=am[e]||0;
-                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': di, 'Cant ALMAC': al, 'Acción': al>0 ? 'MOVER A PISO':'NOVEDAD' };
+                            let m={}; 
+                            // Agrupar saldos por producto tanto de DIGI1 como de ALMAC
+                            Store.n.forEach(r=>{ 
+                                let e=String(h(r,'Artículo')).trim();
+                                if(!m[e]) m[e]={e, d:h(r,'Descr'), di:0, al:0};
+                                let u=String(h(r,'Ubicación')).trim().toUpperCase();
+                                let c=parseFloat(h(r,'Cant Base'))||0; 
+                                if(u==='DIGI1') m[e].di+=c; 
+                                if(u==='ALMAC') m[e].al+=c; 
+                            });
+                            
+                            // Filtrar todos aquellos que tengan algún negativo y mapear la solución
+                            res = Object.values(m).filter(i => i.di < 0 || i.al < 0).map(i => {
+                                let act = "", est = "";
+                                
+                                if (i.di < 0 && i.al > 0) {
+                                    act = `MOVIMIENTO BIN: ${Math.abs(i.di)} UND (ALMAC ➔ DIGI1)`;
+                                    est = "NIVELAR";
+                                } else if (i.al < 0 && i.di > 0) {
+                                    act = `MOVIMIENTO BIN: ${Math.abs(i.al)} UND (DIGI1 ➔ ALMAC)`;
+                                    est = "NIVELAR";
+                                } else {
+                                    act = "REALIZAR AJUSTE DE INVENTARIO";
+                                    est = "NOVEDAD";
+                                }
+                                
+                                return { 
+                                    EAN: i.e, 
+                                    Descripción: i.d, 
+                                    'Cant DIGI1': i.di, 
+                                    'Cant ALMAC': i.al, 
+                                    Acción: act, 
+                                    Estado: est 
+                                };
                             });
                         }
+                        // ---------------------------------------------------------------------
+
                         else if(op.startsWith('almac')){
                             let m={}; 
                             Store.n.forEach(r=>{ 
