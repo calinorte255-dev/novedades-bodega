@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Novedades de Bodega Digital | v26.1 Carga Nube</title>
+    <title>Novedades de Bodega Digital | v27.1 Enterprise </title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -226,7 +226,7 @@
 
     <aside id="sidebar">
         <div class="brand">
-            <h1>BODEGA DIGITAL<br><span style="color:#10b981;">NOVEDADES</span></h1>
+            <h1>BODEGA DIGITAL<br><span style="color:#10b981;">carga inteligente</span></h1>
             <small>Alkosto Cali</small>
         </div>
 
@@ -296,7 +296,7 @@
                 <button class="menu-toggle" onclick="UI.toggleMenu()"><i class="fas fa-bars"></i></button>
                 <div class="header-title">
                     <h2>NOVEDADES BODEGA DIGITAL</h2>
-                    <span>VERSION v26.1 | CARGA NUBE</span>
+                    <span>COMPACT PRO v27.0 | ENTERPRISE NUBE</span>
                 </div>
             </div>
             <div class="kpi">
@@ -426,7 +426,7 @@
     <script>
         window.onerror = function() { document.getElementById('loader').style.display='none'; };
 
-        const DB_NAME="Siga_V26_0_Responsive", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
+        const DB_NAME="Siga_V27_0_Responsive", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
         const Cfg={
             ok:["Accesorios Audio","Accesorio Camara","Videocamaras","Accesorios Informatica","Accesorios Telefonia","Accesorios Video","Computadores","Equipos Audio","Camaras","Otros Hardware","Telefonia Celular","Telefonia Fija","Deportes y Salud","Casa Inteligente y Redes","Videojuegos","Accesorios Energía","Audífonos y Auriculares","Drones y Juguetes Electrónicos","Accesorio Camara","Videocamaras"],
             niv:["Telefonia Celular","Videocamaras","Camaras","Computadores"],
@@ -624,10 +624,9 @@
                             });
                         }
                         
-                        // --- NUEVA LÓGICA DE NEGATIVOS (CRUZADO BODEGA DIGITAL VS ALMACÉN) ---
+                        // --- LÓGICA DE NEGATIVOS CORREGIDA: EXCLUSIVA PARA DIGI1 ---
                         else if(op==='negativos'){
                             let m={}; 
-                            // Agrupar saldos por producto tanto de DIGI1 como de ALMAC
                             Store.n.forEach(r=>{ 
                                 let e=String(h(r,'Artículo')).trim();
                                 if(!m[e]) m[e]={e, d:h(r,'Descr'), di:0, al:0};
@@ -637,15 +636,12 @@
                                 if(u==='ALMAC') m[e].al+=c; 
                             });
                             
-                            // Filtrar todos aquellos que tengan algún negativo y mapear la solución
-                            res = Object.values(m).filter(i => i.di < 0 || i.al < 0).map(i => {
+                            // FILTRO ESTRICTO: Solo mostrar si DIGI1 es negativo (menor a 0)
+                            res = Object.values(m).filter(i => i.di < 0).map(i => {
                                 let act = "", est = "";
                                 
-                                if (i.di < 0 && i.al > 0) {
+                                if (i.al > 0) {
                                     act = `MOVIMIENTO BIN: ${Math.abs(i.di)} UND (ALMAC ➔ DIGI1)`;
-                                    est = "NIVELAR";
-                                } else if (i.al < 0 && i.di > 0) {
-                                    act = `MOVIMIENTO BIN: ${Math.abs(i.al)} UND (DIGI1 ➔ ALMAC)`;
                                     est = "NIVELAR";
                                 } else {
                                     act = "REALIZAR AJUSTE DE INVENTARIO";
@@ -662,7 +658,7 @@
                                 };
                             });
                         }
-                        // ---------------------------------------------------------------------
+                        // -----------------------------------------------------------
 
                         else if(op.startsWith('almac')){
                             let m={}; 
@@ -821,4 +817,3 @@
     </script>
 </body>
 </html>
-
