@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Bodega Digital | v24.0</title>
+    <title>Bodega Digital | v25.0</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
 
     <style>
         /* ==========================================================================
-           DISEÑO COMPACT PRO v24.0
+           DISEÑO COMPACT PRO v25.0
            ========================================================================== */
         :root {
             --primary: #e30613; 
@@ -41,6 +41,31 @@
             display: flex;
             overflow: hidden;
         }
+
+        /* LOGIN SCREEN */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f172a; z-index: 9999; display: flex; 
+            justify-content: center; align-items: center;
+        }
+        .login-box {
+            background: #1e293b; padding: 40px; border-radius: 12px; 
+            width: 350px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .login-box h2 { color: #fff; margin-bottom: 25px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; }
+        .login-input {
+            width: 100%; padding: 12px 15px; margin-bottom: 15px; 
+            border-radius: 6px; border: 1px solid #334155; background: #0f172a;
+            color: #fff; font-size: 0.9rem;
+        }
+        .login-input:focus { border-color: var(--primary); outline: none; }
+        .btn-login {
+            width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none; border-radius: 6px; color: #fff; font-weight: 800; font-size: 1rem;
+            cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase;
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(227, 6, 19, 0.4); }
 
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -118,6 +143,7 @@
         .b-dark { background: #374151; border: 1px solid #4b5563; }
         .b-danger { background: linear-gradient(to right, #7f1d1d, #991b1b); border: 1px solid #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
         .b-inspector { background: linear-gradient(to right, #0891b2, #0e7490); border: 1px solid #22d3ee; box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
+        .b-cloud { background: linear-gradient(to right, #0ea5e9, #0284c7); margin-bottom: 10px; border: 1px solid #38bdf8; box-shadow: 0 0 10px rgba(14, 165, 233, 0.2); justify-content: center;}
 
         .export-bar { display: flex; gap: 5px; margin-top: 5px; }
         .btn-sm { flex: 1; justify-content: center; padding: 6px; font-size: 0.7rem; font-weight: 800; }
@@ -171,7 +197,6 @@
         .chart-wrap { flex: 1; position: relative; width: 100%; height: 100%; }
         .c-tit { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; text-align: center; }
         
-        /* BARRAS DE CUMPLIMIENTO DOBLES */
         .bar-bg { height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 5px; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -223,6 +248,16 @@
 </head>
 <body>
 
+    <div id="login-screen">
+        <div class="login-box">
+            <i class="fas fa-shield-alt fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
+            <h2>ACCESO AL SISTEMA</h2>
+            <input type="text" id="usr" class="login-input" placeholder="Usuario">
+            <input type="password" id="pwd" class="login-input" placeholder="Contraseña">
+            <button onclick="Sys.login()" class="btn-login">INGRESAR</button>
+        </div>
+    </div>
+
     <div id="loader">
         <div class="spin"></div>
         <div style="color:#fff; font-weight:700; letter-spacing:1px;">CARGANDO SISTEMA</div>
@@ -238,6 +273,8 @@
         <div class="menu">
             <div class="section-title"><i class="fas fa-database"></i> BASES DE DATOS</div>
             
+            <button class="btn b-cloud" onclick="Sys.cloud()"><i class="fas fa-cloud-download-alt"></i> CARGAR DE LA NUBE</button>
+
             <label class="file-row" for="f-restr">
                 <div style="width:90%"><div class="f-name">CK_IN_UBICAC_RESTRINGIDAS</div><div class="f-status" id="l-r">Pendiente</div></div>
                 <div class="led" id="led-r"></div>
@@ -303,13 +340,16 @@
         <header class="header">
             <div class="header-title">
                 <h2>BODEGA DIGITAL</h2>
-                <span>COMPACT PRO v24.0</span>
+                <span>COMPACT PRO v25.0</span>
             </div>
             <div class="kpi">
                 <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
                 <div class="k-box"><span class="k-lbl" style="color:#ef4444">ERRORES</span><span id="k-err" class="k-val" style="color:#ef4444">0</span></div>
                 <div class="k-box"><span class="k-lbl">DIGI1</span><span id="k-tot" class="k-val" style="color:#0ea5e9">0</span></div>
                 <div class="k-box"><span class="k-lbl">% CUMP.</span><span id="k-cump-head" class="k-val">0%</span></div>
+                <div class="k-box" style="justify-content: center; margin-left:15px; border-left: 1px solid #e2e8f0; padding-left:15px;">
+                    <i class="fas fa-sign-out-alt" style="color:#ef4444; cursor:pointer; font-size:1.2rem;" onclick="Sys.logout()" title="Cerrar Sesión"></i>
+                </div>
             </div>
         </header>
 
@@ -470,7 +510,7 @@
     <script>
         window.onerror = function(msg) { document.getElementById('loader').style.display='none'; alert("Error interno: " + msg); };
 
-        const DB_NAME="Siga_V24_0_Auditoria", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],logs:JSON.parse(localStorage.getItem('siga_logs')||'[]'),tot:0};
+        const DB_NAME="Siga_V25_0_Cloud", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],logs:JSON.parse(localStorage.getItem('siga_logs')||'[]'),tot:0};
         const Cfg={
             ok:["Accesorios Audio","Accesorio Camara","Videocamaras","Accesorios Informatica","Accesorios Telefonia","Accesorios Video","Computadores","Equipos Audio","Camaras","Otros Hardware","Telefonia Celular","Telefonia Fija","Deportes y Salud","Casa Inteligente y Redes","Videojuegos","Accesorios Energía","Audífonos y Auriculares","Drones y Juguetes Electrónicos","Accesorio Camara","Videocamaras"],
             niv:["Telefonia Celular","Videocamaras","Camaras","Computadores"],
@@ -480,6 +520,7 @@
 
         const Core = {
             init: async () => {
+                Sys.checkAuth(); // Verifica si está logueado
                 setTimeout(()=>document.getElementById('loader').style.display='none', 800);
                 try {
                     await DB.init(); 
@@ -539,7 +580,6 @@
             
             inspect: () => { let ean = prompt("Ingrese EAN a inspeccionar:"); if(ean && ean.trim() !== "") UI.s360(ean.trim()); },
 
-            // LÓGICA DE AUDITORÍA AVANZADA CON DOS CUMPLIMIENTOS
             calcToma: (type) => {
                 if(!Store.n.length) return UI.toast("Falta Base Maestra",0);
                 if(!Store.t.length) return UI.toast("Falta Toma CSV",0);
@@ -553,10 +593,8 @@
                         let csvMap = {}; Store.t.forEach(r => { let e = String(r.EAN); csvMap[e] = (csvMap[e]||0) + r.Cant; });
                         
                         let allEans = (type === 'Selectivo') ? Object.keys(csvMap) : [...new Set([...Object.keys(sysMap), ...Object.keys(csvMap)])];
-                        
-                        // LÓGICA DE DENOMINADOR (CANTIDAD DE REFERENCIAS)
                         let numRef = (type === 'Selectivo') ? Object.keys(csvMap).length : Object.keys(sysMap).length;
-                        if(numRef === 0) numRef = 1; // Prevenir división por cero
+                        if(numRef === 0) numRef = 1; 
 
                         let sumConfRef = 0;
                         let sumConfCant = 0;
@@ -566,13 +604,10 @@
                             let csv = csvMap[ean] || 0; 
                             let diff = csv - sys;
 
-                            // 1. CONFIABILIDAD POR REFERENCIA (Exacta)
                             let confRefItem = (sys === csv) ? 100 : 0;
-                            
-                            // 2. CONFIABILIDAD POR CANTIDAD (Proporción: DIGI / TOMA * 100)
                             let confCantItem = 0;
                             if (csv === 0 && sys === 0) { confCantItem = 100; }
-                            else if (csv === 0 && sys !== 0) { confCantItem = 0; } // Asumimos 0% si no contaron nada pero había en sistema
+                            else if (csv === 0 && sys !== 0) { confCantItem = 0; } 
                             else { confCantItem = (sys / csv) * 100; }
 
                             sumConfRef += confRefItem;
@@ -581,14 +616,12 @@
                             return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
                         });
 
-                        // PROMEDIOS TOTALES
                         let avgConfRef = (sumConfRef / numRef).toFixed(1);
                         let avgConfCant = (sumConfCant / numRef).toFixed(1);
 
                         Store.view = res; Store.full = res; UI.draw(res);
                         let errCount = res.filter(x => x.Diferencia !== 0).length;
                         
-                        // Enviar al nuevo KPI con los dos porcentajes
                         UI.kpi(res.length, Store.tot, errCount, avgConfRef, avgConfCant);
                         UI.chart(Store.tot, errCount);
                         
@@ -685,7 +718,6 @@
                         Store.view=res; Store.full=res; UI.draw(res);
                         let err = op.startsWith('toma') ? res.filter(x=>x.Diferencia!==0).length : res.length;
                         
-                        // Si no es "toma", envía la confiabilidad genérica nula para que ponga el mismo valor en ambas.
                         UI.kpi(res.length, Store.tot, err, null, null);
                         UI.chart(Store.tot, err);
                         document.getElementById('loader').style.display='none';
@@ -704,12 +736,49 @@
             get:(k)=>new Promise(r=>{if(!DB.db)return r(null); let q=DB.db.transaction(['f'],'readonly').objectStore('f').get(k); q.onsuccess=e=>r(e.target.result)})
         };
 
+        // MÓDULO DE SISTEMA Y SEGURIDAD
+        const Sys = { 
+            login: () => {
+                let u = document.getElementById('usr').value;
+                let p = document.getElementById('pwd').value;
+                // CREDENCIALES POR DEFECTO:
+                if(u === 'alkosto cali norte' && p === 'Alkosto01.') {
+                    document.getElementById('login-screen').style.display = 'none';
+                    sessionStorage.setItem('siga_logged', 'true');
+                    UI.toast("Bienvenido al sistema", 1);
+                } else {
+                    UI.toast("Credenciales incorrectas", 0);
+                }
+            },
+            checkAuth: () => {
+                if(sessionStorage.getItem('siga_logged') === 'true') {
+                    document.getElementById('login-screen').style.display = 'none';
+                }
+            },
+            logout: () => {
+                sessionStorage.removeItem('siga_logged');
+                location.reload();
+            },
+            cloud: () => {
+                // Función preparada para conectar con tu API / Script de Apps Script
+                UI.toast("Conectando con la nube...", 1);
+                document.getElementById('loader').style.display='flex';
+                
+                // Simulación de carga (Reemplazar con fetch a tu URL)
+                setTimeout(() => {
+                    document.getElementById('loader').style.display='none';
+                    UI.toast("Bases sincronizadas (Modo Demo)", 1);
+                }, 2000);
+            },
+            backup: async()=>{ let d={r:await DB.get('r'),n:await DB.get('n'),v:await DB.get('v'),p:await DB.get('p')}; let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"application/json"})); a.download=`Backup.json`; a.click(); }, 
+            restore:(i)=>{ let f=i.files[0]; if(!f)return; let r=new FileReader(); r.onload=(e)=>{let d=JSON.parse(e.target.result); if(d.n)DB.save('n',d.n); location.reload()}; r.readAsText(f); } 
+        };
+
         const UI = {
             toast: (m,t)=>{ let b=document.getElementById('toast'); b.innerHTML=`<i class="fas fa-${t?'check':'exclamation'}-circle"></i> ${m}`; b.style.display='flex'; setTimeout(()=>b.style.display='none',3000); },
             led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
             modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
             
-            // ACTUALIZACIÓN KPI MULTIPLE
             kpi: (v, t, e, confRef, confCant) => { 
                 document.getElementById('k-view').innerText=v; 
                 document.getElementById('k-tot').innerText=t;
@@ -725,13 +794,12 @@
                 let headCump = document.getElementById('k-cump-head');
 
                 if (confRef !== null && confCant !== null) {
-                    // MODO TOMA (Muestra los dos indicadores calculados)
                     valRef.innerText = `${confRef}%`; 
                     barRef.style.width = `${Math.min(confRef, 100)}%`;
                     valCant.innerText = `${confCant}%`; 
                     barCant.style.width = `${Math.min(confCant, 100)}%`;
                     
-                    headCump.innerText = `${confRef}%`; // Encabezado principal toma Ref
+                    headCump.innerText = `${confRef}%`; 
                     
                     valRef.style.color = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444');
                     barRef.style.background = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444');
@@ -739,7 +807,6 @@
                     barCant.style.background = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444');
                     headCump.style.color = valRef.style.color;
                 } else {
-                    // MODO NORMAL (Muestra el estándar en ambas barras para que no se vea vacío)
                     valRef.innerText = `${acc}%`; barRef.style.width = `${acc}%`;
                     valCant.innerText = `N/A`; barCant.style.width = `0%`;
                     headCump.innerText = `${acc}%`;
@@ -828,8 +895,6 @@
             }
         };
 
-        const Util = { get: (r,...k)=>{let ks=Object.keys(r); for(let x of k){let f=ks.find(y=>y.toUpperCase().trim()===x.toUpperCase().trim()); if(f)return r[f]} return undefined} };
-        const Sys = { backup: async()=>{ let d={r:await DB.get('r'),n:await DB.get('n'),v:await DB.get('v'),p:await DB.get('p')}; let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"application/json"})); a.download=`Backup.json`; a.click(); }, restore:(i)=>{ let f=i.files[0]; if(!f)return; let r=new FileReader(); r.onload=(e)=>{let d=JSON.parse(e.target.result); if(d.n)DB.save('n',d.n); location.reload()}; r.readAsText(f); } };
         const Exp = { excel:()=>{ let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Store.view),"Data"); XLSX.writeFile(wb,"Reporte.xlsx")}, pdf:()=>{ let d=new jspdf.jsPDF(); d.autoTable({head:[Object.keys(Store.view[0])],body:Store.view.map(Object.values)}); d.save("Reporte.pdf")}, log:()=>{ let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Store.logs),"Log"); XLSX.writeFile(wb,"Log.xlsx")} };
 
         window.onload=Core.init;
