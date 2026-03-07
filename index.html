@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Bodega Digital | v29.2 Auto-Cloud</title>
+    <title>Bodega Digital | v29.3 Auto-Cloud</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
 
     <style>
         /* ==========================================================================
-           DISEÑO COMPACT PRO v29.2
+           DISEÑO COMPACT PRO v29.3
            ========================================================================== */
         :root { --primary: #e30613; --primary-dark: #b91c1c; --secondary: #f9a825; --bg-dark: #1e293b; --bg-light: #f8fafc; --text-main: #334155; --border: 1px solid #e2e8f0; --shadow: 0 2px 4px rgba(0,0,0,0.05); }
         * { box-sizing: border-box; outline: none; user-select: none; }
@@ -206,7 +206,7 @@
         <header class="header">
             <div class="header-title">
                 <h2>BODEGA DIGITAL</h2>
-                <span>COMPACT PRO v29.2 - AUTO CLOUD SYNC</span>
+                <span>COMPACT PRO v29.3 - AUTO CLOUD SYNC</span>
             </div>
             <div class="kpi">
                 <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
@@ -572,13 +572,14 @@
 
         const Sys = { 
             login: () => {
-                // El .trim() elimina los espacios que se puedan ir por error al escribir o pegar
-                let u = document.getElementById('usr').value.trim();
+                // Convertimos lo que escriba el usuario a minúsculas y quitamos espacios
+                let u = document.getElementById('usr').value.trim().toLowerCase();
                 let p = document.getElementById('pwd').value.trim();
                 
-                if(u === 'Alkosto Cali norte' && p === 'Alkosto01.') {
+                // Ahora acepta cualquier variante ("ALKOSTO CALI NORTE", "Alkosto Cali Norte", etc)
+                if(u === 'alkosto cali norte' && p === 'Alkosto01.') {
                     document.getElementById('login-screen').style.display = 'none';
-                    localStorage.setItem('siga_auth_v29', 'true'); // Ahora usa localStorage para que no se borre al refrescar
+                    localStorage.setItem('siga_auth_v29', 'true'); // Memoria persistente
                     UI.toast("Bienvenido al sistema", 1);
                     Sys.cloudDownload(); 
                 } else { UI.toast("Credenciales incorrectas", 0); }
