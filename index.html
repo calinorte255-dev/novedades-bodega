@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Bodega Digital | v29.5 Auto-Cloud</title>
+    <title>Bodega Digital | v29.6 Auto-Cloud</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
 
     <style>
         /* ==========================================================================
-           DISEÑO COMPACT PRO v29.5
+           DISEÑO COMPACT PRO v29.6
            ========================================================================== */
         :root { --primary: #e30613; --primary-dark: #b91c1c; --secondary: #f9a825; --bg-dark: #1e293b; --bg-light: #f8fafc; --text-main: #334155; --border: 1px solid #e2e8f0; --shadow: 0 2px 4px rgba(0,0,0,0.05); }
         * { box-sizing: border-box; outline: none; user-select: none; }
@@ -68,7 +68,7 @@
         .header { height: 60px; background: #fff; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; box-shadow: var(--shadow); z-index: 10; }
         .header-title h2 { font-size: 1.8rem; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         .header-title span { font-size: 0.8rem; color: #64748b; margin-left: 15px; border-left: 2px solid #cbd5e1; padding-left: 15px; font-weight: 600; }
-        .kpi { display: flex; gap: 20px; } .k-box { display: flex; flex-direction: column; align-items: flex-end; } .k-lbl { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; } .k-val { font-size: 1.2rem; font-weight: 800; color: #0f172a; font-family: 'Rajdhani', sans-serif; line-height: 1; }
+        .kpi { display: flex; gap: 20px; align-items: center; } .k-box { display: flex; flex-direction: column; align-items: flex-end; } .k-lbl { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; } .k-val { font-size: 1.2rem; font-weight: 800; color: #0f172a; font-family: 'Rajdhani', sans-serif; line-height: 1; }
 
         .work { flex: 1; display: flex; padding: 15px; gap: 15px; overflow: hidden; }
         .panel-left { flex: 1; background: #fff; border-radius: 8px; border: var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
@@ -206,14 +206,15 @@
         <header class="header">
             <div class="header-title">
                 <h2>BODEGA DIGITAL</h2>
-                <span>COMPACT PRO v29.5 - AUTO CLOUD SYNC</span>
+                <span>COMPACT PRO v29.6 - AUTO CLOUD SYNC</span>
             </div>
             <div class="kpi">
                 <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
                 <div class="k-box"><span class="k-lbl" style="color:#ef4444">ERRORES</span><span id="k-err" class="k-val" style="color:#ef4444">0</span></div>
                 <div class="k-box"><span class="k-lbl">DIGI1</span><span id="k-tot" class="k-val" style="color:#0ea5e9">0</span></div>
                 <div class="k-box"><span class="k-lbl">% CUMP.</span><span id="k-cump-head" class="k-val">0%</span></div>
-                <div class="k-box" style="justify-content: center; margin-left:15px; border-left: 1px solid #e2e8f0; padding-left:15px;">
+                <div class="k-box" style="flex-direction: row; justify-content: center; margin-left:15px; border-left: 1px solid #e2e8f0; padding-left:15px;">
+                    <i class="fas fa-trash-restore" style="color:#f59e0b; cursor:pointer; font-size:1.2rem; margin-right: 15px;" onclick="Sys.hardReset()" title="Reparar Memoria (Usar si no cargan los archivos)"></i>
                     <i class="fas fa-sign-out-alt" style="color:#ef4444; cursor:pointer; font-size:1.2rem;" onclick="Sys.logout()" title="Cerrar Sesión"></i>
                 </div>
             </div>
@@ -343,24 +344,31 @@
 
         const Core = {
             init: async () => {
+                // 1. ACTIVAR BOTONES DE ARCHIVO INMEDIATAMENTE (Modo Blindado)
+                const inputs={'r':'f-restr','n':'f-norestr','v':'f-ver','p':'f-port','t':'f-toma','tr':'f-tras'};
+                Object.keys(inputs).forEach(k => { 
+                    const el = document.getElementById(inputs[k]); 
+                    if(el) el.addEventListener('change', e => Core.file(e,k)); 
+                });
+
                 Sys.checkAuth();
+                
+                // 2. INTENTAR CARGAR MEMORIA LOCAL SIN QUE BLOQUEE EL RESTO
                 try {
                     await DB.init(); 
-                    let wasLoaded = false;
                     for (const k of ['r','n','v','p','tr']) {
-                        let ok = await Core.load(k);
-                        if(ok) wasLoaded = true;
+                        await Core.load(k);
                     }
-                    
-                    if(localStorage.getItem('siga_auth_v29') === 'true') {
-                        Sys.cloudDownload(); 
-                    } else {
-                        setTimeout(()=>document.getElementById('loader').style.display='none', 800);
-                    }
-                    
-                    const inputs={'r':'f-restr','n':'f-norestr','v':'f-ver','p':'f-port','t':'f-toma','tr':'f-tras'};
-                    Object.keys(inputs).forEach(k => { const el = document.getElementById(inputs[k]); if(el) el.addEventListener('change', e => Core.file(e,k)); });
-                } catch(e) { console.error("Error init", e); document.getElementById('loader').style.display='none'; }
+                } catch(e) { 
+                    console.warn("Memoria local corrupta. Los botones siguen funcionando.", e); 
+                }
+                
+                // 3. DESCARGAR NUBE O QUITAR EL LOADER
+                if(localStorage.getItem('siga_auth_v29') === 'true') {
+                    Sys.cloudDownload(); 
+                } else {
+                    setTimeout(()=>document.getElementById('loader').style.display='none', 800);
+                }
             },
             file: (e,k) => {
                 let f=e.target.files[0]; if(!f)return; UI.toast(`Cargando ${f.name}...`);
@@ -386,7 +394,9 @@
                         }
                         
                         Store[k]=d; 
-                        if(k!=='t') DB.save(k,d); 
+                        if(k!=='t') {
+                            try { DB.save(k,d); } catch(er) { console.warn("No se pudo guardar en memoria local, pero se cargó en RAM"); }
+                        }
                         
                         UI.led(k); if(k==='n') Core.calc();
                         let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
@@ -430,7 +440,7 @@
                         if(numRef === 0) numRef = 1; 
 
                         let sumConfRef = 0; let sumConfCant = 0;
-                        let catMap = {}; // Para agrupar los errores por categoría
+                        let catMap = {}; 
 
                         res = allEans.map(ean => {
                             let sys = sysMap[ean] || 0; let csv = csvMap[ean] || 0; let diff = csv - sys;
@@ -438,7 +448,6 @@
                             if (csv === 0 && sys === 0) { confCantItem = 100; } else if (csv === 0 && sys !== 0) { confCantItem = 0; } else { confCantItem = (sys / csv) * 100; }
                             sumConfRef += confRefItem; sumConfCant += confCantItem;
                             
-                            // Evaluación de Categorías
                             let itemData = Store.n.find(x => String(Util.get(x,'Artículo')) === ean);
                             let cat = itemData ? (Util.get(itemData, 'Sublinea') || 'OTRO') : 'OTRO';
                             if (!catMap[cat]) catMap[cat] = { total: 0, err: 0 };
@@ -454,7 +463,6 @@
 
                         let avgConfRef = (sumConfRef / numRef); let avgConfCant = (sumConfCant / numRef);
 
-                        // Cálculo del % de cumplimiento por categorías
                         let totalCats = Object.keys(catMap).length || 1;
                         let perfectCats = Object.values(catMap).filter(c => c.err === 0).length;
                         let avgConfCat = (perfectCats / totalCats) * 100;
@@ -462,7 +470,6 @@
                         Store.view = res; Store.full = res; UI.draw(res);
                         let errCount = res.filter(x => x.Diferencia !== 0).length;
                         
-                        // Enviamos los 3 indicadores al panel
                         UI.kpi(res.length, Store.tot, errCount, avgConfRef, avgConfCant, avgConfCat); 
                         UI.chart(Store.tot, errCount);
                         
@@ -593,12 +600,27 @@
         };
 
         const DB={
-            db:null, init:()=>new Promise(r=>{let q=indexedDB.open(DB_NAME,1); q.onupgradeneeded=e=>e.target.result.createObjectStore('f'); q.onsuccess=e=>{DB.db=e.target.result;r()}}),
+            db:null, init:()=>new Promise((resolve, reject)=>{
+                let q=indexedDB.open(DB_NAME,1); 
+                q.onupgradeneeded=e=>e.target.result.createObjectStore('f'); 
+                q.onsuccess=e=>{DB.db=e.target.result; resolve()};
+                q.onerror=e=>{ reject("IndexedDB Error") };
+            }),
             save:(k,d)=>{if(DB.db)DB.db.transaction(['f'],'readwrite').objectStore('f').put(d,k)},
-            get:(k)=>new Promise(r=>{if(!DB.db)return r(null); let q=DB.db.transaction(['f'],'readonly').objectStore('f').get(k); q.onsuccess=e=>r(e.target.result)})
+            get:(k)=>new Promise(r=>{if(!DB.db)return r(null); let q=DB.db.transaction(['f'],'readonly').objectStore('f').get(k); q.onsuccess=e=>r(e.target.result); q.onerror=e=>r(null);})
         };
 
         const Sys = { 
+            // NUEVO: BOTÓN DE EMERGENCIA PARA LIMPIAR MEMORIA
+            hardReset: () => {
+                if(confirm("🛠️ ¿Deseas limpiar y reparar toda la memoria de la aplicación?\n\nUsa esto si los archivos no te quieren cargar. Tu sesión se cerrará y la memoria se reiniciará para arreglar cualquier error.")) {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    indexedDB.deleteDatabase(DB_NAME);
+                    location.reload();
+                }
+            },
+            
             login: () => {
                 let u = document.getElementById('usr').value.trim().toLowerCase().replace(/\s+/g, ' ');
                 let p = document.getElementById('pwd').value;
@@ -618,7 +640,6 @@
             
             cloudDownload: async () => {
                 if(!CLOUD_API) return; 
-                
                 document.getElementById('loader').style.display='flex';
                 document.getElementById('loader-txt').innerText='DESCARGANDO DESDE NUBE...';
                 
@@ -631,7 +652,7 @@
                     ['r','n','v','p','tr'].forEach(k => {
                         if(data[k] && data[k].length > 0) {
                             Store[k] = data[k];
-                            DB.save(k, data[k]); 
+                            try { DB.save(k, data[k]); } catch(e){} // No bloquea si falla
                             UI.led(k);
                             let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
                             if(statusId) { document.getElementById(statusId).innerText="✅ Nube"; document.getElementById(statusId).style.color="#0ea5e9"; }
@@ -644,7 +665,6 @@
                 } finally { document.getElementById('loader').style.display='none'; }
             },
 
-            // --- BLOQUE DE SUBIDA ACTUALIZADO A PRUEBA DE FALLOS Y REDIRECCIONES ---
             cloudUpload: async () => {
                 if(!CLOUD_API) return UI.toast("Falta configurar la URL CLOUD_API", 0);
                 if(!Store.n.length) return UI.toast("Debe cargar archivos manualmente antes de subir", 0);
@@ -653,6 +673,7 @@
                 document.getElementById('loader-txt').innerText='SUBIENDO ARCHIVOS A LA NUBE...';
 
                 try {
+                    // Si falla por tamaño, aquí lo captura limpiamente
                     let payload = JSON.stringify({ r: Store.r, n: Store.n, v: Store.v, p: Store.p, tr: Store.tr });
                     
                     let res = await fetch(CLOUD_API, {
@@ -670,7 +691,7 @@
                         else { throw new Error(outcome.message); }
                     } catch (err) {
                         console.error("Respuesta de Google:", text);
-                        throw new Error("La nube rechazó la subida. Verifica los permisos de Drive.");
+                        alert("⚠️ Error de Google Drive: El archivo que intentas subir es demasiado pesado para la versión gratuita de Google Apps Script. Te sugiero usar la app en modo local o subir archivos de Excel más pequeños.");
                     }
                 } catch (e) {
                     UI.toast("Error al subir a la Nube", 0);
@@ -684,7 +705,6 @@
             led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
             modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
             
-            // --- ACTUALIZADO: kpi AHORA RECIBE confCat COMO SEXTO PARÁMETRO ---
             kpi: (v, t, e, confRef, confCant, confCat) => { 
                 document.getElementById('k-view').innerText=v; document.getElementById('k-tot').innerText=t; document.getElementById('k-err').innerText=e || 0;
                 let ok = t - (e || 0); let acc = t > 0 ? ((ok / t) * 100).toFixed(1) : 0;
