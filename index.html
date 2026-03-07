@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Bodega Digital | v25.0</title>
+    <title>Bodega Digital | v29.1 Auto-Cloud</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -17,107 +17,34 @@
 
     <style>
         /* ==========================================================================
-           DISEÑO COMPACT PRO v25.0
+           DISEÑO COMPACT PRO v29.1
            ========================================================================== */
-        :root {
-            --primary: #e30613; 
-            --primary-dark: #b91c1c;
-            --secondary: #f9a825;
-            --bg-dark: #1e293b; 
-            --bg-light: #f8fafc;
-            --text-main: #334155; 
-            --border: 1px solid #e2e8f0;
-            --shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
+        :root { --primary: #e30613; --primary-dark: #b91c1c; --secondary: #f9a825; --bg-dark: #1e293b; --bg-light: #f8fafc; --text-main: #334155; --border: 1px solid #e2e8f0; --shadow: 0 2px 4px rgba(0,0,0,0.05); }
         * { box-sizing: border-box; outline: none; user-select: none; }
-        
-        body {
-            margin: 0; height: 100vh;
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            display: flex;
-            overflow: hidden;
-        }
+        body { margin: 0; height: 100vh; background-color: var(--bg-light); color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 13px; display: flex; overflow: hidden; }
 
         /* LOGIN SCREEN */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0f172a; z-index: 9999; display: flex; 
-            justify-content: center; align-items: center;
-        }
-        .login-box {
-            background: #1e293b; padding: 40px; border-radius: 12px; 
-            width: 350px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .login-box h2 { color: #fff; margin-bottom: 25px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; }
-        .login-input {
-            width: 100%; padding: 12px 15px; margin-bottom: 15px; 
-            border-radius: 6px; border: 1px solid #334155; background: #0f172a;
-            color: #fff; font-size: 0.9rem;
-        }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: #1e293b; padding: 40px; border-radius: 12px; width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .login-box h2 { color: #fff; margin-bottom: 5px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; }
+        .login-box p { color: #94a3b8; font-size: 0.8rem; margin-bottom: 25px; }
+        .login-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 0.9rem; text-align: center; }
         .login-input:focus { border-color: var(--primary); outline: none; }
-        .btn-login {
-            width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border: none; border-radius: 6px; color: #fff; font-weight: 800; font-size: 1rem;
-            cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase;
-        }
+        .btn-login { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: 6px; color: #fff; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase; }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(227, 6, 19, 0.4); }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* --- SIDEBAR --- */
-        #sidebar {
-            width: 260px;
-            height: 100%;
-            background-color: var(--bg-dark);
-            color: #94a3b8;
-            display: flex; flex-direction: column;
-            border-right: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            z-index: 20;
-        }
-
-        .brand {
-            padding: 25px 15px; text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.2);
-        }
-        .brand h1 { 
-            font-size: 1.6rem; color: #fff; margin: 0; 
-            font-weight: 800; letter-spacing: 1px; 
-            text-transform: uppercase; line-height: 1;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .brand small { 
-            font-size: 0.75rem; color: var(--secondary); 
-            font-weight: 600; display: block; margin-top: 8px; 
-            letter-spacing: 2px; text-transform: uppercase;
-        }
-
+        #sidebar { width: 260px; height: 100%; background-color: var(--bg-dark); color: #94a3b8; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 20; }
+        .brand { padding: 25px 15px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); }
+        .brand h1 { font-size: 1.6rem; color: #fff; margin: 0; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .brand small { font-size: 0.75rem; color: var(--secondary); font-weight: 600; display: block; margin-top: 8px; letter-spacing: 2px; text-transform: uppercase; }
         .menu { flex: 1; overflow-y: auto; padding: 15px; }
-        
-        .section-title {
-            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;
-            color: #64748b; margin: 15px 0 8px 0; font-weight: 700;
-            display: flex; align-items: center; gap: 5px; border-left: 2px solid var(--primary); padding-left: 8px;
-        }
+        .section-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin: 15px 0 8px 0; font-weight: 700; display: flex; align-items: center; gap: 5px; border-left: 2px solid var(--primary); padding-left: 8px; }
 
         /* INPUTS */
-        .file-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 6px 10px; margin-bottom: 4px;
-            background: rgba(255,255,255,0.03); border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer; transition: 0.2s;
-        }
+        .file-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; margin-bottom: 4px; background: rgba(255,255,255,0.03); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
         .file-row:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
         .f-name { font-size: 0.75rem; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
         .f-status { font-size: 0.65rem; color: #64748b; font-weight: 700; }
@@ -126,124 +53,62 @@
         input[type="file"] { display: none; }
 
         /* BOTONES */
-        .btn {
-            width: 100%; padding: 8px 12px; border: none; border-radius: 4px;
-            font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer;
-            display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
-            transition: 0.2s; text-align: left; text-transform: uppercase;
-        }
+        .btn { width: 100%; padding: 8px 12px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; transition: 0.2s; text-align: left; text-transform: uppercase; }
         .btn:hover { filter: brightness(1.15); transform: translateX(2px); }
         .btn i { width: 15px; text-align: center; }
+        .b-blue { background: linear-gradient(to right, #2563eb, #1d4ed8); } .b-red { background: linear-gradient(to right, #dc2626, #b91c1c); } .b-yellow { background: linear-gradient(to right, #d97706, #b45309); } .b-purple { background: linear-gradient(to right, #7c3aed, #6d28d9); } .b-green { background: linear-gradient(to right, #059669, #047857); } .b-dark { background: #374151; border: 1px solid #4b5563; }
+        .b-danger { background: linear-gradient(to right, #7f1d1d, #991b1b); border: 1px solid #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); } .b-inspector { background: linear-gradient(to right, #0891b2, #0e7490); border: 1px solid #22d3ee; box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
+        .b-cloud { background: linear-gradient(to right, #0ea5e9, #0284c7); border: 1px solid #38bdf8; box-shadow: 0 0 10px rgba(14, 165, 233, 0.2); justify-content: center;}
+        .b-tras { background: linear-gradient(to right, #f59e0b, #d97706); color: #fff; }
 
-        .b-blue { background: linear-gradient(to right, #2563eb, #1d4ed8); } 
-        .b-red { background: linear-gradient(to right, #dc2626, #b91c1c); }
-        .b-yellow { background: linear-gradient(to right, #d97706, #b45309); } 
-        .b-purple { background: linear-gradient(to right, #7c3aed, #6d28d9); }
-        .b-green { background: linear-gradient(to right, #059669, #047857); } 
-        .b-dark { background: #374151; border: 1px solid #4b5563; }
-        .b-danger { background: linear-gradient(to right, #7f1d1d, #991b1b); border: 1px solid #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
-        .b-inspector { background: linear-gradient(to right, #0891b2, #0e7490); border: 1px solid #22d3ee; box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
-        .b-cloud { background: linear-gradient(to right, #0ea5e9, #0284c7); margin-bottom: 10px; border: 1px solid #38bdf8; box-shadow: 0 0 10px rgba(14, 165, 233, 0.2); justify-content: center;}
-
-        .export-bar { display: flex; gap: 5px; margin-top: 5px; }
-        .btn-sm { flex: 1; justify-content: center; padding: 6px; font-size: 0.7rem; font-weight: 800; }
+        .export-bar { display: flex; gap: 5px; margin-top: 5px; } .btn-sm { flex: 1; justify-content: center; padding: 6px; font-size: 0.7rem; font-weight: 800; }
 
         /* --- ÁREA PRINCIPAL --- */
         #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f1f5f9; }
-
-        .header {
-            height: 60px; background: #fff; border-bottom: var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 25px; box-shadow: var(--shadow); z-index: 10;
-        }
+        .header { height: 60px; background: #fff; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; box-shadow: var(--shadow); z-index: 10; }
         .header-title h2 { font-size: 1.8rem; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         .header-title span { font-size: 0.8rem; color: #64748b; margin-left: 15px; border-left: 2px solid #cbd5e1; padding-left: 15px; font-weight: 600; }
+        .kpi { display: flex; gap: 20px; } .k-box { display: flex; flex-direction: column; align-items: flex-end; } .k-lbl { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; } .k-val { font-size: 1.2rem; font-weight: 800; color: #0f172a; font-family: 'Rajdhani', sans-serif; line-height: 1; }
 
-        .kpi { display: flex; gap: 20px; }
-        .k-box { display: flex; flex-direction: column; align-items: flex-end; }
-        .k-lbl { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
-        .k-val { font-size: 1.2rem; font-weight: 800; color: #0f172a; font-family: 'Rajdhani', sans-serif; line-height: 1; }
-
-        /* WORKSPACE */
         .work { flex: 1; display: flex; padding: 15px; gap: 15px; overflow: hidden; }
-
-        .panel-left {
-            flex: 1; background: #fff; border-radius: 8px; border: var(--border);
-            display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
+        .panel-left { flex: 1; background: #fff; border-radius: 8px; border: var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .tbl-ctrl { padding: 8px 15px; border-bottom: var(--border); background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
-        .search { position: relative; width: 300px; }
-        .search input { width: 100%; padding: 6px 10px 6px 30px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.8rem; background: #fff; }
-        .search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.8rem; }
-
-        .tbl-scroll { flex: 1; overflow: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        thead { position: sticky; top: 0; background: #f1f5f9; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        th { text-align: left; padding: 8px 12px; font-weight: 700; color: #475569; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; font-size: 0.7rem; }
-        td { padding: 6px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
-        tr:hover td { background: #fffbeb; color: #000; }
-        .lnk { color: var(--primary); font-weight: 700; text-decoration: underline; cursor: pointer; }
-        .nowrap-col { white-space: nowrap; font-weight: 700; }
-        .tg { padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
-        .tg-ok { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-        .tg-err { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .tg-war { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
-        .tg-crit { background: #7f1d1d; color: #fff; border: 1px solid #ef4444; box-shadow: 0 0 5px rgba(239,68,68,0.5); animation: pulse 2s infinite; }
+        .search { position: relative; width: 300px; } .search input { width: 100%; padding: 6px 10px 6px 30px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.8rem; background: #fff; } .search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.8rem; }
+        .tbl-scroll { flex: 1; overflow: auto; } table { width: 100%; border-collapse: collapse; font-size: 0.8rem; } thead { position: sticky; top: 0; background: #f1f5f9; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05); } th { text-align: left; padding: 8px 12px; font-weight: 700; color: #475569; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; font-size: 0.7rem; } td { padding: 6px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; } tr:hover td { background: #fffbeb; color: #000; }
+        .lnk { color: var(--primary); font-weight: 700; text-decoration: underline; cursor: pointer; } .nowrap-col { white-space: nowrap; font-weight: 700; }
+        .tg { padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; } .tg-ok { background: #dcfce7; color: #166534; border: 1px solid #86efac; } .tg-err { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; } .tg-war { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; } .tg-crit { background: #7f1d1d; color: #fff; border: 1px solid #ef4444; box-shadow: 0 0 5px rgba(239,68,68,0.5); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
 
         .panel-right { width: 260px; display: flex; flex-direction: column; gap: 15px; overflow: hidden; }
         .card { background: #fff; padding: 15px; border-radius: 8px; border: var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .c-chart { display: flex; flex-direction: column; flex: 1; min-height: 200px; }
-        .chart-wrap { flex: 1; position: relative; width: 100%; height: 100%; }
+        .c-chart { display: flex; flex-direction: column; flex: 1; min-height: 200px; } .chart-wrap { flex: 1; position: relative; width: 100%; height: 100%; }
         .c-tit { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; text-align: center; }
-        
-        .bar-bg { height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 5px; overflow: hidden; }
-        .bar-fill { height: 100%; width: 0%; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bar-bg { height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 5px; overflow: hidden; } .bar-fill { height: 100%; width: 0%; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
         /* MODALES */
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:none; justify-content:center; align-items:center; backdrop-filter:blur(2px); }
         .m-360 { background:#fff; width:1100px; max-width:95%; height:90vh; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
         .m-head { background: linear-gradient(135deg, #e30613, #b91c1c); padding:20px 30px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-        .m-head h3 { margin:0; font-size:1.5rem; font-weight:800; letter-spacing:1px; }
-        .m-head p { margin:5px 0 0 0; opacity:0.9; font-size:0.9rem; max-width: 700px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .m-head h3 { margin:0; font-size:1.5rem; font-weight:800; letter-spacing:1px; } .m-head p { margin:5px 0 0 0; opacity:0.9; font-size:0.9rem; max-width: 700px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .m-tag { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-left: 20px; }
-        .m-body { padding:25px; overflow-y:auto; flex:1; background:#f8fafc; }
-        .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; height:100%; }
+        .m-body { padding:25px; overflow-y:auto; flex:1; background:#f8fafc; } .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; height:100%; }
         .col { background:#fff; border:1px solid #e2e8f0; border-radius:8px; display:flex; flex-direction:column; overflow:hidden; height:100%; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .col-h { padding:15px; font-size:0.8rem; font-weight:800; text-transform:uppercase; background:#f1f5f9; color:#475569; border-bottom:2px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
-        .col-l { flex:1; overflow-y:auto; padding:10px; max-height:350px; }
-        .itm { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:1px solid #f1f5f9; font-size:0.85rem; }
-        .itm:hover { background: #f8fafc; }
-        .phys-item { background: #f0f9ff; border: 1px solid #bae6fd; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; font-weight: 700; color: #0369a1; display: flex; justify-content: space-between; align-items: center; }
-        .phys-qty { background: #fff; padding: 2px 8px; border-radius: 10px; color: #0369a1; font-weight: 800; border: 1px solid #e0f2fe; }
-        .qty { background:#e2e8f0; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:800; min-width:35px; text-align:center; }
-        .qty.ok { background: #dcfce7; color: #166534; } .qty.bad { background: #fee2e2; color: #991b1b; }
+        .col-l { flex:1; overflow-y:auto; padding:10px; max-height:350px; } .itm { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:1px solid #f1f5f9; font-size:0.85rem; } .itm:hover { background: #f8fafc; }
+        .phys-item { background: #f0f9ff; border: 1px solid #bae6fd; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; font-weight: 700; color: #0369a1; display: flex; justify-content: space-between; align-items: center; } .phys-qty { background: #fff; padding: 2px 8px; border-radius: 10px; color: #0369a1; font-weight: 800; border: 1px solid #e0f2fe; }
+        .qty { background:#e2e8f0; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:800; min-width:35px; text-align:center; } .qty.ok { background: #dcfce7; color: #166534; } .qty.bad { background: #fee2e2; color: #991b1b; }
         .col-f { padding:15px; text-align:right; font-weight:800; font-size:1rem; border-top:1px solid #e2e8f0; background:#f8fafc; }
-        .port-bar { padding:20px 30px; background:#111827; color: #fff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-        .port-info { display: flex; flex-direction: column; }
-        .port-lbl { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .port-val { font-size: 1.8rem; font-weight: 800; color: #facc15; line-height: 1; }
-        .btn-erp { background: #2563eb; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .btn-erp:hover { background: #1d4ed8; transform: translateY(-2px); }
-
-        .m-std { background:#fff; width:500px; border-radius:8px; padding:25px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
-        .opt { padding:15px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; transition:0.2s; background:#f8fafc; }
-        .opt:hover { background:#fff; border-color:var(--primary); transform:translateY(-2px); box-shadow:0 4px 6px rgba(0,0,0,0.05); }
-        .opt b { display:block; font-size:0.85rem; color:#0f172a; margin-bottom:4px; }
-        .opt small { font-size:0.7rem; color:#64748b; line-height:1.2; display:block; }
-
-        .m-insp { background:#fff; width:600px; border-radius:10px; padding:0; overflow:hidden; }
-        .insp-res { padding:30px; text-align:center; }
-        .insp-big { font-size:2rem; font-weight:900; margin:10px 0; font-family:'Rajdhani'; }
-        .insp-det { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:20px; background:#f8fafc; padding:15px; border-radius:8px; }
-        .insp-box { text-align:center; } .insp-box span { display:block; font-size:0.7rem; color:#64748b; font-weight:700; } .insp-box b { font-size:1.2rem; }
-
-        #loader { position:fixed; top:0; left:0; width:100%; height:100%; background:#111827; z-index:9000; display:flex; justify-content:center; align-items:center; flex-direction:column; transition:opacity 0.5s; }
-        .spin { width:40px; height:40px; border:3px solid rgba(255,255,255,0.1); border-top:3px solid var(--primary); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:15px; }
-        @keyframes spin { 100% { transform:rotate(360deg); } }
-        #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:10px 25px; border-radius:30px; font-size:0.85rem; font-weight:600; z-index:9999; display:none; align-items:center; gap:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3); }
+        .port-bar { padding:20px 30px; background:#111827; color: #fff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; } .port-info { display: flex; flex-direction: column; } .port-lbl { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; } .port-val { font-size: 1.8rem; font-weight: 800; color: #facc15; line-height: 1; }
+        .btn-erp { background: #2563eb; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); } .btn-erp:hover { background: #1d4ed8; transform: translateY(-2px); }
+        .m-std { background:#fff; width:500px; border-radius:8px; padding:25px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); } .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; } .opt { padding:15px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; transition:0.2s; background:#f8fafc; } .opt:hover { background:#fff; border-color:var(--primary); transform:translateY(-2px); box-shadow:0 4px 6px rgba(0,0,0,0.05); } .opt b { display:block; font-size:0.85rem; color:#0f172a; margin-bottom:4px; } .opt small { font-size:0.7rem; color:#64748b; line-height:1.2; display:block; }
+        .m-insp { background:#fff; width:600px; border-radius:10px; padding:0; overflow:hidden; } .insp-res { padding:30px; text-align:center; } .insp-big { font-size:2rem; font-weight:900; margin:10px 0; font-family:'Rajdhani'; } .insp-det { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:20px; background:#f8fafc; padding:15px; border-radius:8px; } .insp-box { text-align:center; } .insp-box span { display:block; font-size:0.7rem; color:#64748b; font-weight:700; } .insp-box b { font-size:1.2rem; }
+        #loader { position:fixed; top:0; left:0; width:100%; height:100%; background:#111827; z-index:9000; display:flex; justify-content:center; align-items:center; flex-direction:column; transition:opacity 0.5s; } .spin { width:40px; height:40px; border:3px solid rgba(255,255,255,0.1); border-top:3px solid var(--primary); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:15px; } @keyframes spin { 100% { transform:rotate(360deg); } } #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:10px 25px; border-radius:30px; font-size:0.85rem; font-weight:600; z-index:9999; display:none; align-items:center; gap:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3); }
         
+        /* ESTILO PARA TRASLADOS EN 360 */
+        .tras-alert { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; font-weight: 700; text-align: center; display: none; }
+        .t-rec { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .t-pet { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+        .t-pen { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
     </style>
 </head>
 <body>
@@ -251,16 +116,17 @@
     <div id="login-screen">
         <div class="login-box">
             <i class="fas fa-shield-alt fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
-            <h2>ACCESO AL SISTEMA</h2>
+            <h2>BODEGA DIGITAL</h2>
+            <p>Servidor: <b>calinorte255-dev</b></p>
             <input type="text" id="usr" class="login-input" placeholder="Usuario">
-            <input type="password" id="pwd" class="login-input" placeholder="Contraseña">
+            <input type="password" id="pwd" class="login-input" placeholder="Contraseña" onkeyup="if(event.key === 'Enter') Sys.login()">
             <button onclick="Sys.login()" class="btn-login">INGRESAR</button>
         </div>
     </div>
 
     <div id="loader">
         <div class="spin"></div>
-        <div style="color:#fff; font-weight:700; letter-spacing:1px;">CARGANDO SISTEMA</div>
+        <div id="loader-txt" style="color:#fff; font-weight:700; letter-spacing:1px;">CARGANDO SISTEMA</div>
     </div>
     <div id="toast"></div>
 
@@ -271,9 +137,14 @@
         </div>
 
         <div class="menu">
-            <div class="section-title"><i class="fas fa-database"></i> BASES DE DATOS</div>
+            <div class="section-title"><i class="fas fa-server"></i> SINCRONIZACIÓN NUBE</div>
             
-            <button class="btn b-cloud" onclick="Sys.cloud()"><i class="fas fa-cloud-download-alt"></i> CARGAR DE LA NUBE</button>
+            <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+                <button class="btn b-cloud" style="flex:1; justify-content:center; font-size: 0.7rem;" onclick="Sys.cloudDownload()"><i class="fas fa-sync-alt"></i> REFRESCAR</button>
+                <button class="btn b-cloud" style="flex:1; justify-content:center; font-size: 0.7rem; background: linear-gradient(to right, #059669, #047857); border-color: #10b981;" onclick="Sys.cloudUpload()"><i class="fas fa-cloud-upload-alt"></i> SUBIR</button>
+            </div>
+
+            <div class="section-title"><i class="fas fa-database"></i> BASES MANUALES</div>
 
             <label class="file-row" for="f-restr">
                 <div style="width:90%"><div class="f-name">CK_IN_UBICAC_RESTRINGIDAS</div><div class="f-status" id="l-r">Pendiente</div></div>
@@ -316,6 +187,7 @@
             <button class="btn b-inspector" onclick="Core.inspect()"><i class="fas fa-search-plus"></i> 🔍 INSPECTOR EAN</button>
             <button class="btn b-danger" onclick="Core.run('riesgo')"><i class="fas fa-radiation"></i> 🚨 DIGITAL EN JDA</button> 
             <button class="btn b-blue" onclick="UI.modal('m-toma-sel', true)"><i class="fas fa-search"></i> TOMA FÍSICA vs DIGI</button>
+            <button class="btn b-tras" onclick="Core.run('traslados')"><i class="fas fa-truck-loading"></i> TRASLADOS</button>
             <button class="btn b-red" onclick="Core.run('negativos')"><i class="fas fa-arrow-down"></i> NEGATIVOS DIGITAL</button>
             <button class="btn b-yellow" style="color:#000" onclick="UI.modal('m-almac',true)"><i class="fas fa-exchange-alt"></i> ALMACÉN</button>
             <button class="btn b-purple" onclick="Core.run('prohibido')"><i class="fas fa-ban"></i> NO DEBE ESTAR EN DIGI</button> 
@@ -326,12 +198,6 @@
             <div class="export-bar">
                 <button class="btn btn-sm b-green" onclick="Exp.excel()">XLSX</button>
                 <button class="btn btn-sm b-red" onclick="Exp.pdf()">PDF</button>
-                <button class="btn btn-sm b-dark" onclick="Exp.log()">LOG</button>
-            </div>
-            <div class="export-bar" style="margin-top:5px;">
-                <button class="btn btn-sm btn-dark" style="background:transparent; border:1px solid #64748b; color:#94a3b8;" onclick="Sys.backup()">BACKUP</button>
-                <button class="btn btn-sm btn-dark" style="background:transparent; border:1px solid #64748b; color:#94a3b8;" onclick="document.getElementById('f-res').click()">RESTAURAR</button>
-                <input type="file" id="f-res" accept=".json" onchange="Sys.restore(this)" style="display:none;">
             </div>
         </div>
     </aside>
@@ -340,7 +206,7 @@
         <header class="header">
             <div class="header-title">
                 <h2>BODEGA DIGITAL</h2>
-                <span>COMPACT PRO v25.0</span>
+                <span>COMPACT PRO v29.1 - AUTO CLOUD SYNC</span>
             </div>
             <div class="kpi">
                 <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
@@ -379,7 +245,6 @@
                 
                 <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
                     <div class="c-tit">MÉTRICAS DE AUDITORÍA</div>
-                    
                     <div style="margin-top:5px;">
                         <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; color:#64748b; margin-bottom: 2px;">
                             <span><i class="fas fa-bullseye" style="color:#10b981"></i> REF (EXACTA)</span>
@@ -387,7 +252,6 @@
                         </div>
                         <div class="bar-bg"><div id="c-bar-ref" class="bar-fill" style="background:#10b981;"></div></div>
                     </div>
-
                     <div style="margin-top:15px;">
                         <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; color:#64748b; margin-bottom: 2px;">
                             <span><i class="fas fa-balance-scale" style="color:#3b82f6"></i> CANT (PROPORC)</span>
@@ -400,65 +264,11 @@
         </div>
     </main>
 
-    <div id="m-toma-sel" class="overlay">
-        <div class="m-std">
-            <i class="fas fa-times" onclick="UI.modal('m-toma-sel',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
-            <h3 style="margin-top:0;">Tipo de Toma</h3>
-            <div class="grid-2">
-                <div class="opt" onclick="Core.calcToma('General'); UI.modal('m-toma-sel',false)">
-                    <b style="color:#0ea5e9">GENERAL</b><small>Compara TODO DIGI1 contra tu archivo.</small>
-                </div>
-                <div class="opt" onclick="Core.calcToma('Selectivo'); UI.modal('m-toma-sel',false)">
-                    <b style="color:#22c55e">SELECTIVO</b><small>Solo compara los productos que cargaste.</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="m-insp" class="overlay">
-        <div class="m-insp">
-            <div class="m-head" style="background:#1e293b;">
-                <h3 style="color:#fff; font-size:1.1rem;">INSPECTOR EAN</h3>
-                <i class="fas fa-times" onclick="UI.modal('m-insp',false)"></i>
-            </div>
-            <div class="insp-res">
-                <div style="font-size:0.9rem; color:#64748b; font-weight:700;" id="i-ean">---</div>
-                <div style="font-size:1.1rem; color:#0f172a; font-weight:800; margin-bottom:20px;" id="i-desc">---</div>
-                <div id="i-status" class="insp-big">---</div>
-                <div class="insp-det">
-                    <div class="insp-box"><span>DIGI1</span><b id="i-digi" style="color:#059669">0</b></div>
-                    <div class="insp-box"><span>BODEGA</span><b id="i-bod" style="color:#eab308">0</b></div>
-                    <div class="insp-box"><span>FÍSICO</span><b id="i-fis" style="color:#2563eb">0</b></div>
-                </div>
-                <div id="i-msg" style="margin-top:20px; font-weight:700; color:#dc2626;"></div>
-                <br>
-                <button class="btn-erp" style="width:100%; justify-content:center;" onclick="let e=document.getElementById('i-ean').innerText; UI.modal('m-insp',false); UI.s360(e);">
-                    <i class="fas fa-eye"></i> VER DETALLE 360°
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="m-almac" class="overlay">
-        <div class="m-std">
-            <i class="fas fa-times" onclick="UI.modal('m-almac',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
-            <h3 style="margin-top:0;">Filtros Almacén</h3>
-            <div class="grid-2">
-                <div class="opt" onclick="Core.run('almac_digi0'); UI.modal('m-almac',false)">
-                    <b style="color:#dc2626">DIGITAL = 0</b><small>Existe en DIGI1 (0) pero hay en ALMAC.</small>
-                </div>
-                <div class="opt" onclick="Core.run('almac_almac0'); UI.modal('m-almac',false)">
-                    <b style="color:#d97706">ALMAC = 0</b><small>Agotado en ALMAC pero hay en DIGI1.</small>
-                </div>
-                <div class="opt" onclick="Core.run('almac_neg'); UI.modal('m-almac',false)">
-                    <b style="color:#7c3aed">NEGATIVOS</b><small>Saldo negativo en ALMAC.</small>
-                </div>
-                <div class="opt" onclick="Core.run('almac_sum0'); UI.modal('m-almac',false)">
-                    <b style="color:#059669">SUMA 0</b><small>Nivelación exacta.</small>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="m-toma-sel" class="overlay"><div class="m-std"><i class="fas fa-times" onclick="UI.modal('m-toma-sel',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i><h3 style="margin-top:0;">Tipo de Toma</h3><div class="grid-2"><div class="opt" onclick="Core.calcToma('General'); UI.modal('m-toma-sel',false)"><b style="color:#0ea5e9">GENERAL</b><small>Compara TODO DIGI1 contra tu archivo.</small></div><div class="opt" onclick="Core.calcToma('Selectivo'); UI.modal('m-toma-sel',false)"><b style="color:#22c55e">SELECTIVO</b><small>Solo compara los productos que cargaste.</small></div></div></div></div>
+    
+    <div id="m-insp" class="overlay"><div class="m-insp"><div class="m-head" style="background:#1e293b;"><h3 style="color:#fff; font-size:1.1rem;">INSPECTOR EAN</h3><i class="fas fa-times" onclick="UI.modal('m-insp',false)"></i></div><div class="insp-res"><div style="font-size:0.9rem; color:#64748b; font-weight:700;" id="i-ean">---</div><div style="font-size:1.1rem; color:#0f172a; font-weight:800; margin-bottom:20px;" id="i-desc">---</div><div id="i-status" class="insp-big">---</div><div class="insp-det"><div class="insp-box"><span>DIGI1</span><b id="i-digi" style="color:#059669">0</b></div><div class="insp-box"><span>BODEGA</span><b id="i-bod" style="color:#eab308">0</b></div><div class="insp-box"><span>FÍSICO</span><b id="i-fis" style="color:#2563eb">0</b></div></div><div id="i-msg" style="margin-top:20px; font-weight:700; color:#dc2626;"></div><br><button class="btn-erp" style="width:100%; justify-content:center;" onclick="let e=document.getElementById('i-ean').innerText; UI.modal('m-insp',false); UI.s360(e);"><i class="fas fa-eye"></i> VER DETALLE 360°</button></div></div></div>
+    
+    <div id="m-almac" class="overlay"><div class="m-std"><i class="fas fa-times" onclick="UI.modal('m-almac',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i><h3 style="margin-top:0;">Filtros Almacén</h3><div class="grid-2"><div class="opt" onclick="Core.run('almac_digi0'); UI.modal('m-almac',false)"><b style="color:#dc2626">DIGITAL = 0</b><small>Existe en DIGI1 (0) pero hay en ALMAC.</small></div><div class="opt" onclick="Core.run('almac_almac0'); UI.modal('m-almac',false)"><b style="color:#d97706">ALMAC = 0</b><small>Agotado en ALMAC pero hay en DIGI1.</small></div><div class="opt" onclick="Core.run('almac_neg'); UI.modal('m-almac',false)"><b style="color:#7c3aed">NEGATIVOS</b><small>Saldo negativo en ALMAC.</small></div><div class="opt" onclick="Core.run('almac_sum0'); UI.modal('m-almac',false)"><b style="color:#059669">SUMA 0</b><small>Nivelación exacta.</small></div></div></div></div>
 
     <div id="m-360" class="overlay">
         <div class="m-360">
@@ -472,20 +282,21 @@
                 </div>
                 <i class="fas fa-times" onclick="UI.modal('m-360',false)"></i>
             </div>
-            <div class="m-body">
+            
+            <div class="m-body" style="padding-top: 15px;">
+                <div id="d360-tras-alert" class="tras-alert"></div>
                 <div class="grid-3">
                     <div class="col">
-                        <div class="col-h"><i class="fas fa-map-marker-alt" style="color:#2563eb"></i> REALIDAD FÍSICA (VER_INV)</div>
+                        <div class="col-h"><i class="fas fa-map-marker-alt" style="color:#2563eb"></i> FÍSICO (VER_INV)</div>
                         <div id="d360-phys" class="col-l"></div>
-                        <div class="col-f" style="color:#64748b;">UBICACIONES ENCONTRADAS</div>
                     </div>
                     <div class="col">
-                        <div class="col-h"><i class="fas fa-box-open" style="color:#059669"></i> SISTEMA PISO (DIGI1)</div>
+                        <div class="col-h"><i class="fas fa-box-open" style="color:#059669"></i> PISO (DIGI1)</div>
                         <div id="d360-nr" class="col-l"></div>
                         <div class="col-f">Total: <span id="d360-nr-t" style="color:#059669;">0</span></div>
                     </div>
                     <div class="col">
-                        <div class="col-h"><i class="fas fa-warehouse" style="color:#dc2626"></i> SISTEMA BODEGA (RESTR)</div>
+                        <div class="col-h"><i class="fas fa-warehouse" style="color:#dc2626"></i> BODEGA (RESTR)</div>
                         <div id="d360-r" class="col-l"></div>
                         <div class="col-f">Total: <span id="d360-r-t" style="color:#dc2626;">0</span></div>
                     </div>
@@ -493,14 +304,8 @@
             </div>
             <div class="port-bar">
                 <div style="display:flex; gap:30px; align-items:center;">
-                    <div class="port-info">
-                        <span class="port-lbl">ESTADO PORTAFOLIO</span>
-                        <div id="d360-st" style="font-weight:700; color:#fff; font-size:1.2rem;">---</div>
-                    </div>
-                    <div class="port-info">
-                        <span class="port-lbl">TOTAL LIBROS</span>
-                        <div id="d360-bk" class="port-val">---</div>
-                    </div>
+                    <div class="port-info"><span class="port-lbl">PORTAFOLIO</span><div id="d360-st" style="font-weight:700; color:#fff; font-size:1.2rem;">---</div></div>
+                    <div class="port-info"><span class="port-lbl">TOTAL LIBROS</span><div id="d360-bk" class="port-val">---</div></div>
                 </div>
                 <div id="erp-action-area"></div>
             </div>
@@ -510,7 +315,12 @@
     <script>
         window.onerror = function(msg) { document.getElementById('loader').style.display='none'; alert("Error interno: " + msg); };
 
-        const DB_NAME="Siga_V25_0_Cloud", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],logs:JSON.parse(localStorage.getItem('siga_logs')||'[]'),tot:0};
+        // =========================================================================
+        // URL DE TU NUBE EN GOOGLE (IMPLEMENTADA EXACTAMENTE COMO LA SOLICITASTE)
+        // =========================================================================
+        const CLOUD_API = "https://script.google.com/macros/s/AKfycbywsc6gzJjAKoCga5b1F6y3vqbElhQQB0vWWZmWuw6Ts-0isV74vwRbzZaoKnj2Ohp9/exec"; 
+        
+        const DB_NAME="Siga_V29_AutoCloud", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
         const Cfg={
             ok:["Accesorios Audio","Accesorio Camara","Videocamaras","Accesorios Informatica","Accesorios Telefonia","Accesorios Video","Computadores","Equipos Audio","Camaras","Otros Hardware","Telefonia Celular","Telefonia Fija","Deportes y Salud","Casa Inteligente y Redes","Videojuegos","Accesorios Energía","Audífonos y Auriculares","Drones y Juguetes Electrónicos","Accesorio Camara","Videocamaras"],
             niv:["Telefonia Celular","Videocamaras","Camaras","Computadores"],
@@ -520,14 +330,24 @@
 
         const Core = {
             init: async () => {
-                Sys.checkAuth(); // Verifica si está logueado
-                setTimeout(()=>document.getElementById('loader').style.display='none', 800);
+                Sys.checkAuth();
                 try {
                     await DB.init(); 
-                    ['r','n','v','p','tr'].forEach(k=>Core.load(k)); 
+                    let wasLoaded = false;
+                    for (const k of ['r','n','v','p','tr']) {
+                        let ok = await Core.load(k);
+                        if(ok) wasLoaded = true;
+                    }
+                    
+                    if(sessionStorage.getItem('siga_auth_v29') === 'true') {
+                        Sys.cloudDownload(); 
+                    } else {
+                        setTimeout(()=>document.getElementById('loader').style.display='none', 800);
+                    }
+                    
                     const inputs={'r':'f-restr','n':'f-norestr','v':'f-ver','p':'f-port','t':'f-toma','tr':'f-tras'};
                     Object.keys(inputs).forEach(k => { const el = document.getElementById(inputs[k]); if(el) el.addEventListener('change', e => Core.file(e,k)); });
-                } catch(e) { console.error("Error init", e); }
+                } catch(e) { console.error("Error init", e); document.getElementById('loader').style.display='none'; }
             },
             file: (e,k) => {
                 let f=e.target.files[0]; if(!f)return; UI.toast(`Cargando ${f.name}...`);
@@ -551,14 +371,13 @@
                             let wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
                             d=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
                         }
-                        Store[k]=d; if(k!=='t') DB.save(k,d);
-                        UI.led(k); if(k==='n') Core.calc();
                         
+                        Store[k]=d; 
+                        if(k!=='t') DB.save(k,d); 
+                        
+                        UI.led(k); if(k==='n') Core.calc();
                         let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
-                        if(statusId) {
-                            let el = document.getElementById(statusId);
-                            el.innerText = "✅ Cargado"; el.style.color="#22c55e";
-                        }
+                        if(statusId) { document.getElementById(statusId).innerText = "✅ Cargado"; document.getElementById(statusId).style.color="#22c55e"; }
                         UI.toast("Carga Exitosa",1);
 
                     } catch(er){ 
@@ -570,25 +389,26 @@
             },
             load: async(k)=>{ 
                 let d=await DB.get(k); 
-                if(d){ 
+                if(d && d.length > 0){ 
                     Store[k]=d; UI.led(k); if(k==='n') Core.calc(); 
                     let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
-                    if(statusId) { document.getElementById(statusId).innerText="✅ En Memoria"; document.getElementById(statusId).style.color="#0ea5e9"; }
+                    if(statusId) { document.getElementById(statusId).innerText="✅ Local"; document.getElementById(statusId).style.color="#0ea5e9"; }
+                    return true;
                 } 
+                return false;
             },
             calc: ()=>{ let c=0; Store.n.forEach(r=>{if(Util.get(r,'Ubicación')==='DIGI1')c++}); Store.tot=c; UI.kpi(0,c); },
-            
             inspect: () => { let ean = prompt("Ingrese EAN a inspeccionar:"); if(ean && ean.trim() !== "") UI.s360(ean.trim()); },
 
             calcToma: (type) => {
                 if(!Store.n.length) return UI.toast("Falta Base Maestra",0);
                 if(!Store.t.length) return UI.toast("Falta Toma CSV",0);
                 document.getElementById('loader').style.display='flex';
+                document.getElementById('loader-txt').innerText='AUDITANDO...';
                 
                 setTimeout(() => {
                     try {
-                        let res=[], h=Util.get;
-                        let sysMap = {};
+                        let res=[], h=Util.get; let sysMap = {};
                         Store.n.forEach(r => { if(h(r,'Ubicación')==='DIGI1') { let e = String(h(r,'Artículo')); sysMap[e] = (sysMap[e]||0) + parseFloat(h(r,'Cant Base')||0); } });
                         let csvMap = {}; Store.t.forEach(r => { let e = String(r.EAN); csvMap[e] = (csvMap[e]||0) + r.Cant; });
                         
@@ -596,37 +416,26 @@
                         let numRef = (type === 'Selectivo') ? Object.keys(csvMap).length : Object.keys(sysMap).length;
                         if(numRef === 0) numRef = 1; 
 
-                        let sumConfRef = 0;
-                        let sumConfCant = 0;
-
+                        let sumConfRef = 0; let sumConfCant = 0;
                         res = allEans.map(ean => {
-                            let sys = sysMap[ean] || 0; 
-                            let csv = csvMap[ean] || 0; 
-                            let diff = csv - sys;
-
-                            let confRefItem = (sys === csv) ? 100 : 0;
-                            let confCantItem = 0;
-                            if (csv === 0 && sys === 0) { confCantItem = 100; }
-                            else if (csv === 0 && sys !== 0) { confCantItem = 0; } 
-                            else { confCantItem = (sys / csv) * 100; }
-
-                            sumConfRef += confRefItem;
-                            sumConfCant += confCantItem;
-
-                            return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
+                            let sys = sysMap[ean] || 0; let csv = csvMap[ean] || 0; let diff = csv - sys;
+                            let confRefItem = (sys === csv) ? 100 : 0; let confCantItem = 0;
+                            if (csv === 0 && sys === 0) { confCantItem = 100; } else if (csv === 0 && sys !== 0) { confCantItem = 0; } else { confCantItem = (sys / csv) * 100; }
+                            sumConfRef += confRefItem; sumConfCant += confCantItem;
+                            
+                            let aiAnalysis = diff === 0 ? 'OK' : '';
+                            if (diff > 0) aiAnalysis = "SOBRANTE - Posible cruce en piso o venta sin descargar";
+                            if (diff < 0) aiAnalysis = "FALTANTE - Revisar Bodega o Traslados pendientes";
+                            
+                            return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'Diagnóstico AI': aiAnalysis, 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
                         });
 
-                        let avgConfRef = (sumConfRef / numRef).toFixed(1);
-                        let avgConfCant = (sumConfCant / numRef).toFixed(1);
+                        let avgConfRef = (sumConfRef / numRef).toFixed(1); let avgConfCant = (sumConfCant / numRef).toFixed(1);
 
                         Store.view = res; Store.full = res; UI.draw(res);
                         let errCount = res.filter(x => x.Diferencia !== 0).length;
-                        
-                        UI.kpi(res.length, Store.tot, errCount, avgConfRef, avgConfCant);
-                        UI.chart(Store.tot, errCount);
-                        
-                        document.getElementById('loader').style.display='none'; 
-                        UI.toast(`Auditoría ${type} finalizada`, 1);
+                        UI.kpi(res.length, Store.tot, errCount, avgConfRef, avgConfCant); UI.chart(Store.tot, errCount);
+                        document.getElementById('loader').style.display='none'; UI.toast(`Auditoría ${type} finalizada`, 1);
                     } catch(e) { document.getElementById('loader').style.display='none'; alert("Error: " + e); }
                 }, 100);
             },
@@ -634,32 +443,24 @@
             run: (op) => {
                 if(!Store.n.length) return UI.toast("Falta Base Maestra",0);
                 document.getElementById('loader').style.display='flex';
+                document.getElementById('loader-txt').innerText='ANALIZANDO DATOS...';
                 setTimeout(()=>{
                     try {
                         let res=[], h=Util.get;
                         
                         if(op === 'riesgo') {
-                            let physMap = {};
-                            Store.v.forEach(r => { let e=String(h(r,'Producto')); if(!physMap[e]) physMap[e]=[]; physMap[e].push(h(r,'Ubicacion')); });
-                            
+                            let physMap = {}; Store.v.forEach(r => { let e=String(h(r,'Producto')); if(!physMap[e]) physMap[e]=[]; physMap[e].push(h(r,'Ubicacion')); });
                             Store.n.forEach(r => {
                                 if(h(r,'Ubicación') === 'DIGI1') {
-                                    let ean = String(h(r,'Artículo'));
-                                    let qty = parseFloat(h(r,'Cant Base')) || 0;
-                                    let locs = physMap[ean] || [];
-                                    
+                                    let ean = String(h(r,'Artículo')); let qty = parseFloat(h(r,'Cant Base')) || 0; let locs = physMap[ean] || [];
                                     if(locs.length > 0) {
                                         let isNegative = qty < 0;
-                                        let hasExcludedLoc = locs.some(l => {
-                                            let u = l.trim().toUpperCase();
-                                            return u.startsWith('E') || Cfg.despa.includes(u);
-                                        });
-
+                                        let hasExcludedLoc = locs.some(l => { let u = l.trim().toUpperCase(); return u.startsWith('E') || Cfg.despa.includes(u); });
                                         if(!hasExcludedLoc) {
                                             let hasValidPiso = locs.some(l => !l.includes('BODEGA') && !l.includes('ALTOS'));
                                             if(isNegative || !hasValidPiso) {
-                                                let reason = isNegative ? "NEGATIVO REAL" : "FÍSICO EN BODEGA (DIGITAL)";
-                                                res.push({ 'EAN': ean, 'Descripción': h(r,'Descr'), 'Cant DIGI1': qty, 'Ubic Físicas': locs.join(', '), 'Problema': reason });
+                                                let reason = isNegative ? "NEGATIVO EN DIGI1 PERO FÍSICO EN BODEGA" : "SOLO FÍSICO EN BODEGA (DIGITAL MAL CREADO)";
+                                                res.push({ 'EAN': ean, 'Descripción': h(r,'Descr'), 'Cant DIGI1': qty, 'Ubic Físicas': locs.join(', '), 'Diagnóstico AI': reason, 'Acción': 'CORREGIR JDA' });
                                             }
                                         }
                                     }
@@ -667,19 +468,34 @@
                             });
                         }
                         else if(op==='negativos'){
-                            let am={}, bod={}, tras={};
+                            let am={}, bod={}, phys={};
                             Store.n.forEach(r=>{if(h(r,'Ubicación')==='ALMAC') am[String(h(r,'Artículo'))] = parseFloat(h(r,'Cant Base')) || 0; });
                             Store.r.forEach(r=> bod[String(h(r,'Artículo'))] = parseFloat(h(r,'Cant Base')) || 0);
-                            Store.tr.forEach(r=> tras[String(Util.get(r,'Material','Producto','EAN'))] = parseFloat(Util.get(r,'Cantidad','Cant','Pendiente')) || 0);
+                            Store.v.forEach(r=> phys[String(h(r,'Producto'))] = true);
+                            let trasMap = Core.getTrasladosStatus();
 
                             res = Store.n.filter(r => h(r,'Ubicación')==='DIGI1' && parseFloat(h(r,'Cant Base')) < 0).map(r => {
-                                let e = String(h(r,'Artículo')); let q = parseFloat(h(r,'Cant Base')); let acc = "AJUSTE / VENTA VACÍO";
-                                if ((tras[e]||0) > 0) acc = "RECIBIR TRASLADO";
+                                let e = String(h(r,'Artículo')); let q = parseFloat(h(r,'Cant Base')); 
+                                let acc = ""; let tStatus = trasMap[e];
+                                if (tStatus && tStatus.tipo === 'PET') acc = "EN TRÁNSITO - ESPERAR LLEGADA";
+                                else if (tStatus && tStatus.tipo === 'REC') acc = "CONFIRMAR INGRESO EN SISTEMA";
+                                else if (tStatus && tStatus.tipo === 'PEN') acc = "PENDIENTE POR DESPACHAR DEL CEDI";
                                 else if ((am[e]||0) > 0) acc = "SURTIR DE ALMACÉN";
-                                else if ((bod[e]||0) > 0) acc = "PEDIR A BODEGA";
-
-                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': q, 'Stock Almac': am[e]||0, 'Stock Bod': bod[e]||0, 'En Traslado': tras[e]||0, 'Acción Sugerida': acc };
+                                else if ((bod[e]||0) > 0) acc = "BAJAR DE BODEGA";
+                                else if (phys[e]) acc = "POSIBLE CRUCE - HAY FÍSICO PERO NO DIGITAL";
+                                else acc = "VENTA EN VACÍO / AJUSTE DE INVENTARIO";
+                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': q, 'Stock Almac': am[e]||0, 'Stock Bod': bod[e]||0, 'Traslado AI': tStatus ? tStatus.val : 'N/A', 'Acción Sugerida AI': acc };
                             });
+                        }
+                        else if(op==='traslados'){
+                            if(!Store.tr.length) { throw "No hay archivo de Traslados cargado"; }
+                            let m={}; Store.n.forEach(r=>{ if(h(r,'Ubicación')==='DIGI1') m[String(h(r,'Artículo'))] = parseFloat(h(r,'Cant Base'))||0; });
+                            let trasMap = Core.getTrasladosStatus();
+                            for (const [ean, info] of Object.entries(trasMap)) {
+                                let digiQty = m[ean] || 0;
+                                let statusStr = info.tipo === 'REC' ? "YA INGRESÓ (REC)" : (info.tipo === 'PET' ? "EN TRÁNSITO (PET)" : "PENDIENTE (NO REC/PET)");
+                                res.push({ EAN: ean, Descripción: Core.desc(ean), 'Cant DIGI1': digiQty, 'Código Docs': info.val, 'Estado Traslado': statusStr });
+                            }
                         }
                         else if(op.startsWith('almac')){
                             let m={}; Store.n.forEach(r=>{ let e=String(h(r,'Artículo')),s=h(r,'Sublinea')||""; if(!m[e])m[e]={e,d:h(r,'Descr'),s,di:0,al:0,hd:false};
@@ -727,7 +543,22 @@
             },
             search: ()=>{ let t=document.getElementById('search').value.toLowerCase(); UI.draw(Store.full.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(t)))); },
             desc: (e)=>{ let i=Store.n.find(r=>String(Util.get(r,'Artículo'))===e); return i?Util.get(i,'Descr'):"---"; },
-            openERP: (ean) => { navigator.clipboard.writeText(ean).then(() => { UI.toast("EAN copiado", 1); window.open('https://erp.colcomercio.com/psp/PROD_1/EMPLOYEE/ERP/c/MAINTAIN_INVENTORY.MATERIAL_TRANSFER.GBL?&skipcnav=1', '_blank'); }); }
+            openERP: (ean) => { navigator.clipboard.writeText(ean).then(() => { UI.toast("EAN copiado", 1); window.open('https://erp.colcomercio.com/psp/PROD_1/EMPLOYEE/ERP/c/MAINTAIN_INVENTORY.MATERIAL_TRANSFER.GBL?&skipcnav=1', '_blank'); }); },
+            
+            getTrasladosStatus: () => {
+                let m = {};
+                Store.tr.forEach(r => {
+                    let ean = String(Util.get(r,'Material','Producto','EAN','Artículo'));
+                    if(!ean || ean === 'undefined') return;
+                    let allVals = Object.values(r).join(' ').toUpperCase();
+                    let matchREC = allVals.match(/REC\d+/);
+                    let matchPET = allVals.match(/PET\d+/);
+                    if (matchREC) { m[ean] = { tipo: 'REC', val: matchREC[0] }; }
+                    else if (matchPET) { m[ean] = { tipo: 'PET', val: matchPET[0] }; }
+                    else { m[ean] = { tipo: 'PEN', val: 'PENDIENTE' }; }
+                });
+                return m;
+            }
         };
 
         const DB={
@@ -736,42 +567,77 @@
             get:(k)=>new Promise(r=>{if(!DB.db)return r(null); let q=DB.db.transaction(['f'],'readonly').objectStore('f').get(k); q.onsuccess=e=>r(e.target.result)})
         };
 
-        // MÓDULO DE SISTEMA Y SEGURIDAD
         const Sys = { 
             login: () => {
                 let u = document.getElementById('usr').value;
                 let p = document.getElementById('pwd').value;
-                // CREDENCIALES POR DEFECTO:
-                if(u === 'alkosto cali norte' && p === 'Alkosto01.') {
+                if(u === 'Alkosto Cali norte' && p === 'Alkosto01.') {
                     document.getElementById('login-screen').style.display = 'none';
-                    sessionStorage.setItem('siga_logged', 'true');
+                    sessionStorage.setItem('siga_auth_v29', 'true');
                     UI.toast("Bienvenido al sistema", 1);
-                } else {
-                    UI.toast("Credenciales incorrectas", 0);
-                }
+                    Sys.cloudDownload(); 
+                } else { UI.toast("Credenciales incorrectas", 0); }
             },
             checkAuth: () => {
-                if(sessionStorage.getItem('siga_logged') === 'true') {
+                if(sessionStorage.getItem('siga_auth_v29') === 'true') {
                     document.getElementById('login-screen').style.display = 'none';
                 }
             },
-            logout: () => {
-                sessionStorage.removeItem('siga_logged');
-                location.reload();
-            },
-            cloud: () => {
-                // Función preparada para conectar con tu API / Script de Apps Script
-                UI.toast("Conectando con la nube...", 1);
-                document.getElementById('loader').style.display='flex';
+            logout: () => { sessionStorage.removeItem('siga_auth_v29'); location.reload(); },
+            
+            cloudDownload: async () => {
+                if(!CLOUD_API) return; 
                 
-                // Simulación de carga (Reemplazar con fetch a tu URL)
-                setTimeout(() => {
-                    document.getElementById('loader').style.display='none';
-                    UI.toast("Bases sincronizadas (Modo Demo)", 1);
-                }, 2000);
+                document.getElementById('loader').style.display='flex';
+                document.getElementById('loader-txt').innerText='DESCARGANDO DESDE NUBE...';
+                
+                try {
+                    let res = await fetch(CLOUD_API);
+                    let data = await res.json();
+                    
+                    if(data.status === "empty") throw new Error("La nube está vacía");
+
+                    ['r','n','v','p','tr'].forEach(k => {
+                        if(data[k] && data[k].length > 0) {
+                            Store[k] = data[k];
+                            DB.save(k, data[k]); 
+                            UI.led(k);
+                            let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
+                            if(statusId) { document.getElementById(statusId).innerText="✅ Nube"; document.getElementById(statusId).style.color="#0ea5e9"; }
+                        }
+                    });
+                    Core.calc();
+                    UI.toast("Base de datos sincronizada", 1);
+                } catch (e) {
+                    console.error("Nube:", e);
+                } finally { document.getElementById('loader').style.display='none'; }
             },
-            backup: async()=>{ let d={r:await DB.get('r'),n:await DB.get('n'),v:await DB.get('v'),p:await DB.get('p')}; let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"application/json"})); a.download=`Backup.json`; a.click(); }, 
-            restore:(i)=>{ let f=i.files[0]; if(!f)return; let r=new FileReader(); r.onload=(e)=>{let d=JSON.parse(e.target.result); if(d.n)DB.save('n',d.n); location.reload()}; r.readAsText(f); } 
+
+            cloudUpload: async () => {
+                if(!CLOUD_API) return UI.toast("Falta configurar la URL CLOUD_API", 0);
+                if(!Store.n.length) return UI.toast("Debe cargar archivos manualmente antes de subir", 0);
+
+                document.getElementById('loader').style.display='flex';
+                document.getElementById('loader-txt').innerText='SUBIENDO ARCHIVOS A LA NUBE...';
+
+                try {
+                    let payload = { r: Store.r, n: Store.n, v: Store.v, p: Store.p, tr: Store.tr };
+                    
+                    let res = await fetch(CLOUD_API, {
+                        method: 'POST',
+                        body: JSON.stringify(payload),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' } 
+                    });
+
+                    let outcome = await res.json();
+
+                    if(outcome.status === "success") { UI.toast("Datos guardados en la Nube", 1); } 
+                    else { throw new Error(outcome.message); }
+                } catch (e) {
+                    UI.toast("Error al subir a la Nube", 0);
+                    console.error(e);
+                } finally { document.getElementById('loader').style.display='none'; }
+            }
         };
 
         const UI = {
@@ -780,40 +646,19 @@
             modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
             
             kpi: (v, t, e, confRef, confCant) => { 
-                document.getElementById('k-view').innerText=v; 
-                document.getElementById('k-tot').innerText=t;
-                document.getElementById('k-err').innerText=e || 0;
-                
-                let ok = t - (e || 0); 
-                let acc = t > 0 ? ((ok / t) * 100).toFixed(1) : 0;
-                
-                let valRef = document.getElementById('c-val-ref');
-                let barRef = document.getElementById('c-bar-ref');
-                let valCant = document.getElementById('c-val-cant');
-                let barCant = document.getElementById('c-bar-cant');
-                let headCump = document.getElementById('k-cump-head');
+                document.getElementById('k-view').innerText=v; document.getElementById('k-tot').innerText=t; document.getElementById('k-err').innerText=e || 0;
+                let ok = t - (e || 0); let acc = t > 0 ? ((ok / t) * 100).toFixed(1) : 0;
+                let valRef = document.getElementById('c-val-ref'); let barRef = document.getElementById('c-bar-ref'); let valCant = document.getElementById('c-val-cant'); let barCant = document.getElementById('c-bar-cant'); let headCump = document.getElementById('k-cump-head');
 
                 if (confRef !== null && confCant !== null) {
-                    valRef.innerText = `${confRef}%`; 
-                    barRef.style.width = `${Math.min(confRef, 100)}%`;
-                    valCant.innerText = `${confCant}%`; 
-                    barCant.style.width = `${Math.min(confCant, 100)}%`;
-                    
-                    headCump.innerText = `${confRef}%`; 
-                    
-                    valRef.style.color = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444');
-                    barRef.style.background = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444');
-                    valCant.style.color = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444');
-                    barCant.style.background = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444');
+                    valRef.innerText = `${confRef}%`; barRef.style.width = `${Math.min(confRef, 100)}%`; valCant.innerText = `${confCant}%`; barCant.style.width = `${Math.min(confCant, 100)}%`; headCump.innerText = `${confRef}%`; 
+                    valRef.style.color = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444'); barRef.style.background = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444');
+                    valCant.style.color = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444'); barCant.style.background = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444');
                     headCump.style.color = valRef.style.color;
                 } else {
-                    valRef.innerText = `${acc}%`; barRef.style.width = `${acc}%`;
-                    valCant.innerText = `N/A`; barCant.style.width = `0%`;
-                    headCump.innerText = `${acc}%`;
-                    
+                    valRef.innerText = `${acc}%`; barRef.style.width = `${acc}%`; valCant.innerText = `N/A`; barCant.style.width = `0%`; headCump.innerText = `${acc}%`;
                     let col = acc >= 98 ? '#10b981' : (acc >= 90 ? '#f59e0b' : '#ef4444');
-                    valRef.style.color = col; barRef.style.background = col; headCump.style.color = col;
-                    valCant.style.color = '#94a3b8'; barCant.style.background = '#e2e8f0';
+                    valRef.style.color = col; barRef.style.background = col; headCump.style.color = col; valCant.style.color = '#94a3b8'; barCant.style.background = '#e2e8f0';
                 }
             },
 
@@ -826,13 +671,13 @@
                 tb.innerHTML=d.map(r=>`<tr>${cols.map(c=>{
                     let v=r[c];
                     if(c==='EAN'||c==='Artículo') return `<td><span class="lnk" onclick="UI.s360('${v}')">${v}</span></td>`;
-                    if(c==='Acción' || c==='Acción Sugerida') return `<td class="nowrap-col"><span class="tg tg-crit">${v}</span></td>`;
+                    if(c==='Acción' || c==='Acción Sugerida AI' || c==='Diagnóstico AI' || c==='Estado Traslado') return `<td class="nowrap-col"><span class="tg tg-crit" style="background:#fef2f2; border-color:#fca5a5; color:#991b1b; box-shadow:none; animation:none;">${v}</span></td>`;
                     if(c==='Estado') return `<td class="nowrap-col"><span class="tg ${v==='OK'?'tg-ok':(v==='NOVEDAD'?'tg-err':'tg-war')}">${v}</span></td>`;
                     return `<td>${v}</td>`;
                 }).join('')}</tr>`).join('');
             },
             chart: (tot,err)=>{
-                if(typeof Chart === 'undefined') { console.warn("Chart.js no cargado"); return; }
+                if(typeof Chart === 'undefined') { return; }
                 let ctx=document.getElementById('chart').getContext('2d'); if(Store.chart)Store.chart.destroy();
                 let ok=tot-err; if(ok<0)ok=0;
                 Store.chart=new Chart(ctx,{type:'doughnut',data:{labels:['OK','Error'],datasets:[{data:[ok,err],backgroundColor:['#10b981','#ef4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
@@ -843,59 +688,57 @@
                 document.getElementById('d360-ean').innerText=ean; 
                 document.getElementById('d360-desc').innerText=Core.desc(ean);
                 
-                let physRows = Store.v.filter(r => String(Util.get(r,'Producto')) === ean);
-                let locMap = {};
-                physRows.forEach(r => {
-                    let loc = Util.get(r,'Ubicacion');
-                    let q = parseFloat(Util.get(r,'Cantidad','Cant','Unidades')) || 1;
-                    if(locMap[loc]) locMap[loc] += q; else locMap[loc] = q;
-                });
-                let physHtml = "";
-                let hasDespa = false;
-                if (Object.keys(locMap).length > 0) {
-                    for (const [loc, qty] of Object.entries(locMap)) {
-                        let isDespa = Cfg.despa.includes(loc);
-                        if(isDespa) hasDespa = true;
-                        let color = isDespa ? "#ef4444" : "#2563eb"; 
-                        let icon = isDespa ? "fa-truck" : "fa-map-marker-alt";
-                        physHtml += `<div class="phys-item" style="color:${color}; border-color:${color}40; background:${color}10;"><span><i class="fas ${icon}"></i> ${loc}</span><span class="phys-qty">${qty}</span></div>`;
+                let trasAlert = document.getElementById('d360-tras-alert');
+                let tStatus = Core.getTrasladosStatus()[ean];
+                if(tStatus) {
+                    trasAlert.style.display = 'block';
+                    if(tStatus.tipo === 'REC') {
+                        trasAlert.className = 'tras-alert t-rec';
+                        trasAlert.innerHTML = `<i class="fas fa-check-circle"></i> ESTADO TRASLADO: YA INGRESÓ (${tStatus.val})`;
+                    } else if(tStatus.tipo === 'PET') {
+                        trasAlert.className = 'tras-alert t-pet';
+                        trasAlert.innerHTML = `<i class="fas fa-truck"></i> ESTADO TRASLADO: EN TRÁNSITO (${tStatus.val})`;
+                    } else {
+                        trasAlert.className = 'tras-alert t-pen';
+                        trasAlert.innerHTML = `<i class="fas fa-clock"></i> ESTADO TRASLADO: PENDIENTE POR DESPACHAR`;
                     }
                 } else {
-                    physHtml = '<span style="padding:10px; color:#9ca3af;">Sin ubicación física</span>';
+                    trasAlert.style.display = 'none';
                 }
+
+                let physRows = Store.v.filter(r => String(Util.get(r,'Producto')) === ean);
+                let locMap = {};
+                physRows.forEach(r => { let loc = Util.get(r,'Ubicacion'); let q = parseFloat(Util.get(r,'Cantidad','Cant','Unidades')) || 1; if(locMap[loc]) locMap[loc] += q; else locMap[loc] = q; });
+                let physHtml = ""; let hasDespa = false;
+                if (Object.keys(locMap).length > 0) {
+                    for (const [loc, qty] of Object.entries(locMap)) {
+                        let isDespa = Cfg.despa.includes(loc); if(isDespa) hasDespa = true;
+                        let color = isDespa ? "#ef4444" : "#2563eb"; let icon = isDespa ? "fa-truck" : "fa-map-marker-alt";
+                        physHtml += `<div class="phys-item" style="color:${color}; border-color:${color}40; background:${color}10;"><span><i class="fas ${icon}"></i> ${loc}</span><span class="phys-qty">${qty}</span></div>`;
+                    }
+                } else { physHtml = '<span style="padding:10px; color:#9ca3af;">Sin ubicación física</span>'; }
                 document.getElementById('d360-phys').innerHTML = physHtml;
 
                 let f= (arr,id,totId)=>{
                     let h="", t=0; 
-                    arr.filter(r=>String(Util.get(r,'Artículo'))===ean).forEach(r=>{
-                        let u=Util.get(r,'Ubicación'), q=parseFloat(Util.get(r,'Cant Base'))||0; t+=q;
-                        h+=`<div class="itm"><span>${u}</span><span class="qty ${q>0?'ok':'bad'}">${q}</span></div>`;
-                    });
-                    document.getElementById(id).innerHTML=h||'<span style="padding:10px; color:#aaa;">Sin stock</span>';
-                    document.getElementById(totId).innerText=t;
-                    return t;
+                    arr.filter(r=>String(Util.get(r,'Artículo'))===ean).forEach(r=>{ let u=Util.get(r,'Ubicación'), q=parseFloat(Util.get(r,'Cant Base'))||0; t+=q; h+=`<div class="itm"><span>${u}</span><span class="qty ${q>0?'ok':'bad'}">${q}</span></div>`; });
+                    document.getElementById(id).innerHTML=h||'<span style="padding:10px; color:#aaa;">Sin stock</span>'; document.getElementById(totId).innerText=t; return t;
                 };
-                let totalDigi = f(Store.n, 'd360-nr', 'd360-nr-t'); 
-                f(Store.r, 'd360-r', 'd360-r-t');
+                let totalDigi = f(Store.n, 'd360-nr', 'd360-nr-t'); f(Store.r, 'd360-r', 'd360-r-t');
 
                 let p=Store.p.find(r=>String(Util.get(r,'Artículo','EAN'))===ean);
-                document.getElementById('d360-st').innerText=p?"ACTIVO":"NO LISTADO";
-                document.getElementById('d360-bk').innerText=p?Util.get(p,'Total Libros'):"---";
+                document.getElementById('d360-st').innerText=p?"ACTIVO":"NO LISTADO"; document.getElementById('d360-bk').innerText=p?Util.get(p,'Total Libros'):"---";
 
                 let badge = document.getElementById('d360-badge');
-                if (totalDigi > 0 && !hasDespa) {
-                    badge.innerText = "DISPONIBLE PARA VENTA"; badge.style.background = "#16a34a"; badge.style.color = "#fff";
-                } else if (hasDespa) {
-                    badge.innerText = "EN DESPACHO (NO VENDER)"; badge.style.background = "#dc2626"; badge.style.color = "#fff";
-                } else {
-                    badge.innerText = "NO DISPONIBLE"; badge.style.background = "#64748b"; badge.style.color = "#fff";
-                }
+                if (totalDigi > 0 && !hasDespa) { badge.innerText = "DISPONIBLE PARA VENTA"; badge.style.background = "#16a34a"; badge.style.color = "#fff"; } 
+                else if (hasDespa) { badge.innerText = "EN DESPACHO (NO VENDER)"; badge.style.background = "#dc2626"; badge.style.color = "#fff"; } 
+                else { badge.innerText = "NO DISPONIBLE"; badge.style.background = "#64748b"; badge.style.color = "#fff"; }
 
                 document.getElementById('erp-action-area').innerHTML = `<button class="btn-erp" onclick="Core.openERP('${ean}')"><i class="fas fa-external-link-alt"></i> REALIZAR MOVIMIENTO</button>`;
             }
         };
 
-        const Exp = { excel:()=>{ let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Store.view),"Data"); XLSX.writeFile(wb,"Reporte.xlsx")}, pdf:()=>{ let d=new jspdf.jsPDF(); d.autoTable({head:[Object.keys(Store.view[0])],body:Store.view.map(Object.values)}); d.save("Reporte.pdf")}, log:()=>{ let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Store.logs),"Log"); XLSX.writeFile(wb,"Log.xlsx")} };
+        const Exp = { excel:()=>{ let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Store.view),"Data"); XLSX.writeFile(wb,"Reporte.xlsx")}, pdf:()=>{ let d=new jspdf.jsPDF(); d.autoTable({head:[Object.keys(Store.view[0])],body:Store.view.map(Object.values)}); d.save("Reporte.pdf")} };
 
         window.onload=Core.init;
     </script>
