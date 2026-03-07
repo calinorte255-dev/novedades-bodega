@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Bodega Digital | v29.4 Auto-Cloud</title>
+    <title>Bodega Digital | v29.5 Auto-Cloud</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
 
     <style>
         /* ==========================================================================
-           DISEÑO COMPACT PRO v29.4
+           DISEÑO COMPACT PRO v29.5
            ========================================================================== */
         :root { --primary: #e30613; --primary-dark: #b91c1c; --secondary: #f9a825; --bg-dark: #1e293b; --bg-light: #f8fafc; --text-main: #334155; --border: 1px solid #e2e8f0; --shadow: 0 2px 4px rgba(0,0,0,0.05); }
         * { box-sizing: border-box; outline: none; user-select: none; }
@@ -206,7 +206,7 @@
         <header class="header">
             <div class="header-title">
                 <h2>BODEGA DIGITAL</h2>
-                <span>COMPACT PRO v29.4 - AUTO CLOUD SYNC</span>
+                <span>COMPACT PRO v29.5 - AUTO CLOUD SYNC</span>
             </div>
             <div class="kpi">
                 <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
@@ -245,6 +245,7 @@
                 
                 <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
                     <div class="c-tit">MÉTRICAS DE AUDITORÍA</div>
+                    
                     <div style="margin-top:5px;">
                         <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; color:#64748b; margin-bottom: 2px;">
                             <span><i class="fas fa-bullseye" style="color:#10b981"></i> REF (EXACTA)</span>
@@ -252,6 +253,7 @@
                         </div>
                         <div class="bar-bg"><div id="c-bar-ref" class="bar-fill" style="background:#10b981;"></div></div>
                     </div>
+
                     <div style="margin-top:15px;">
                         <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; color:#64748b; margin-bottom: 2px;">
                             <span><i class="fas fa-balance-scale" style="color:#3b82f6"></i> CANT (PROPORC)</span>
@@ -259,6 +261,15 @@
                         </div>
                         <div class="bar-bg"><div id="c-bar-cant" class="bar-fill" style="background:#3b82f6;"></div></div>
                     </div>
+
+                    <div style="margin-top:15px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; color:#64748b; margin-bottom: 2px;">
+                            <span><i class="fas fa-layer-group" style="color:#8b5cf6"></i> CUMP. CATEGORÍA</span>
+                            <span id="c-val-cat" style="color:#0f172a; font-family:'Rajdhani'; font-size:1.1rem;">0%</span>
+                        </div>
+                        <div class="bar-bg"><div id="c-bar-cat" class="bar-fill" style="background:#8b5cf6;"></div></div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -316,7 +327,7 @@
         window.onerror = function(msg) { document.getElementById('loader').style.display='none'; alert("Error interno: " + msg); };
 
         // =========================================================================
-        // URL DE TU NUBE EN GOOGLE
+        // URL DE TU NUBE EN GOOGLE (AUTO-SYNC)
         // =========================================================================
         const CLOUD_API = "https://script.google.com/macros/s/AKfycbywsc6gzJjAKoCga5b1F6y3vqbElhQQB0vWWZmWuw6Ts-0isV74vwRbzZaoKnj2Ohp9/exec"; 
         
@@ -419,12 +430,21 @@
                         if(numRef === 0) numRef = 1; 
 
                         let sumConfRef = 0; let sumConfCant = 0;
+                        let catMap = {}; // Para agrupar los errores por categoría
+
                         res = allEans.map(ean => {
                             let sys = sysMap[ean] || 0; let csv = csvMap[ean] || 0; let diff = csv - sys;
                             let confRefItem = (sys === csv) ? 100 : 0; let confCantItem = 0;
                             if (csv === 0 && sys === 0) { confCantItem = 100; } else if (csv === 0 && sys !== 0) { confCantItem = 0; } else { confCantItem = (sys / csv) * 100; }
                             sumConfRef += confRefItem; sumConfCant += confCantItem;
                             
+                            // Evaluación de Categorías
+                            let itemData = Store.n.find(x => String(Util.get(x,'Artículo')) === ean);
+                            let cat = itemData ? (Util.get(itemData, 'Sublinea') || 'OTRO') : 'OTRO';
+                            if (!catMap[cat]) catMap[cat] = { total: 0, err: 0 };
+                            catMap[cat].total++;
+                            if (diff !== 0) catMap[cat].err++;
+
                             let aiAnalysis = diff === 0 ? 'OK' : '';
                             if (diff > 0) aiAnalysis = "SOBRANTE - Posible cruce en piso o venta sin descargar";
                             if (diff < 0) aiAnalysis = "FALTANTE - Revisar Bodega o Traslados pendientes";
@@ -432,11 +452,20 @@
                             return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'Diagnóstico AI': aiAnalysis, 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
                         });
 
-                        let avgConfRef = (sumConfRef / numRef).toFixed(1); let avgConfCant = (sumConfCant / numRef).toFixed(1);
+                        let avgConfRef = (sumConfRef / numRef); let avgConfCant = (sumConfCant / numRef);
+
+                        // Cálculo del % de cumplimiento por categorías
+                        let totalCats = Object.keys(catMap).length || 1;
+                        let perfectCats = Object.values(catMap).filter(c => c.err === 0).length;
+                        let avgConfCat = (perfectCats / totalCats) * 100;
 
                         Store.view = res; Store.full = res; UI.draw(res);
                         let errCount = res.filter(x => x.Diferencia !== 0).length;
-                        UI.kpi(res.length, Store.tot, errCount, avgConfRef, avgConfCant); UI.chart(Store.tot, errCount);
+                        
+                        // Enviamos los 3 indicadores al panel
+                        UI.kpi(res.length, Store.tot, errCount, avgConfRef, avgConfCant, avgConfCat); 
+                        UI.chart(Store.tot, errCount);
+                        
                         document.getElementById('loader').style.display='none'; UI.toast(`Auditoría ${type} finalizada`, 1);
                     } catch(e) { document.getElementById('loader').style.display='none'; alert("Error: " + e); }
                 }, 100);
@@ -536,7 +565,7 @@
                         Store.view=res; Store.full=res; UI.draw(res);
                         let err = op.startsWith('toma') ? res.filter(x=>x.Diferencia!==0).length : res.length;
                         
-                        UI.kpi(res.length, Store.tot, err, null, null);
+                        UI.kpi(res.length, Store.tot, err, null, null, null);
                         UI.chart(Store.tot, err);
                         document.getElementById('loader').style.display='none';
                         UI.toast("Análisis finalizado",1);
@@ -571,13 +600,11 @@
 
         const Sys = { 
             login: () => {
-                // Súper flexible: convierte a minúsculas, quita espacios al inicio/fin, y reduce dobles espacios a uno solo.
                 let u = document.getElementById('usr').value.trim().toLowerCase().replace(/\s+/g, ' ');
                 let p = document.getElementById('pwd').value;
-                
                 if(u === 'alkosto cali norte' && p === 'Alkosto01.') {
                     document.getElementById('login-screen').style.display = 'none';
-                    localStorage.setItem('siga_auth_v29', 'true'); // Memoria fuerte
+                    localStorage.setItem('siga_auth_v29', 'true');
                     UI.toast("Bienvenido al sistema", 1);
                     Sys.cloudDownload(); 
                 } else { UI.toast("Credenciales incorrectas", 0); }
@@ -617,6 +644,7 @@
                 } finally { document.getElementById('loader').style.display='none'; }
             },
 
+            // --- BLOQUE DE SUBIDA ACTUALIZADO A PRUEBA DE FALLOS Y REDIRECCIONES ---
             cloudUpload: async () => {
                 if(!CLOUD_API) return UI.toast("Falta configurar la URL CLOUD_API", 0);
                 if(!Store.n.length) return UI.toast("Debe cargar archivos manualmente antes de subir", 0);
@@ -625,21 +653,28 @@
                 document.getElementById('loader-txt').innerText='SUBIENDO ARCHIVOS A LA NUBE...';
 
                 try {
-                    let payload = { r: Store.r, n: Store.n, v: Store.v, p: Store.p, tr: Store.tr };
+                    let payload = JSON.stringify({ r: Store.r, n: Store.n, v: Store.v, p: Store.p, tr: Store.tr });
                     
                     let res = await fetch(CLOUD_API, {
                         method: 'POST',
-                        body: JSON.stringify(payload),
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' } 
+                        body: payload,
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        redirect: 'follow'
                     });
 
-                    let outcome = await res.json();
-
-                    if(outcome.status === "success") { UI.toast("Datos guardados en la Nube", 1); } 
-                    else { throw new Error(outcome.message); }
+                    let text = await res.text();
+                    
+                    try {
+                        let outcome = JSON.parse(text);
+                        if(outcome.status === "success") { UI.toast("Datos guardados en la Nube", 1); } 
+                        else { throw new Error(outcome.message); }
+                    } catch (err) {
+                        console.error("Respuesta de Google:", text);
+                        throw new Error("La nube rechazó la subida. Verifica los permisos de Drive.");
+                    }
                 } catch (e) {
                     UI.toast("Error al subir a la Nube", 0);
-                    console.error(e);
+                    console.error("Fallo de conexión:", e);
                 } finally { document.getElementById('loader').style.display='none'; }
             }
         };
@@ -649,20 +684,38 @@
             led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
             modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
             
-            kpi: (v, t, e, confRef, confCant) => { 
+            // --- ACTUALIZADO: kpi AHORA RECIBE confCat COMO SEXTO PARÁMETRO ---
+            kpi: (v, t, e, confRef, confCant, confCat) => { 
                 document.getElementById('k-view').innerText=v; document.getElementById('k-tot').innerText=t; document.getElementById('k-err').innerText=e || 0;
                 let ok = t - (e || 0); let acc = t > 0 ? ((ok / t) * 100).toFixed(1) : 0;
-                let valRef = document.getElementById('c-val-ref'); let barRef = document.getElementById('c-bar-ref'); let valCant = document.getElementById('c-val-cant'); let barCant = document.getElementById('c-bar-cant'); let headCump = document.getElementById('k-cump-head');
+                
+                let valRef = document.getElementById('c-val-ref'); let barRef = document.getElementById('c-bar-ref'); 
+                let valCant = document.getElementById('c-val-cant'); let barCant = document.getElementById('c-bar-cant'); 
+                let valCat = document.getElementById('c-val-cat'); let barCat = document.getElementById('c-bar-cat');
+                let headCump = document.getElementById('k-cump-head');
 
-                if (confRef !== null && confCant !== null) {
-                    valRef.innerText = `${confRef}%`; barRef.style.width = `${Math.min(confRef, 100)}%`; valCant.innerText = `${confCant}%`; barCant.style.width = `${Math.min(confCant, 100)}%`; headCump.innerText = `${confRef}%`; 
-                    valRef.style.color = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444'); barRef.style.background = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444');
-                    valCant.style.color = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444'); barCant.style.background = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444');
-                    headCump.style.color = valRef.style.color;
+                if (confRef !== null && confCant !== null && confCat !== null) {
+                    // Ref
+                    valRef.innerText = `${confRef.toFixed(1)}%`; barRef.style.width = `${Math.min(confRef, 100)}%`; 
+                    valRef.style.color = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444'); 
+                    barRef.style.background = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444');
+                    // Cant
+                    valCant.innerText = `${confCant.toFixed(1)}%`; barCant.style.width = `${Math.min(confCant, 100)}%`; 
+                    valCant.style.color = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444'); 
+                    barCant.style.background = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444');
+                    // Categorías
+                    valCat.innerText = `${confCat.toFixed(1)}%`; barCat.style.width = `${Math.min(confCat, 100)}%`;
+                    valCat.style.color = confCat >= 95 ? '#8b5cf6' : (confCat >= 80 ? '#f59e0b' : '#ef4444'); 
+                    barCat.style.background = confCat >= 95 ? '#8b5cf6' : (confCat >= 80 ? '#f59e0b' : '#ef4444');
+                    
+                    headCump.innerText = `${confRef.toFixed(1)}%`; headCump.style.color = valRef.style.color;
                 } else {
-                    valRef.innerText = `${acc}%`; barRef.style.width = `${acc}%`; valCant.innerText = `N/A`; barCant.style.width = `0%`; headCump.innerText = `${acc}%`;
+                    valRef.innerText = `${acc}%`; barRef.style.width = `${acc}%`; headCump.innerText = `${acc}%`;
                     let col = acc >= 98 ? '#10b981' : (acc >= 90 ? '#f59e0b' : '#ef4444');
-                    valRef.style.color = col; barRef.style.background = col; headCump.style.color = col; valCant.style.color = '#94a3b8'; barCant.style.background = '#e2e8f0';
+                    valRef.style.color = col; barRef.style.background = col; headCump.style.color = col; 
+                    
+                    valCant.innerText = `N/A`; barCant.style.width = `0%`; valCant.style.color = '#94a3b8'; barCant.style.background = '#e2e8f0';
+                    if(valCat) { valCat.innerText = `N/A`; barCat.style.width = `0%`; valCat.style.color = '#94a3b8'; barCat.style.background = '#e2e8f0'; }
                 }
             },
 
