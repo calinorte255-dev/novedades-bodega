@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Bodega Digital | v29.6 Auto-Cloud</title>
+    <title>Bodega Digital | v29.7 Auto-Cloud</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
 
     <style>
         /* ==========================================================================
-           DISEÑO COMPACT PRO v29.6
+           DISEÑO COMPACT PRO v29.7
            ========================================================================== */
         :root { --primary: #e30613; --primary-dark: #b91c1c; --secondary: #f9a825; --bg-dark: #1e293b; --bg-light: #f8fafc; --text-main: #334155; --border: 1px solid #e2e8f0; --shadow: 0 2px 4px rgba(0,0,0,0.05); }
         * { box-sizing: border-box; outline: none; user-select: none; }
@@ -150,31 +150,31 @@
                 <div style="width:90%"><div class="f-name">CK_IN_UBICAC_RESTRINGIDAS</div><div class="f-status" id="l-r">Pendiente</div></div>
                 <div class="led" id="led-r"></div>
             </label>
-            <input type="file" id="f-restr" accept=".xlsx">
+            <input type="file" id="f-restr" accept=".xlsx, .xls, .csv">
 
             <label class="file-row" for="f-norestr">
                 <div style="width:90%"><div class="f-name">CK_IN_UBICAC_NO_RESTRINGIDAS</div><div class="f-status" id="l-n">Pendiente</div></div>
                 <div class="led" id="led-n"></div>
             </label>
-            <input type="file" id="f-norestr" accept=".xlsx">
+            <input type="file" id="f-norestr" accept=".xlsx, .xls, .csv">
 
             <label class="file-row" for="f-ver">
                 <div style="width:90%"><div class="f-name">VER_INVENTARIO</div><div class="f-status" id="l-v">Pendiente</div></div>
                 <div class="led" id="led-v"></div>
             </label>
-            <input type="file" id="f-ver" accept=".xlsx">
+            <input type="file" id="f-ver" accept=".xlsx, .xls, .csv">
 
             <label class="file-row" for="f-tras">
                 <div style="width:90%"><div class="f-name">CK_GL_IN_TRASLADOS_POR_RECIBIR</div><div class="f-status" id="l-tr">Pendiente</div></div>
                 <div class="led" id="led-tr"></div>
             </label>
-            <input type="file" id="f-tras" accept=".xlsx">
+            <input type="file" id="f-tras" accept=".xlsx, .xls, .csv">
 
             <label class="file-row" for="f-port">
                 <div style="width:90%"><div class="f-name">CK_IN_PORTAFOLIO</div><div class="f-status" id="l-p">Pendiente</div></div>
                 <div class="led" id="led-p"></div>
             </label>
-            <input type="file" id="f-port" accept=".xlsx">
+            <input type="file" id="f-port" accept=".xlsx, .xls, .csv">
 
             <div class="section-title"><i class="fas fa-calculator"></i> OPERACIONES</div>
             
@@ -206,7 +206,7 @@
         <header class="header">
             <div class="header-title">
                 <h2>BODEGA DIGITAL</h2>
-                <span>COMPACT PRO v29.6 - AUTO CLOUD SYNC</span>
+                <span>COMPACT PRO v29.7 - AUTO CLOUD SYNC</span>
             </div>
             <div class="kpi">
                 <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
@@ -327,9 +327,6 @@
     <script>
         window.onerror = function(msg) { document.getElementById('loader').style.display='none'; alert("Error interno: " + msg); };
 
-        // =========================================================================
-        // URL DE TU NUBE EN GOOGLE (AUTO-SYNC)
-        // =========================================================================
         const CLOUD_API = "https://script.google.com/macros/s/AKfycbywsc6gzJjAKoCga5b1F6y3vqbElhQQB0vWWZmWuw6Ts-0isV74vwRbzZaoKnj2Ohp9/exec"; 
         
         const DB_NAME="Siga_V29_AutoCloud", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
@@ -344,7 +341,6 @@
 
         const Core = {
             init: async () => {
-                // 1. ACTIVAR BOTONES DE ARCHIVO INMEDIATAMENTE (Modo Blindado)
                 const inputs={'r':'f-restr','n':'f-norestr','v':'f-ver','p':'f-port','t':'f-toma','tr':'f-tras'};
                 Object.keys(inputs).forEach(k => { 
                     const el = document.getElementById(inputs[k]); 
@@ -353,7 +349,6 @@
 
                 Sys.checkAuth();
                 
-                // 2. INTENTAR CARGAR MEMORIA LOCAL SIN QUE BLOQUEE EL RESTO
                 try {
                     await DB.init(); 
                     for (const k of ['r','n','v','p','tr']) {
@@ -363,7 +358,6 @@
                     console.warn("Memoria local corrupta. Los botones siguen funcionando.", e); 
                 }
                 
-                // 3. DESCARGAR NUBE O QUITAR EL LOADER
                 if(localStorage.getItem('siga_auth_v29') === 'true') {
                     Sys.cloudDownload(); 
                 } else {
@@ -389,13 +383,14 @@
                                 return null;
                             }).filter(x => x);
                         } else {
-                            let wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+                            // MOTOR TURBO: Ignora formatos, colores y fórmulas para no ahogar la memoria
+                            let wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array', cellFormula: false, cellHTML: false, cellStyles: false});
                             d=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
                         }
                         
                         Store[k]=d; 
                         if(k!=='t') {
-                            try { DB.save(k,d); } catch(er) { console.warn("No se pudo guardar en memoria local, pero se cargó en RAM"); }
+                            try { DB.save(k,d); } catch(er) { console.warn("Archivo muy grande para guardar en disco local, pero se cargó en RAM"); }
                         }
                         
                         UI.led(k); if(k==='n') Core.calc();
@@ -611,7 +606,6 @@
         };
 
         const Sys = { 
-            // NUEVO: BOTÓN DE EMERGENCIA PARA LIMPIAR MEMORIA
             hardReset: () => {
                 if(confirm("🛠️ ¿Deseas limpiar y reparar toda la memoria de la aplicación?\n\nUsa esto si los archivos no te quieren cargar. Tu sesión se cerrará y la memoria se reiniciará para arreglar cualquier error.")) {
                     localStorage.clear();
@@ -652,7 +646,7 @@
                     ['r','n','v','p','tr'].forEach(k => {
                         if(data[k] && data[k].length > 0) {
                             Store[k] = data[k];
-                            try { DB.save(k, data[k]); } catch(e){} // No bloquea si falla
+                            try { DB.save(k, data[k]); } catch(e){} 
                             UI.led(k);
                             let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
                             if(statusId) { document.getElementById(statusId).innerText="✅ Nube"; document.getElementById(statusId).style.color="#0ea5e9"; }
@@ -673,7 +667,6 @@
                 document.getElementById('loader-txt').innerText='SUBIENDO ARCHIVOS A LA NUBE...';
 
                 try {
-                    // Si falla por tamaño, aquí lo captura limpiamente
                     let payload = JSON.stringify({ r: Store.r, n: Store.n, v: Store.v, p: Store.p, tr: Store.tr });
                     
                     let res = await fetch(CLOUD_API, {
@@ -715,15 +708,14 @@
                 let headCump = document.getElementById('k-cump-head');
 
                 if (confRef !== null && confCant !== null && confCat !== null) {
-                    // Ref
                     valRef.innerText = `${confRef.toFixed(1)}%`; barRef.style.width = `${Math.min(confRef, 100)}%`; 
                     valRef.style.color = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444'); 
                     barRef.style.background = confRef >= 95 ? '#10b981' : (confRef >= 80 ? '#f59e0b' : '#ef4444');
-                    // Cant
+
                     valCant.innerText = `${confCant.toFixed(1)}%`; barCant.style.width = `${Math.min(confCant, 100)}%`; 
                     valCant.style.color = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444'); 
                     barCant.style.background = confCant >= 95 ? '#3b82f6' : (confCant >= 80 ? '#f59e0b' : '#ef4444');
-                    // Categorías
+
                     valCat.innerText = `${confCat.toFixed(1)}%`; barCat.style.width = `${Math.min(confCat, 100)}%`;
                     valCat.style.color = confCat >= 95 ? '#8b5cf6' : (confCat >= 80 ? '#f59e0b' : '#ef4444'); 
                     barCat.style.background = confCat >= 95 ? '#8b5cf6' : (confCat >= 80 ? '#f59e0b' : '#ef4444');
