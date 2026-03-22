@@ -261,6 +261,8 @@
                 <div class="k-box"><span class="k-lbl" style="color:#ef4444">ERRORES</span><span id="k-err" class="k-val" style="color:#ef4444">0</span></div>
                 <div class="k-box"><span class="k-lbl">DIGI1</span><span id="k-tot" class="k-val" style="color:#0ea5e9">0</span></div>
                 <div class="k-box"><span class="k-lbl">% CUMP.</span><span id="k-cump-head" class="k-val">0%</span></div>
+                <div class="k-box" id="box-confi-ref" style="display:none;"><span class="k-lbl" style="color:#8b5cf6">CONFI REF</span><span id="k-confi-ref" class="k-val" style="color:#8b5cf6">0%</span></div>
+                <div class="k-box" id="box-confi-inv" style="display:none;"><span class="k-lbl" style="color:#10b981">CONFI INV</span><span id="k-confi-inv" class="k-val" style="color:#10b981">0%</span></div>
             </div>
         </header>
 
@@ -359,7 +361,7 @@
                         <div class="col-f" style="color:#64748b;">UBICACIONES ENCONTRADAS</div>
                     </div>
                     <div class="col">
-                        <div class="col-h"><i class="fas fa-box-open" style="color:#059669"></i> SISTEMA PISO (DIGI1)</div>
+                        <div class="col-h"><i class="fas fa-box-open" style="color:#059669"></i> SISTEMA JDA (DIGI1)</div>
                         <div id="d360-nr" class="col-l"></div>
                         <div class="col-f">Total: <span id="d360-nr-t" style="color:#059669;">0</span></div>
                     </div>
@@ -435,9 +437,7 @@
                 } catch(e) { console.error("Error init", e); }
             },
             
-            // --- NUEVA FUNCIÓN PARA DESCARGAR DATOS DEL SERVIDOR AUTOMÁTICAMENTE ---
             fetchServerData: async () => {
-                // Definimos las rutas de los archivos en el servidor (dentro de una carpeta "datos")
                 const filesMap = {
                     'r': 'datos/restringidas.xlsx',
                     'n': 'datos/norestringidas.xlsx',
@@ -522,42 +522,122 @@
 
             generarReporteIA: (ean, descrip) => {
                 let r = Store.view.find(x => String(x.EAN) === String(ean));
-                let msgText = `<strong>Análisis Activo:</strong> ${descrip}.<br><br>`;
-                let msgVoz = `El producto, ${descrip}. `;
+                let sysRows = Store.n.filter(x => String(Util.get(x,'Artículo')) === ean);
+                let physRows = Store.v.filter(x => String(Util.get(x,'Producto')) === ean);
+                let restrRows = Store.r.filter(x => String(Util.get(x,'Artículo')) === ean);
+                let traslados = Store.tr.filter(x => String(Util.get(x,'Artículo')).trim() === ean);
+                let portafolio = Store.p.find(x => String(Util.get(x,'Artículo','EAN')) === ean);
 
-                let qtyNovedad = 0;
+                // Variables de estado dinámicas
+                let cantDigi = 0, cantAlmac = 0, cantToma = null, dif = 0;
+                
                 if (r) {
-                    if (r['Diferencia'] !== undefined && r['Diferencia'] !== 0) qtyNovedad = Math.abs(r['Diferencia']);
-                    else if (r['Cant DIGI1'] !== undefined && r['Cant DIGI1'] < 0) qtyNovedad = Math.abs(r['Cant DIGI1']);
-                    else if (r['Cant DIGI1'] !== undefined && r['Cant ALMAC'] === 0) qtyNovedad = Math.abs(r['Cant DIGI1']);
-                    else if (r['Stock ALMAC'] !== undefined) qtyNovedad = Math.abs(r['Stock ALMAC']);
-                    else qtyNovedad = Math.abs(r['Cant DIGI1'] || r['Cant Toma'] || 1);
+                    cantDigi = parseFloat(r['Cant DIGI1']) || 0;
+                    if(r['Cant Toma'] !== undefined) cantToma = parseFloat(r['Cant Toma']);
+                    if(r['Cant ALMAC'] !== undefined) cantAlmac = parseFloat(r['Cant ALMAC']);
+                    if(r['Diferencia'] !== undefined) dif = parseFloat(r['Diferencia']);
+                    else if(r['Stock ALMAC'] !== undefined) dif = parseFloat(r['Stock ALMAC']) * -1;
+                } else {
+                    sysRows.forEach(row => {
+                        let u = String(Util.get(row, 'Ubicación')).trim().toUpperCase();
+                        let q = parseFloat(Util.get(row, 'Cant Base')) || 0;
+                        if(u === 'DIGI1') cantDigi += q;
+                        if(u === 'ALMAC') cantAlmac += q;
+                    });
                 }
 
-                let traslados = Store.tr.filter(x => String(Util.get(x,'Artículo')).trim() === ean);
-                let matchRealizado = false; let trasTarget = null;
-
-                if (traslados.length > 0) {
-                    for (let t of traslados) {
-                        let cantTraslado = Math.abs(parseFloat(Util.get(t, 'Cantidad', 'Cant', 'Recibido')) || 0);
-                        if (cantTraslado === qtyNovedad && qtyNovedad > 0) { matchRealizado = true; trasTarget = t; break; }
+                // Validación de Flag Exhibición
+                let flagExhibicion = false;
+                if (portafolio) {
+                    let rawFlag = Util.get(portafolio, 'Flag Exhibicion', 'Flag_Exhibicion', 'FLAG EXHIBICION');
+                    if (rawFlag !== undefined) {
+                        let val = String(rawFlag).trim().toUpperCase();
+                        if (val === 'Y' || val === 'S' || val.startsWith('Y') || val.startsWith('S')) flagExhibicion = true;
                     }
                 }
 
-                if (matchRealizado && trasTarget) {
-                    let idIntUni = Util.get(trasTarget, 'ID IntUni') || 'Indeterminado';
-                    let fTrns = Util.get(trasTarget, 'F Trns') || 'Sin fecha';
-                    let nNotaRecep = Util.get(trasTarget, 'Nº Nota Recep') || 'Sin nota';
-                    
-                    if(typeof fTrns === 'number') fTrns = new Date((fTrns - 25569) * 86400 * 1000).toLocaleDateString('es-CO');
-                    else if (fTrns !== 'Sin fecha') fTrns = String(fTrns).split(' ')[0];
+                let cantExhibicion = 0;
+                sysRows.forEach(row => {
+                    let u = String(Util.get(row, 'Ubicación')).trim().toUpperCase();
+                    if (u === 'EXHIB' || u === 'EXDIS') cantExhibicion += (parseFloat(Util.get(row, 'Cant Base')) || 0);
+                });
+                restrRows.forEach(row => {
+                    let u = String(Util.get(row, 'Ubicación')).trim().toUpperCase();
+                    if (u === 'EXHIB' || u === 'EXDIS') cantExhibicion += (parseFloat(Util.get(row, 'Cant Base')) || 0);
+                });
 
-                    let reporteCoincide = `El sistema ha detectado una coincidencia exacta con un traslado registrado. La cantidad de ${qtyNovedad} unidades comprometidas en la novedad corresponde al Traslado número ${idIntUni}, gestionado en la fecha ${fTrns}, y finalizado bajo el número de Recepción ${nNotaRecep}. Esto confirma que el inventario fue recepcionado correctamente, pero requiere ser validado y ubicado físicamente para cerrar la desviación de manera efectiva en la Bodega Digital.`;
-                    msgText += reporteCoincide; msgVoz += reporteCoincide;
-                } else {
-                    let reporteFallo = `Tras el cruce analítico, no se detectan coincidencias en cantidades con traslados recientes. Por lo tanto, se determina que es un movimiento de salida de Bodega Digital no registrado en la base de datos de los movimientos bin a bin del día anterior. Validar y realizar movimiento para actualizar nuestro inventario en la bodega digital.`;
-                    msgText += reporteFallo; msgVoz += reporteFallo;
+                let alertaExhibicionFalta = (flagExhibicion && cantExhibicion <= 0);
+
+                let isNegativo = cantDigi < 0;
+                let isFaltante = (cantToma !== null && cantToma < cantDigi);
+                let isSobrante = (cantToma !== null && cantToma > cantDigi);
+
+                // Construcción del reporte estructurado
+                let titulo = "Diagnóstico Integral";
+                let hipotesis = "";
+                let accion = "";
+
+                // Análisis predictivo de variables
+                let qtyNovedad = Math.abs(dif !== 0 ? dif : (cantDigi < 0 ? cantDigi : 0));
+                let trasladoMatch = traslados.find(t => Math.abs(parseFloat(Util.get(t, 'Cantidad', 'Cant', 'Recibido')) || 0) === qtyNovedad);
+                let cantRestringida = restrRows.reduce((acc, row) => acc + (parseFloat(Util.get(row, 'Cant Base')) || 0), 0);
+
+                if (isNegativo) {
+                    titulo = "ALERTA: INVENTARIO NEGATIVO";
+                    if (trasladoMatch) {
+                        hipotesis = `El saldo negativo de ${cantDigi} en JDA coincide exactamente con un traslado pendiente (Nota: ${Util.get(trasladoMatch, 'Nº Nota Recep') || 'N/A'}, Fecha: ${Util.get(trasladoMatch, 'F Trns') || 'N/A'}). Esto ocurre por ventas de mercancía que ingresó físicamente pero sin entrada en el sistema.`;
+                        accion = "Confirmar la recepción del traslado en el ERP. El negativo se nivelará automáticamente a 0.";
+                    } else if (cantAlmac > 0) {
+                        hipotesis = `Existe un saldo negativo en JDA (DIGI1) de ${cantDigi}, pero la base reporta un saldo a favor de ${cantAlmac} en el Almacén principal. Falla de movimiento interno.`;
+                        accion = `Ejecutar movimiento Bin a Bin trasladando ${Math.abs(cantDigi)} unidades desde ALMAC hacia DIGI1.`;
+                    } else {
+                        hipotesis = `No se detectan traslados por recibir ni saldos de respaldo en Almacén para este negativo. Sugiere fuertemente un error de facturación por cruce de códigos en caja o avería no descargada.`;
+                        accion = "Auditar el kárdex del día anterior e investigar posibles cruces de referencias con productos similares de la misma sublínea.";
+                    }
+                } 
+                else if (isFaltante) {
+                    titulo = "INVESTIGACIÓN: FALTANTE FÍSICO";
+                    let faltan = cantDigi - cantToma;
+                    if (cantRestringida >= faltan) {
+                        hipotesis = `Faltan ${faltan} unidades en JDA, pero el sistema localiza ${cantRestringida} unidades en zonas restringidas. La mercancía no está perdida, falta bajarla para nivelar.`;
+                        accion = "Ubicar la mercancía físicamente en las posiciones de JDA y realizar el movimiento de bajada a DIGI1.";
+                    } else if (portafolio && String(Util.get(portafolio, 'Flag Exhibicion')).toUpperCase().startsWith('N')) {
+                        hipotesis = `Faltan ${faltan} unidades. Atención: El portafolio indica que este producto NO debería tener presencia en exhibición.`;
+                        accion = "Retirar cualquier saldo restante de DIGI1 en el sistema y reubicarlo lógicamente en el inventario de ALMAC.";
+                    } else {
+                        hipotesis = `Déficit de ${faltan} unidades en JDA sin respaldo lógico en bodega ni en traslados recientes. Existe un alto riesgo de novedad real (pérdida o robo).`;
+                        accion = "Generar reporte de novedad inmediata y ejecutar conteo cíclico al 100% de la referencia y sus agregados físicos.";
+                    }
                 }
+                else if (isSobrante) {
+                    titulo = "INVESTIGACIÓN: SOBRANTE FÍSICO";
+                    let sobran = cantToma - cantDigi;
+                    if (trasladoMatch) {
+                         hipotesis = `Exceso físico de ${sobran} unidades en JDA. Existe un traslado por la misma cantidad que probablemente ya fue surtido físicamente por el personal, pero sigue en tránsito lógico.`;
+                         accion = "Confirmar recepción del traslado pendiente en el JDA/ERP para que el saldo del sistema alcance al físico.";
+                    } else {
+                         hipotesis = `Se identificaron ${sobran} unidades de más. Posible mercancía de ALMAC mezclada indebidamente en JDA o una devolución de cliente no ingresada correctamente al sistema.`;
+                         accion = "Verificar bitácora de devoluciones del día o ejecutar traslado correctivo de DIGI1 hacia ALMAC si la mercancía no pertenece a exhibición.";
+                    }
+                } else {
+                    titulo = "NIVELACIÓN CONFIRMADA";
+                    hipotesis = "Los saldos lógicos y físicos de la toma concuerdan perfectamente. No se detectan anomalías de ubicaciones cruzadas ni inventarios negativos ocultos en JDA.";
+                    accion = "Ninguna acción técnica requerida. Continuar con el monitoreo estándar.";
+                }
+
+                // Inyección de alerta de exhibición
+                if (alertaExhibicionFalta) {
+                    hipotesis += `<br><br><strong style="color:#e30613;"><i class="fas fa-exclamation-triangle"></i> REGLA DE PORTAFOLIO INCUMPLIDA:</strong> El producto debe estar exhibido (Flag Y), pero no registra saldo en EXHIB ni EXDIS.`;
+                    accion += ` <strong style="color:#10b981;">Además, se debe SURTIR o enviar a EXDIS inmediatamente.</strong>`;
+                }
+
+                // Generación de la vista y la voz
+                let msgText = `<strong style="color:var(--primary); font-size:1.05rem; letter-spacing:0.5px;"><i class="fas fa-microchip"></i> ${titulo}</strong><br><br>
+                               <span style="color:#334155; font-size:0.9rem;"><strong>Hipótesis Fundamental:</strong> ${hipotesis}</span><br><br>
+                               <span style="color:var(--ai-color); font-size:0.9rem;"><strong><i class="fas fa-check-circle"></i> Acción Recomendada:</strong> ${accion}</span>`;
+                
+                let msgVoz = `${titulo}. ${hipotesis.replace(/<[^>]*>?/gm, '')} Acción recomendada: ${accion.replace(/<[^>]*>?/gm, '')}`;
+
                 return { text: msgText, voz: msgVoz };
             },
 
@@ -571,12 +651,24 @@
                         Store.n.forEach(r => { if(h(r,'Ubicación')==='DIGI1') { let e = String(h(r,'Artículo')); sysMap[e] = (sysMap[e]||0) + parseFloat(h(r,'Cant Base')||0); } });
                         let csvMap = {}; Store.t.forEach(r => { let e = String(r.EAN); csvMap[e] = (csvMap[e]||0) + r.Cant; });
                         let allEans = (type === 'Selectivo') ? Object.keys(csvMap) : [...new Set([...Object.keys(sysMap), ...Object.keys(csvMap)])];
+                        
                         res = allEans.map(ean => {
                             let sys = sysMap[ean] || 0; let csv = csvMap[ean] || 0; let diff = csv - sys;
-                            return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
+                            let confRef = (sys === csv) ? "100%" : "0%";
+                            let confInv = sys === 0 ? (csv === 0 ? "100%" : "0%") : ((csv / sys) * 100).toFixed(1) + "%";
+                            return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'Conf. Ref': confRef, 'Conf. Inv': confInv, 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
                         });
                         Store.view = res; Store.full = res; UI.draw(res);
-                        let errCount = res.filter(x => x.Diferencia !== 0).length; UI.kpi(res.length, Store.tot, errCount); UI.chart(Store.tot, errCount);
+                        let errCount = res.filter(x => x.Diferencia !== 0).length;
+                        
+                        let exactMatches = res.filter(x => x.Diferencia === 0).length;
+                        let globalConfRef = res.length > 0 ? ((exactMatches / res.length) * 100).toFixed(1) : 0;
+                        let sumToma = res.reduce((sum, x) => sum + x['Cant Toma'], 0);
+                        let sumSys = res.reduce((sum, x) => sum + x['Cant DIGI1'], 0);
+                        let globalConfInv = sumSys === 0 ? (sumToma === 0 ? 100 : 0) : ((sumToma / sumSys) * 100).toFixed(1);
+
+                        UI.kpi(res.length, Store.tot, errCount, globalConfRef, globalConfInv);
+                        UI.chart(Store.tot, errCount);
                         document.getElementById('loader').style.display='none'; UI.toast(`Análisis ${type} finalizado`, 1);
                     } catch(e) { document.getElementById('loader').style.display='none'; alert("Error: " + e); }
                 }, 100);
@@ -597,7 +689,7 @@
                                         let isNegative = qty < 0; let hasExcludedLoc = locs.some(l => { let u = l.trim().toUpperCase(); return u.startsWith('E') || Cfg.despa.includes(u); });
                                         if(!hasExcludedLoc) {
                                             let hasValidPiso = locs.some(l => !l.includes('BODEGA') && !l.includes('ALTOS'));
-                                            if(isNegative || !hasValidPiso) { res.push({ 'EAN': ean, 'Descripción': h(r,'Descr'), 'Cant DIGI1': qty, 'Ubic Físicas': locs.join(', '), 'Problema': isNegative ? "NEGATIVO REAL" : "FÍSICO EN BODEGA" }); }
+                                            if(isNegative || !hasValidPiso) { res.push({ 'EAN': ean, 'Descripción': h(r,'Descr'), 'Cant DIGI1': qty, 'Ubic Físicas': locs.join(', '), 'Problema': isNegative ? "NEGATIVO REAL" : "FÍSICO EN JDA" }); }
                                         }
                                     }
                                 }
@@ -607,7 +699,7 @@
                             let am={}; Store.n.forEach(r=>{ let u=h(r,'Ubicación'), e=String(h(r,'Artículo')), c=parseFloat(h(r,'Cant Base'))||0; if(u==='ALMAC') am[e]=c; });
                             res = Store.n.filter(r => h(r,'Ubicación')==='DIGI1' && parseFloat(h(r,'Cant Base'))<0).map(r => {
                                 let e=String(h(r,'Artículo')), di=parseFloat(h(r,'Cant Base'))||0, al=am[e]||0;
-                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': di, 'Cant ALMAC': al, 'Acción': al>0 ? 'MOVER A PISO':'NOVEDAD' };
+                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': di, 'Cant ALMAC': al, 'Acción': al>0 ? 'MOVER A JDA':'NOVEDAD' };
                             });
                         }
                         else if(op.startsWith('almac')){
@@ -645,7 +737,7 @@
                                     let catFiltro = ["DRONES", "CELULAR", "PORTATIL", "TABLET", "DEPORTES", "PROYECTORES", "CONSOLAS"].map(norm);
                                     if (catFiltro.some(c => cat.includes(c))) return true;
                                     return !exc.some(e=>cat.includes(e));
-                                }).map(i=>({EAN:i.e, Descripción:i.d, 'Cant DIGI1':i.di, 'Cant ALMAC':0, Estado:'SOLO PISO'}));
+                                }).map(i=>({EAN:i.e, Descripción:i.d, 'Cant DIGI1':i.di, 'Cant ALMAC':0, Estado:'SOLO JDA'}));
                             }
                             else if(op==='almac_neg') res=arr.filter(i=>i.di>0 && i.al<0).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Estado:'NOVEDAD'}));
                             else if(op==='almac_sum0') res=arr.filter(i=>(i.di+i.al)===0 && !(i.di===0&&i.al===0)).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Suma:0}));
@@ -657,7 +749,7 @@
                         else if(op==='nivelar'){
                             let ds=new Set(); Store.v.forEach(r=>{if(Cfg.despa.includes(h(r,'Ubicacion'))) ds.add(String(h(r,'Producto')))});
                             let m={}; Store.n.forEach(r=>{ let e=String(h(r,'Artículo')); if(!m[e])m[e]={e,d:h(r,'Descr')||"",s:h(r,'Sublinea')||"",f:0,b:0}; let u=h(r,'Ubicación'),q=parseFloat(h(r,'Cant Base'))||0; if(u==='DIGI1'||u==='EXHIB')m[e].f+=q; if(u==='ALMAC')m[e].b+=q; });
-                            res=Object.values(m).filter(i=>{ if(ds.has(i.e)||i.b<=0||(i.f===0&&i.b===0))return false; let ok=Cfg.niv.some(c=>i.s.includes(c)), na=!i.s.toLowerCase().includes("accesorio"), no=!i.d.toUpperCase().includes("AIO"); return ok&&na&&no; }).map(i=>({EAN:i.e,Descripción:i.d,'Suma PISO':i.f,'Stock ALMAC':i.b,Acción:'MOVER A PISO'}));
+                            res=Object.values(m).filter(i=>{ if(ds.has(i.e)||i.b<=0||(i.f===0&&i.b===0))return false; let ok=Cfg.niv.some(c=>i.s.includes(c)), na=!i.s.toLowerCase().includes("accesorio"), no=!i.d.toUpperCase().includes("AIO"); return ok&&na&&no; }).map(i=>({EAN:i.e,Descripción:i.d,'Suma JDA':i.f,'Stock ALMAC':i.b,Acción:'MOVER A JDA'}));
                         }
                         
                         Store.view=res; Store.full=res; UI.draw(res);
@@ -694,7 +786,7 @@
             led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
             modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
             
-            kpi: (v,t,e)=>{ 
+            kpi: (v,t,e, confiRef, confiInv)=>{ 
                 document.getElementById('k-view').innerText=v; document.getElementById('k-tot').innerText=t; document.getElementById('k-err').innerText=e || 0;
                 let bar=document.getElementById('c-bar'), val=document.getElementById('c-val'), txt=document.getElementById('c-txt'), headCump=document.getElementById('k-cump-head');
                 let ok=t-(e||0), acc=t>0?((ok/t)*100).toFixed(1):0;
@@ -702,6 +794,16 @@
                 let col='', statusTxt='';
                 if(acc>=98){ col='#10b981'; statusTxt='Excelente'; } else if(acc>=90){ col='#f59e0b'; statusTxt='Aceptable'; } else { col='#ef4444'; statusTxt='Crítico'; }
                 val.style.color=col; bar.style.background=col; txt.innerText=statusTxt; headCump.style.color=col;
+                
+                let boxRef = document.getElementById('box-confi-ref');
+                let boxInv = document.getElementById('box-confi-inv');
+                if (confiRef !== undefined && confiInv !== undefined) {
+                    if(boxRef) { boxRef.style.display = 'flex'; document.getElementById('k-confi-ref').innerText = confiRef + '%'; }
+                    if(boxInv) { boxInv.style.display = 'flex'; document.getElementById('k-confi-inv').innerText = confiInv + '%'; }
+                } else {
+                    if(boxRef) boxRef.style.display = 'none';
+                    if(boxInv) boxInv.style.display = 'none';
+                }
             },
             draw: (d)=>{
                 let th=document.getElementById('th'), tb=document.getElementById('tb'), em=document.getElementById('empty'), cnt=document.getElementById('lbl-count');
