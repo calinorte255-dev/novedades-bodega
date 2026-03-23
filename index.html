@@ -699,7 +699,8 @@
                             let am={}; Store.n.forEach(r=>{ let u=h(r,'Ubicación'), e=String(h(r,'Artículo')), c=parseFloat(h(r,'Cant Base'))||0; if(u==='ALMAC') am[e]=c; });
                             res = Store.n.filter(r => h(r,'Ubicación')==='DIGI1' && parseFloat(h(r,'Cant Base'))<0).map(r => {
                                 let e=String(h(r,'Artículo')), di=parseFloat(h(r,'Cant Base'))||0, al=am[e]||0;
-                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': di, 'Cant ALMAC': al, 'Acción': al>0 ? 'MOVER A JDA':'NOVEDAD' };
+                                let cantMover = Math.abs(di);
+                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': di, 'Cant ALMAC': al, 'Acción': al>0 ? `MOVER DE ALMAC A DIGI1: ${cantMover}`:'NOVEDAD' };
                             });
                         }
                         else if(op.startsWith('almac')){
@@ -739,7 +740,7 @@
                                     return !exc.some(e=>cat.includes(e));
                                 }).map(i=>({EAN:i.e, Descripción:i.d, 'Cant DIGI1':i.di, 'Cant ALMAC':0, Estado:'SOLO JDA'}));
                             }
-                            else if(op==='almac_neg') res=arr.filter(i=>i.di>0 && i.al<0).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Estado:'NOVEDAD'}));
+                            else if(op==='almac_neg') res=arr.filter(i=>i.di>0 && i.al<0).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Acción:`MOVER DE DIGI1 A ALMAC: ${Math.abs(i.al)}`}));
                             else if(op==='almac_sum0') res=arr.filter(i=>(i.di+i.al)===0 && !(i.di===0&&i.al===0)).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Suma:0}));
                         }
                         else if(op==='prohibido'){
@@ -749,7 +750,7 @@
                         else if(op==='nivelar'){
                             let ds=new Set(); Store.v.forEach(r=>{if(Cfg.despa.includes(h(r,'Ubicacion'))) ds.add(String(h(r,'Producto')))});
                             let m={}; Store.n.forEach(r=>{ let e=String(h(r,'Artículo')); if(!m[e])m[e]={e,d:h(r,'Descr')||"",s:h(r,'Sublinea')||"",f:0,b:0}; let u=h(r,'Ubicación'),q=parseFloat(h(r,'Cant Base'))||0; if(u==='DIGI1'||u==='EXHIB')m[e].f+=q; if(u==='ALMAC')m[e].b+=q; });
-                            res=Object.values(m).filter(i=>{ if(ds.has(i.e)||i.b<=0||(i.f===0&&i.b===0))return false; let ok=Cfg.niv.some(c=>i.s.includes(c)), na=!i.s.toLowerCase().includes("accesorio"), no=!i.d.toUpperCase().includes("AIO"); return ok&&na&&no; }).map(i=>({EAN:i.e,Descripción:i.d,'Suma JDA':i.f,'Stock ALMAC':i.b,Acción:'MOVER A JDA'}));
+                            res=Object.values(m).filter(i=>{ if(ds.has(i.e)||i.b<=0||(i.f===0&&i.b===0))return false; let ok=Cfg.niv.some(c=>i.s.includes(c)), na=!i.s.toLowerCase().includes("accesorio"), no=!i.d.toUpperCase().includes("AIO"); return ok&&na&&no; }).map(i=>({EAN:i.e,Descripción:i.d,'Suma JDA':i.f,'Stock ALMAC':i.b,Acción:'MOVER DE ALMAC A DIGI1'}));
                         }
                         
                         Store.view=res; Store.full=res; UI.draw(res);
