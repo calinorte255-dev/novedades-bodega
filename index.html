@@ -648,29 +648,69 @@
                 setTimeout(() => {
                     try {
                         let res=[], h=Util.get, sysMap = {};
-                        Store.n.forEach(r => { if(h(r,'Ubicación')==='DIGI1') { let e = String(h(r,'Artículo')); sysMap[e] = (sysMap[e]||0) + parseFloat(h(r,'Cant Base')||0); } });
-                        let csvMap = {}; Store.t.forEach(r => { let e = String(r.EAN); csvMap[e] = (csvMap[e]||0) + r.Cant; });
+                        
+                        // Mapear el sistema (DIGI1)
+                        Store.n.forEach(r => { 
+                            if(h(r,'Ubicación')==='DIGI1') { 
+                                let e = String(h(r,'Artículo')); 
+                                sysMap[e] = (sysMap[e]||0) + parseFloat(h(r,'Cant Base')||0); 
+                            } 
+                        });
+                        
+                        // Mapear la toma física (CSV)
+                        let csvMap = {}; 
+                        Store.t.forEach(r => { 
+                            let e = String(r.EAN); 
+                            csvMap[e] = (csvMap[e]||0) + r.Cant; 
+                        });
+                        
                         let allEans = (type === 'Selectivo') ? Object.keys(csvMap) : [...new Set([...Object.keys(sysMap), ...Object.keys(csvMap)])];
                         
+                        // Cálculo Individual
                         res = allEans.map(ean => {
-                            let sys = sysMap[ean] || 0; let csv = csvMap[ean] || 0; let diff = csv - sys;
+                            let sys = sysMap[ean] || 0; 
+                            let csv = csvMap[ean] || 0; 
+                            let diff = csv - sys;
+                            
+                            // Confiabilidad de Referencia (100% si exacto, 0% si hay diferencia)
                             let confRef = (sys === csv) ? "100%" : "0%";
-                            let confInv = sys === 0 ? (csv === 0 ? "100%" : "0%") : ((csv / sys) * 100).toFixed(1) + "%";
-                            return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'Conf. Ref': confRef, 'Conf. Inv': confInv, 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
+                            
+                            // NUEVA FÓRMULA: Confiabilidad de Inventario Individual (Penaliza sobrantes y faltantes)
+                            let confInvCalc = sys === 0 ? (csv === 0 ? 100 : 0) : Math.max(0, (1 - (Math.abs(diff) / sys)) * 100);
+                            let confInv = confInvCalc.toFixed(1) + "%";
+
+                            return { 
+                                'EAN': ean, 
+                                'Descripción': Core.desc(ean), 
+                                'Cant Toma': csv, 
+                                'Cant DIGI1': sys, 
+                                'Diferencia': diff, 
+                                'Conf. Ref': confRef, 
+                                'Conf. Inv': confInv, 
+                                'Estado': diff === 0 ? 'OK' : 'NOVEDAD' 
+                            };
                         });
+                        
                         Store.view = res; Store.full = res; UI.draw(res);
                         let errCount = res.filter(x => x.Diferencia !== 0).length;
                         
+                        // Cálculo Global para KPIs
                         let exactMatches = res.filter(x => x.Diferencia === 0).length;
                         let globalConfRef = res.length > 0 ? ((exactMatches / res.length) * 100).toFixed(1) : 0;
-                        let sumToma = res.reduce((sum, x) => sum + x['Cant Toma'], 0);
-                        let sumSys = res.reduce((sum, x) => sum + x['Cant DIGI1'], 0);
-                        let globalConfInv = sumSys === 0 ? (sumToma === 0 ? 100 : 0) : ((sumToma / sumSys) * 100).toFixed(1);
+                        
+                        // NUEVA FÓRMULA: Confiabilidad de Inventario Global
+                        let sumSys = res.reduce((sum, x) => sum + Math.max(0, x['Cant DIGI1']), 0);
+                        let sumAbsDiff = res.reduce((sum, x) => sum + Math.abs(x['Diferencia']), 0);
+                        let globalConfInv = sumSys === 0 ? (sumAbsDiff === 0 ? 100 : 0) : Math.max(0, ((sumSys - sumAbsDiff) / sumSys) * 100).toFixed(1);
 
                         UI.kpi(res.length, Store.tot, errCount, globalConfRef, globalConfInv);
                         UI.chart(Store.tot, errCount);
-                        document.getElementById('loader').style.display='none'; UI.toast(`Análisis ${type} finalizado`, 1);
-                    } catch(e) { document.getElementById('loader').style.display='none'; alert("Error: " + e); }
+                        document.getElementById('loader').style.display='none'; 
+                        UI.toast(`Análisis ${type} finalizado`, 1);
+                    } catch(e) { 
+                        document.getElementById('loader').style.display='none'; 
+                        alert("Error: " + e); 
+                    }
                 }, 100);
             },
 
