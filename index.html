@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Novedades de Bodega Digital | v25.0 Enterprise Nube</title>
+    <title>Novedades de Bodega Digital | v27.0 Forense AI</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -13,7 +13,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
     <style>
         :root {
@@ -26,6 +25,7 @@
             --border: 1px solid #e2e8f0;
             --shadow: 0 2px 4px rgba(0,0,0,0.05);
             --ai-color: #10b981;
+            --cyan: #06b6d4;
         }
 
         * { box-sizing: border-box; outline: none; user-select: none; }
@@ -45,12 +45,12 @@
         .menu { flex: 1; overflow-y: auto; padding: 15px; }
         .section-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin: 15px 0 8px 0; font-weight: 700; display: flex; align-items: center; gap: 5px; border-left: 2px solid var(--primary); padding-left: 8px; }
 
-        .file-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; margin-bottom: 4px; background: rgba(255,255,255,0.03); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
-        .file-row:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
-        .f-name { font-size: 0.75rem; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
-        .f-status { font-size: 0.65rem; color: #64748b; font-weight: 700; }
+        .file-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; margin-bottom: 4px; background: rgba(255,255,255,0.03); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .f-name { font-size: 0.7rem; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .f-status { font-size: 0.6rem; color: #64748b; font-weight: 700; }
         .led { width: 8px; height: 8px; border-radius: 50%; background: #475569; box-shadow: 0 0 0 1px rgba(255,255,255,0.1); transition: 0.3s; }
         .led.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; border-color: #fff; }
+        .led.opt { background: #06b6d4; box-shadow: 0 0 8px #06b6d4; border-color: #fff; }
         input[type="file"] { display: none; }
 
         .btn { width: 100%; padding: 8px 12px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; transition: 0.2s; text-align: left; text-transform: uppercase; }
@@ -62,9 +62,15 @@
         .b-yellow { background: linear-gradient(to right, #d97706, #b45309); } 
         .b-purple { background: linear-gradient(to right, #7c3aed, #6d28d9); }
         .b-green { background: linear-gradient(to right, #16a34a, #15803d); } 
+        .b-cyan { background: linear-gradient(to right, #0891b2, #0e7490); }
         .b-dark { background: #374151; border: 1px solid #4b5563; }
         .b-danger { background: linear-gradient(to right, #7f1d1d, #991b1b); border: 1px solid #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
-        .b-cloud { background: linear-gradient(to right, #0284c7, #0369a1); border: 1px solid #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); animation: pulse 2s infinite; }
+        
+        .b-cloud { background: linear-gradient(to right, #0284c7, #0369a1); border: 1px solid #38bdf8; padding: 10px; font-size: 0.8rem; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); justify-content: center; margin-bottom: 8px; animation: pulseBlue 2s infinite;}
+        .b-massive { background: linear-gradient(to right, #16a34a, #15803d); border: 1px solid #4ade80; padding: 10px; font-size: 0.8rem; box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); justify-content: center; margin-bottom: 15px; text-align: center; display: flex; cursor: pointer; color: #fff; border-radius: 4px; font-weight: 700; text-transform: uppercase; transition: 0.2s;}
+        .b-massive:hover { filter: brightness(1.15); transform: translateX(2px); }
+
+        @keyframes pulseBlue { 0% { box-shadow: 0 0 0 0 rgba(56,189,248,0.5); } 70% { box-shadow: 0 0 0 8px rgba(56,189,248,0); } 100% { box-shadow: 0 0 0 0 rgba(56,189,248,0); } }
 
         .export-bar { display: flex; gap: 5px; margin-top: 5px; }
         .btn-sm { flex: 1; justify-content: center; padding: 6px; font-size: 0.7rem; font-weight: 800; }
@@ -73,10 +79,14 @@
         .header { height: 60px; background: #fff; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; box-shadow: var(--shadow); z-index: 10; }
         .header-title h2 { font-size: 1.8rem; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         .header-title span { font-size: 0.8rem; color: var(--ai-color); margin-left: 15px; border-left: 2px solid #cbd5e1; padding-left: 15px; font-weight: 800; }
-        .kpi { display: flex; gap: 20px; }
+        .kpi { display: flex; gap: 20px; align-items: center; }
         .k-box { display: flex; flex-direction: column; align-items: flex-end; }
         .k-lbl { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
         .k-val { font-size: 1.2rem; font-weight: 800; color: #0f172a; font-family: 'Rajdhani', sans-serif; line-height: 1; }
+        
+        #last-update-badge { background:#f8fafc; color:#64748b; padding:8px 12px; border-radius:6px; font-weight:700; font-size:0.75rem; border:1px solid #cbd5e1; display:flex; align-items:center; gap:8px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        #last-update-badge.updated { background:#f0fdf4; color:#166534; border-color:#86efac; }
+        #last-update-badge.old { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
 
         .work { flex: 1; display: flex; padding: 15px; gap: 15px; overflow: hidden; }
         .panel-left { flex: 1; background: #fff; border-radius: 8px; border: var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
@@ -97,17 +107,11 @@
         .tg-err { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
         .tg-war { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
         .tg-crit { background: #7f1d1d; color: #fff; border: 1px solid #ef4444; box-shadow: 0 0 5px rgba(239,68,68,0.5); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
 
         .panel-right { width: 260px; display: flex; flex-direction: column; gap: 15px; overflow: hidden; }
         .card { background: #fff; padding: 15px; border-radius: 8px; border: var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .c-chart { display: flex; flex-direction: column; flex: 1; min-height: 200px; }
-        .chart-wrap { flex: 1; position: relative; width: 100%; height: 100%; }
-        .c-tit { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; text-align: center; }
-        .comp-val { font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1; }
-        .comp-txt { font-size: 0.8rem; color: #64748b; margin-top: 5px; }
-        .bar-bg { height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; width: 0%; background: #10b981; transition: 1s; }
+        .c-tit { font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; text-align: center; letter-spacing: 1px; }
+        .comp-val { font-size: 2.2rem; font-weight: 800; color: #0f172a; line-height: 1; font-family: 'Rajdhani', sans-serif;}
 
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:none; justify-content:center; align-items:center; backdrop-filter:blur(2px); }
         .m-360 { background:#fff; width:1100px; max-width:95%; height:95vh; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
@@ -117,11 +121,18 @@
         .m-tag { background: rgba(16,185,129,0.2); border: 1px solid #10b981; padding: 5px 15px; border-radius: 20px; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-left: 20px; color: #34d399; }
         .m-body { padding:25px; overflow-y:auto; flex:1; background:#f1f5f9; display: flex; flex-direction: column; gap: 20px; }
         
-        .ai-box { background: linear-gradient(to right, #ecfdf5, #dcfce7); border: 1px solid #6ee7b7; border-radius: 10px; padding: 20px; display: flex; gap: 15px; box-shadow: 0 4px 10px rgba(16,185,129,0.1); }
-        .ai-icon { width: 50px; height: 50px; border-radius: 50%; background: #10b981; color: #fff; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; flex-shrink: 0; box-shadow: 0 0 10px rgba(16,185,129,0.5); }
-        .ai-content h4 { margin: 0 0 8px 0; color: #065f46; font-size: 0.95rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        .ai-text { margin: 0; color: #064e3b; font-size: 0.95rem; line-height: 1.6; font-weight: 600; text-align: justify; }
-
+        /* Modificado diseño del reporte IA forense */
+        .ai-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .ai-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 15px; }
+        .ai-icon { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(16,185,129,0.3); }
+        .ai-title { margin: 0; color: #0f172a; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .ai-text { margin: 0; color: #334155; font-size: 0.95rem; line-height: 1.6; }
+        
+        .timeline-box { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .tl-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 6px; flex: 1; min-width: 200px; display: flex; flex-direction: column; }
+        .tl-lbl { font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        .tl-val { font-size: 0.9rem; font-weight: 700; color: #0f172a; }
+        
         .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; flex:1; }
         .col { background:#fff; border:1px solid #e2e8f0; border-radius:8px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .col-h { padding:15px; font-size:0.8rem; font-weight:800; text-transform:uppercase; background:#f8fafc; color:#475569; border-bottom:2px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
@@ -140,19 +151,25 @@
         .btn-erp { background: #2563eb; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .btn-erp:hover { background: #1d4ed8; transform: translateY(-2px); }
 
-        .m-std { background:#fff; width:500px; border-radius:8px; padding:25px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .m-std { background:#fff; width:500px; max-height: 90vh; border-radius:8px; padding:25px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
         .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
         .opt { padding:15px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; transition:0.2s; background:#f8fafc; }
         .opt:hover { background:#fff; border-color:var(--primary); transform:translateY(-2px); box-shadow:0 4px 6px rgba(0,0,0,0.05); }
-        .opt b { display:block; font-size:0.85rem; color:#0f172a; margin-bottom:4px; }
+        .opt b { display:block; font-size:0.85rem; color:#0f172a; margin-bottom:4px; text-transform: uppercase; }
         .opt small { font-size:0.7rem; color:#64748b; line-height:1.2; display:block; }
+        
+        .list-box { margin-top: 15px; max-height: 250px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px; background: #f8fafc; }
+        .list-item { padding: 8px 12px; font-size: 0.8rem; font-weight: 700; color: #334155; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .list-item:hover { background: #e0f2fe; color: #0369a1; }
+        .list-item:last-child { border-bottom: none; }
+        .in-box { display: flex; gap: 10px; margin-top: 15px; }
+        .in-box input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; font-weight: 600; }
 
         #loader { position:fixed; top:0; left:0; width:100%; height:100%; background:#111827; z-index:9000; display:flex; justify-content:center; align-items:center; flex-direction:column; transition:opacity 0.5s; }
         .spin { width:40px; height:40px; border:3px solid rgba(255,255,255,0.1); border-top:3px solid var(--primary); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:15px; }
         @keyframes spin { 100% { transform:rotate(360deg); } }
         #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:10px 25px; border-radius:30px; font-size:0.85rem; font-weight:600; z-index:9999; display:none; align-items:center; gap:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3); }
         
-        /* LOGIN OVERLAY */
         #login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #0f172a, #1e293b); z-index:100000; display:flex; justify-content:center; align-items:center; transition:opacity 0.5s ease; }
         .login-box { background:#fff; width:400px; padding:45px 40px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); text-align:center; position:relative; }
         .login-icon { width:70px; height:70px; background:var(--primary); color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:2rem; margin:0 auto 20px auto; box-shadow:0 10px 20px rgba(227, 6, 19, 0.3); }
@@ -180,55 +197,63 @@
 
     <div id="loader" style="display:none;">
         <div class="spin"></div>
-        <div id="loader-txt" style="color:#fff; font-weight:700; letter-spacing:1px;">CARGANDO SISTEMA IA</div>
+        <div id="loader-txt" style="color:#fff; font-weight:700; letter-spacing:1px;">CARGANDO SISTEMA INTELIGENTE</div>
     </div>
     <div id="toast"></div>
 
     <aside id="sidebar">
         <div class="brand">
-            <h1>BODEGA DIGITAL<br><span style="color:#10b981;">SMART IA</span></h1>
-            <small>Alkosto Cali</small>
+            <h1>BODEGA DIGITAL<br><span style="color:#10b981;">FORENSE AI</span></h1>
+            <small>Alkosto Cali Norte</small>
         </div>
 
         <div class="menu">
-            <div class="section-title"><i class="fas fa-cloud-download-alt"></i> NUBE / SERVIDOR</div>
-            <button class="btn b-cloud" onclick="Core.fetchServerData()"><i class="fas fa-sync-alt"></i> CARGAR DATOS DEL SERVIDOR</button>
-
-            <div class="section-title" style="margin-top:20px;"><i class="fas fa-database"></i> CARGA MANUAL (OPCIONAL)</div>
+            <div class="section-title"><i class="fas fa-cloud-download-alt"></i> ACTUALIZACIÓN DE DATOS</div>
             
-            <label class="file-row" for="f-restr">
+            <button class="btn b-cloud" onclick="Core.fetchServerData()">
+                <i class="fas fa-sync-alt" style="font-size: 1.1rem; margin-right: 5px;"></i> SINCRONIZAR CON SERVIDOR
+            </button>
+
+            <label class="b-massive" for="f-massive" title="Usa esta opción si el servidor bloquea la sincronización automática">
+                <i class="fas fa-folder-open" style="font-size: 1.1rem; margin-right: 5px;"></i> CARGA MANUAL (EXCEL)
+            </label>
+            <input type="file" id="f-massive" accept=".xlsx" multiple>
+
+            <div class="section-title" style="margin-top:20px;"><i class="fas fa-database"></i> ESTADO DE BASES</div>
+            
+            <div class="file-row">
                 <div style="width:90%"><div class="f-name">CK_IN_UBICAC_RESTRINGIDAS</div><div class="f-status" id="l-r">Pendiente</div></div>
                 <div class="led" id="led-r"></div>
-            </label>
-            <input type="file" id="f-restr" accept=".xlsx">
-
-            <label class="file-row" for="f-norestr">
+            </div>
+            <div class="file-row">
                 <div style="width:90%"><div class="f-name">CK_IN_UBICAC_NO_RESTRINGIDAS</div><div class="f-status" id="l-n">Pendiente</div></div>
                 <div class="led" id="led-n"></div>
-            </label>
-            <input type="file" id="f-norestr" accept=".xlsx">
-
-            <label class="file-row" for="f-ver">
+            </div>
+            <div class="file-row">
                 <div style="width:90%"><div class="f-name">VER_INVENTARIO</div><div class="f-status" id="l-v">Pendiente</div></div>
                 <div class="led" id="led-v"></div>
-            </label>
-            <input type="file" id="f-ver" accept=".xlsx">
-
-            <label class="file-row" for="f-tras">
+            </div>
+            <div class="file-row">
                 <div style="width:90%"><div class="f-name">CK_GL_IN_TRASLADOS_POR_RECIBIR</div><div class="f-status" id="l-tr">Pendiente</div></div>
                 <div class="led" id="led-tr"></div>
-            </label>
-            <input type="file" id="f-tras" accept=".xlsx">
-
-            <label class="file-row" for="f-port">
+            </div>
+            <div class="file-row">
                 <div style="width:90%"><div class="f-name">CK_IN_PORTAFOLIO</div><div class="f-status" id="l-p">Pendiente</div></div>
                 <div class="led" id="led-p"></div>
-            </label>
-            <input type="file" id="f-port" accept=".xlsx">
+            </div>
+            <!-- Archivos Secundarios Vitales para Auditoría -->
+            <div class="file-row" style="border-color:#38bdf8;">
+                <div style="width:90%"><div class="f-name" style="color:#38bdf8;">VENTAS (Diario)</div><div class="f-status" id="l-ve">Opcional</div></div>
+                <div class="led" id="led-ve"></div>
+            </div>
+            <div class="file-row" style="border-color:#a78bfa;">
+                <div style="width:90%"><div class="f-name" style="color:#a78bfa;">HISTORIAL_BIN_BIN</div><div class="f-status" id="l-bb">Opcional</div></div>
+                <div class="led" id="led-bb"></div>
+            </div>
 
             <div class="section-title"><i class="fas fa-calculator"></i> OPERACIONES</div>
-            <label class="file-row" style="border-color:#dc2626;" for="f-toma">
-                <div style="width:90%"><div class="f-name" style="color:#fca5a5;">TOMA_FISICA.csv</div><div class="f-status">Archivo Cruce</div></div>
+            <label class="file-row" style="border-color:#dc2626; cursor: pointer;" for="f-toma">
+                <div style="width:90%"><div class="f-name" style="color:#fca5a5;">TOMA_FISICA.csv</div><div class="f-status">Cargar Archivo de Toma</div></div>
                 <div class="led" id="led-t"></div>
             </label>
             <input type="file" id="f-toma" accept=".csv">
@@ -239,6 +264,9 @@
             <button class="btn b-yellow" style="color:#000" onclick="UI.modal('m-almac',true)"><i class="fas fa-exchange-alt"></i> ALMACÉN</button>
             <button class="btn b-purple" onclick="Core.run('prohibido')"><i class="fas fa-ban"></i> NO DEBE ESTAR EN DIGI</button> 
             <button class="btn b-green" onclick="Core.run('nivelar')"><i class="fas fa-balance-scale"></i> DIGI EN ALMAC</button> 
+            
+            <div class="section-title"><i class="fas fa-truck"></i> LOGÍSTICA TRASLADOS</div>
+            <button class="btn b-cyan" onclick="UI.modal('m-traslados-main', true)"><i class="fas fa-truck-loading"></i> ID CARGAS TRASLADOS</button>
 
             <div class="section-title"><i class="fas fa-file-export"></i> EXPORTAR</div>
             <div class="export-bar">
@@ -253,16 +281,15 @@
     <main id="main">
         <header class="header">
             <div class="header-title">
-                <h2>NOVEDADES DE BODEGA DIGITAL</h2>
-                <span>COMPACT PRO v25.0 | ENTERPRISE NUBE</span>
+                <h2>AUDITORÍA FORENSE INVENTARIO</h2>
+                <span>Version 27.0 | Alkosto Cali Norte JACR</span>
             </div>
             <div class="kpi">
-                <div class="k-box"><span class="k-lbl">VISTA</span><span id="k-view" class="k-val">0</span></div>
-                <div class="k-box"><span class="k-lbl" style="color:#ef4444">ERRORES</span><span id="k-err" class="k-val" style="color:#ef4444">0</span></div>
-                <div class="k-box"><span class="k-lbl">DIGI1</span><span id="k-tot" class="k-val" style="color:#0ea5e9">0</span></div>
-                <div class="k-box"><span class="k-lbl">% CUMP.</span><span id="k-cump-head" class="k-val">0%</span></div>
-                <div class="k-box" id="box-confi-ref" style="display:none;"><span class="k-lbl" style="color:#8b5cf6">CONFI REF</span><span id="k-confi-ref" class="k-val" style="color:#8b5cf6">0%</span></div>
-                <div class="k-box" id="box-confi-inv" style="display:none;"><span class="k-lbl" style="color:#10b981">CONFI INV</span><span id="k-confi-inv" class="k-val" style="color:#10b981">0%</span></div>
+                <div id="last-update-badge"><i class="fas fa-clock"></i> Última Sincronización: Pendiente</div>
+                <div style="width: 1px; height: 30px; background: #cbd5e1; margin: 0 15px;"></div>
+                <div class="k-box"><span class="k-lbl">VISTA REGISTROS</span><span id="k-view" class="k-val">0</span></div>
+                <div class="k-box"><span class="k-lbl" style="color:#ef4444">CON NOVEDAD</span><span id="k-err" class="k-val" style="color:#ef4444">0</span></div>
+                <div class="k-box"><span class="k-lbl">TOTAL DIGI1</span><span id="k-tot" class="k-val" style="color:#0ea5e9">0</span></div>
             </div>
         </header>
 
@@ -270,33 +297,48 @@
             <div class="panel-left">
                 <div class="tbl-ctrl">
                     <span id="lbl-count" style="font-weight:700; font-size:0.8rem; color:#64748b;">0 REGISTROS</span>
-                    <div class="search"><i class="fas fa-search"></i><input type="text" id="search" placeholder="Buscar EAN, Ubicación..." onkeyup="Core.search()"></div>
+                    <div class="search"><i class="fas fa-search"></i><input type="text" id="search" placeholder="Buscar EAN, Ubicación, ID..." onkeyup="Core.search()"></div>
                 </div>
                 <div class="tbl-scroll">
                     <table id="tbl"><thead id="th"></thead><tbody id="tb"></tbody></table>
                     <div id="empty" style="text-align:center; padding:80px; color:#cbd5e1;">
-                        <i class="fas fa-cloud fa-4x" style="margin-bottom:15px; color:#94a3b8;"></i>
-                        <p style="font-size:1.1rem; font-weight:700; color:#64748b;">Sistema en Blanco.</p>
-                        <p>Haga clic en <b>CARGAR DATOS DEL SERVIDOR</b> para obtener la última información.</p>
+                        <i class="fas fa-laptop-house fa-4x" style="margin-bottom:15px; color:#94a3b8;"></i>
+                        <p style="font-size:1.1rem; font-weight:700; color:#64748b;">Bases de datos no cargadas en este equipo.</p>
+                        <p>Haga clic en <b style="color:#0284c7">SINCRONIZAR CON SERVIDOR</b>. Si el navegador lo bloquea, use <b style="color:#16a34a">CARGA MANUAL</b>.</p>
                     </div>
                 </div>
             </div>
 
             <div class="panel-right">
-                <div class="card c-chart">
-                    <div class="c-tit">EFECTIVIDAD</div>
-                    <div class="chart-wrap"><canvas id="chart"></canvas></div>
-                </div>
                 <div class="card">
-                    <div class="c-tit">CUMPLIMIENTO</div>
-                    <div id="c-val" class="comp-val">0%</div>
-                    <div id="c-txt" class="comp-txt">Esperando datos...</div>
-                    <div class="bar-bg"><div id="c-bar" class="bar-fill"></div></div>
+                    <div class="c-tit"><i class="fas fa-chart-pie"></i> INDICADORES DE EXACTITUD</div>
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                            <div>
+                                <div class="k-lbl" style="color:#8b5cf6">CONFI. REFERENCIA (META 96%)</div>
+                                <div id="card-confi-ref" class="comp-val" style="color:#8b5cf6">0%</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div class="k-lbl" style="color:#10b981">CONFI. INVENTARIO (META 98%)</div>
+                                <div id="card-confi-inv" class="comp-val" style="color:#10b981">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="flex: 1; display: flex; flex-direction: column; min-height: 0; background: linear-gradient(to bottom right, #f8fafc, #f1f5f9); border: 1px solid #cbd5e1;">
+                    <div class="c-tit" style="color: var(--primary); border-bottom-color: #e2e8f0; flex-shrink: 0; margin-bottom: 5px;"><i class="fas fa-robot"></i> REPORTE INTELIGENTE IA</div>
+                    <div id="ai-manager-report" style="flex: 1; overflow-y: auto; min-height: 0; font-size: 0.85rem; color: #334155; line-height: 1.5; text-align: justify; padding-right: 10px; padding-bottom: 15px;">
+                        Ejecute el cruce de <b style="color:var(--primary)">TOMA FÍSICA vs DIGI</b> para generar el diagnóstico automatizado sobre el estado de la Bodega Digital.
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Modals Operaciones -->
     <div id="m-toma-sel" class="overlay">
         <div class="m-std">
             <i class="fas fa-times" onclick="UI.modal('m-toma-sel',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
@@ -333,6 +375,69 @@
         </div>
     </div>
 
+    <!-- Modals Archivos Secundarios -->
+    <div id="m-sec-prompt" class="overlay">
+        <div class="m-std" style="text-align:center;">
+            <h3 style="margin-top:0; color:#0f172a;"><i class="fas fa-folder-plus" style="color:var(--primary);"></i> CARGA OPCIONAL</h3>
+            <p style="color:#475569; font-weight:600;">¿Quieres cargar los archivos secundarios para habilitar la <b style="color:#2563eb">Auditoría Forense IA</b> de inventario?</p>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                <button class="btn b-green" onclick="UI.modal('m-sec-prompt',false); UI.modal('m-sec-upload',true);" style="width:auto; padding:10px 20px;"><i class="fas fa-check"></i> SÍ, CARGAR</button>
+                <button class="btn b-dark" onclick="UI.modal('m-sec-prompt',false);" style="width:auto; padding:10px 20px;"><i class="fas fa-times"></i> NO, CONTINUAR</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="m-sec-upload" class="overlay">
+        <div class="m-std">
+            <i class="fas fa-times" onclick="UI.modal('m-sec-upload',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
+            <h3 style="margin-top:0;"><i class="fas fa-file-excel"></i> Archivos Secundarios</h3>
+            <p style="font-size:0.8rem; color:#64748b; margin-top:-5px;">Selecciona los archivos correspondientes para auditoría completa.</p>
+            
+            <label class="b-massive" for="f-ventas" style="background: linear-gradient(to right, #0ea5e9, #0284c7); border-color:#38bdf8; margin-top:15px;">
+                <i class="fas fa-shopping-cart" style="font-size: 1.1rem; margin-right: 5px;"></i> CARGAR VENTAS.XLSX
+            </label>
+            <input type="file" id="f-ventas" accept=".xlsx">
+
+            <label class="b-massive" for="f-bin" style="background: linear-gradient(to right, #8b5cf6, #6d28d9); border-color:#a78bfa;">
+                <i class="fas fa-exchange-alt" style="font-size: 1.1rem; margin-right: 5px;"></i> CARGAR HISTORIAL_BIN_BIN.XLSX
+            </label>
+            <input type="file" id="f-bin" accept=".xlsx">
+
+            <button class="btn b-dark" onclick="UI.modal('m-sec-upload',false);" style="margin-top:10px; justify-content:center;">FINALIZAR</button>
+        </div>
+    </div>
+
+    <!-- Modals Traslados -->
+    <div id="m-traslados-main" class="overlay">
+        <div class="m-std" style="width: 600px;">
+            <i class="fas fa-times" onclick="UI.modal('m-traslados-main',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
+            <h3 style="margin-top:0; color:#0f172a;"><i class="fas fa-truck-loading" style="color:var(--cyan);"></i> GESTIÓN DE TRASLADOS</h3>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:-10px; margin-bottom: 20px;">Selecciona el tipo de validación que deseas realizar.</p>
+            
+            <div class="grid-3" style="grid-template-columns: 1fr 1fr 1fr;">
+                <div class="opt" onclick="Core.tras.openPendientes(); UI.modal('m-traslados-main',false)">
+                    <b style="color:#d97706; text-align:center; font-size:0.9rem;"><i class="fas fa-clock fa-2x" style="display:block; margin-bottom:10px;"></i> PENDIENTES</b>
+                    <small style="text-align:center;">Traslados generados sin recepción confirmada.</small>
+                </div>
+                <div class="opt" onclick="Core.tras.openIngresadosMenu(); UI.modal('m-traslados-main',false)">
+                    <b style="color:#16a34a; text-align:center; font-size:0.9rem;"><i class="fas fa-check-double fa-2x" style="display:block; margin-bottom:10px;"></i> INGRESADOS</b>
+                    <small style="text-align:center;">Traslados completamente procesados en el sistema.</small>
+                </div>
+                <div class="opt" onclick="Core.tras.openGeneral(); UI.modal('m-traslados-main',false)">
+                    <b style="color:#2563eb; text-align:center; font-size:0.9rem;"><i class="fas fa-search fa-2x" style="display:block; margin-bottom:10px;"></i> GENERAL</b>
+                    <small style="text-align:center;">Búsqueda libre por cualquier parámetro.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Dinámico para Traslados (Sub-vistas) -->
+    <div id="m-tras-dyn" class="overlay">
+        <div class="m-std" id="tras-dyn-content">
+            <!-- Inyectado por JS -->
+        </div>
+    </div>
+
     <div id="m-360" class="overlay">
         <div class="m-360">
             <div class="m-head">
@@ -348,11 +453,14 @@
             
             <div class="m-body">
                 <div class="ai-box">
-                    <div class="ai-icon"><i class="fas fa-robot"></i></div>
-                    <div class="ai-content">
-                        <h4>Reporte Diagnóstico Inteligente <span style="font-size:0.7rem; background:#10b981; color:#fff; padding:2px 6px; border-radius:10px; font-weight:800;">AUTO-PLAY</span></h4>
-                        <p id="d360-ai-text" class="ai-text">Analizando parámetros...</p>
+                    <div class="ai-header">
+                        <div class="ai-icon"><i class="fas fa-brain"></i></div>
+                        <div>
+                            <h4 class="ai-title">Auditoría Forense IA <span style="font-size:0.6rem; background:#0f172a; color:#fff; padding:2px 6px; border-radius:10px; margin-left:10px;">CRUZANDO DATA</span></h4>
+                            <span style="font-size:0.75rem; color:#64748b;">Analizando Ventas, Traslados y Movimientos Bin a Bin</span>
+                        </div>
                     </div>
+                    <div id="d360-ai-text" class="ai-text">Analizando parámetros multidimensionales...</div>
                 </div>
                 <div class="grid-3">
                     <div class="col">
@@ -385,7 +493,20 @@
     <script>
         window.onerror = function() { document.getElementById('loader').style.display='none'; };
 
-        const DB_NAME="Siga_V25_0_Nube", Store={r:[],n:[],t:[],v:[],p:[],tr:[],view:[],full:[],tot:0};
+        const Util = { 
+            get: (r, ...k) => {
+                let ks = Object.keys(r); 
+                let norm = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim();
+                for(let x of k) {
+                    let nx = norm(x);
+                    let f = ks.find(y => norm(y) === nx); 
+                    if(f) return r[f];
+                } 
+                return undefined;
+            } 
+        };
+
+        const DB_NAME="Siga_V27_Forense", Store={r:[],n:[],t:[],v:[],p:[],tr:[],ve:[],bb:[],view:[],full:[],tot:0};
         const Cfg={
             ok:["Accesorios Audio","Accesorio Camara","Videocamaras","Accesorios Informatica","Accesorios Telefonia","Accesorios Video","Computadores","Equipos Audio","Camaras","Otros Hardware","Telefonia Celular","Telefonia Fija","Deportes y Salud","Casa Inteligente y Redes","Videojuegos","Accesorios Energía","Audífonos y Auriculares","Drones y Juguetes Electrónicos","Accesorio Camara","Videocamaras"],
             niv:["Telefonia Celular","Videocamaras","Camaras","Computadores"],
@@ -406,6 +527,7 @@
                         document.getElementById('login-overlay').style.display = 'none';
                         UI.toast("Acceso Autorizado", 1);
                         Sys.startInactivityTimer();
+                        Core.checkLastUpdate(); 
                     }, 500);
                 } else {
                     msg.innerText = "Credenciales incorrectas. Verifique ID y contraseña.";
@@ -421,7 +543,7 @@
                 UI.toast("Sesión Cerrada", 1);
             },
             startInactivityTimer: () => {
-                const reset = () => { clearTimeout(Sys.timer); Sys.timer = setTimeout(Sys.logout, 3600000); }; // 3600000 ms = 1 Hora
+                const reset = () => { clearTimeout(Sys.timer); Sys.timer = setTimeout(Sys.logout, 3600000); };
                 document.onmousemove = reset; document.onkeypress = reset; document.onclick = reset;
                 reset();
             }
@@ -431,213 +553,368 @@
             init: async () => {
                 try {
                     await DB.init(); 
-                    ['r','n','v','p','tr'].forEach(k=>Core.load(k)); 
-                    const inputs={'r':'f-restr','n':'f-norestr','v':'f-ver','p':'f-port','t':'f-toma','tr':'f-tras'};
-                    Object.keys(inputs).forEach(k => { const el = document.getElementById(inputs[k]); if(el) el.addEventListener('change', e => Core.file(e,k)); });
+                    ['r','n','v','p','tr','ve','bb'].forEach(k=>Core.load(k)); 
+                    
+                    const elToma = document.getElementById('f-toma');
+                    if(elToma) elToma.addEventListener('change', e => Core.file(e,'t'));
+
+                    document.getElementById('f-ventas').addEventListener('change', e => Core.processSecFile(e, 've'));
+                    document.getElementById('f-bin').addEventListener('change', e => Core.processSecFile(e, 'bb'));
+
+                    document.getElementById('f-massive').addEventListener('change', async (e) => {
+                        let files = e.target.files;
+                        if(files.length === 0) return;
+                        
+                        document.getElementById('loader').style.display = 'flex';
+                        document.getElementById('loader-txt').innerText = "PROCESANDO Y GUARDANDO BASES (MANUAL)...";
+                        
+                        let dateToSave = new Date().getTime(); 
+                        let loadedCount = 0;
+
+                        for(let file of files) {
+                            let name = file.name.toUpperCase();
+                            let k = null;
+                            if(name.includes('RESTRINGIDAS') && !name.includes('NO_RESTRINGIDAS')) k = 'r';
+                            else if(name.includes('NO_RESTRINGIDAS')) k = 'n';
+                            else if(name.includes('VER_INVENTARIO')) k = 'v';
+                            else if(name.includes('TRASLADOS')) k = 'tr';
+                            else if(name.includes('PORTAFOLIO')) k = 'p';
+
+                            if(k) { await Core.processExcelFile(file, k); loadedCount++; }
+                        }
+                        
+                        document.getElementById('loader').style.display = 'none';
+                        document.getElementById('f-massive').value = ''; 
+                        
+                        if(loadedCount > 0) {
+                            localStorage.setItem('siga_last_update', dateToSave);
+                            Core.checkLastUpdate();
+                            if(Store.n.length > 0) Core.calc();
+                            UI.toast(`Sincronización Manual: ${loadedCount} bases actualizadas.`, 1);
+                            setTimeout(() => UI.modal('m-sec-prompt', true), 1000);
+                        } else {
+                            UI.toast("Error: Nombres de archivo no reconocidos.", 0);
+                        }
+                    });
+
                 } catch(e) { console.error("Error init", e); }
             },
-            
+
             fetchServerData: async () => {
                 const filesMap = {
-                    'r': 'datos/restringidas.xlsx',
-                    'n': 'datos/norestringidas.xlsx',
-                    'v': 'datos/ver_inventario.xlsx',
-                    'tr': 'datos/traslados.xlsx',
-                    'p': 'datos/portafolio.xlsx'
+                    'r': './CK_IN_UBICAC_RESTRINGIDAS.xlsx', 'n': './CK_IN_UBICAC_NO_RESTRINGIDAS.xlsx',
+                    'v': './VER_INVENTARIO.xlsx', 'tr': './CK_GL_IN_TRASLADOS_POR_RECIBIR.xlsx', 'p': './CK_IN_PORTAFOLIO.xlsx'
                 };
-                
-                document.getElementById('loader').style.display='flex';
-                document.getElementById('loader-txt').innerText = "DESCARGANDO DATOS DEL SERVIDOR...";
-                
+                document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText = "CONECTANDO CON SERVIDOR...";
                 let successCount = 0;
-
                 for (let k of Object.keys(filesMap)) {
                     try {
-                        let res = await fetch(filesMap[k]);
+                        let res = await fetch(filesMap[k], {cache: "no-store"}); 
                         if (res.ok) {
                             let ab = await res.arrayBuffer();
                             let wb = XLSX.read(new Uint8Array(ab), {type:'array'});
-                            let d = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                            
-                            Store[k] = d;
-                            DB.save(k, d);
-                            UI.led(k);
-                            let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
-                            if(statusId) {
-                                document.getElementById(statusId).innerText = "✅ EN NUBE"; 
-                                document.getElementById(statusId).style.color="#0ea5e9";
-                            }
+                            let d = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {raw: false, defval: ""});
+                            Store[k] = d; DB.save(k, d); UI.led(k);
+                            let stId = `l-${k}`; if(document.getElementById(stId)) { document.getElementById(stId).innerText = "✅ Sincronizado"; document.getElementById(stId).style.color="#0ea5e9"; }
                             successCount++;
                         }
-                    } catch(e) { 
-                        console.warn("No se encontró en servidor: " + filesMap[k]); 
-                    }
+                    } catch(e) { console.warn(`Fetch falló para ${k}`); }
                 }
-                
                 if (Store.n.length > 0) Core.calc();
                 document.getElementById('loader').style.display='none';
                 
                 if(successCount > 0) {
-                    UI.toast(`¡Éxito! ${successCount} bases de datos cargadas de la nube.`, 1);
-                } else {
-                    UI.toast("No se detectaron archivos en el servidor. Revise la carpeta 'datos/'.", 0);
-                }
+                    localStorage.setItem('siga_last_update', new Date().getTime()); Core.checkLastUpdate();
+                    UI.toast(`Sincronización Exitosa: ${successCount} bases descargadas.`, 1);
+                    setTimeout(() => UI.modal('m-sec-prompt', true), 1000);
+                } else UI.toast("Servidor no accesible. Usa CARGA MANUAL (EXCEL).", 0);
+            },
+            
+            processExcelFile: (file, k) => {
+                return new Promise((resolve) => {
+                    let r = new FileReader();
+                    r.onload = ev => {
+                        try {
+                            let wb = XLSX.read(new Uint8Array(ev.target.result), {type:'array'});
+                            let d = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {raw: false, defval: ""});
+                            Store[k] = d; DB.save(k, d); UI.led(k);
+                            let stId = `l-${k}`; if(document.getElementById(stId)) { document.getElementById(stId).innerText = "✅ Sincronizado"; document.getElementById(stId).style.color = "#16a34a"; }
+                            resolve(true);
+                        } catch(e) { resolve(false); }
+                    }; r.readAsArrayBuffer(file);
+                });
+            },
+
+            processSecFile: (e, k) => {
+                let file = e.target.files[0]; if(!file) return;
+                document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText = "PROCESANDO ARCHIVO SECUNDARIO...";
+                Core.processExcelFile(file, k).then(res => {
+                    document.getElementById('loader').style.display='none';
+                    if(res) { UI.toast(`Archivo ${k==='ve'?'Ventas':'Bin a Bin'} cargado.`, 1); document.getElementById(`led-${k}`).classList.add('opt'); }
+                });
+            },
+
+            checkLastUpdate: () => {
+                let last = localStorage.getItem('siga_last_update'); let badge = document.getElementById('last-update-badge');
+                if(!last) { badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Bases sin cargar'; badge.className = 'old'; return; }
+                let date = new Date(parseInt(last)); let diffHours = Math.abs(new Date() - date) / 36e5; 
+                badge.innerHTML = `<i class="fas fa-clock"></i> Última Sincronización: ${date.toLocaleString()}`;
+                if(diffHours > 12) { badge.className = 'old'; badge.innerHTML += ' (Recom. Sincronizar)'; } else badge.className = 'updated';
             },
 
             file: (e,k) => {
-                let f=e.target.files[0]; if(!f)return; UI.toast(`Cargando ${f.name}...`);
+                let f=e.target.files[0]; if(!f)return; UI.toast(`Procesando Toma Física...`);
                 let r=new FileReader();
                 r.onload=ev=>{
                     try {
-                        let d=[];
-                        if(k==='t') {
-                            let txt=new TextDecoder("utf-8").decode(new Uint8Array(ev.target.result));
-                            let lines = txt.split(/\r\n|\n/);
-                            d = lines.map(l => {
-                                let c = l.split(','); 
-                                if (c.length >= 5) {
-                                    let ean = String(c[2]).replace(/["\r]/g, "").trim();
-                                    let cant = parseFloat(String(c[4]).replace(/["\r]/g, "")) || 0;
-                                    if(ean && ean.length > 5 && !isNaN(cant)) return { EAN: ean, Cant: cant };
-                                }
-                                return null;
-                            }).filter(x => x);
-                        } else {
-                            let wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
-                            d=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                        }
-                        Store[k]=d; if(k!=='t') DB.save(k,d);
-                        UI.led(k); if(k==='n') Core.calc();
-                        let statusId = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k];
-                        if(statusId) { document.getElementById(statusId).innerText = "✅ Manual"; document.getElementById(statusId).style.color="#22c55e"; }
-                        UI.toast("Carga Exitosa",1);
-                    } catch(er){ UI.toast("Error archivo",0); }
+                        let txt=new TextDecoder("utf-8").decode(new Uint8Array(ev.target.result));
+                        let d = txt.split(/\r\n|\n/).map(l => {
+                            let c = l.split(','); 
+                            if (c.length >= 5) {
+                                let ean = String(c[2]).replace(/["\r]/g, "").trim(); let cant = parseFloat(String(c[4]).replace(/["\r]/g, "")) || 0;
+                                if(ean && ean.length > 5 && !isNaN(cant)) return { EAN: ean, Cant: cant };
+                            } return null;
+                        }).filter(x => x);
+                        Store[k]=d; UI.led(k); UI.toast("Toma Física Lista para Cruzar",1);
+                    } catch(er){ UI.toast("Error leyendo CSV",0); }
                 }; r.readAsArrayBuffer(f);
             },
+
             load: async(k)=>{ 
                 let d=await DB.get(k); 
-                if(d){ Store[k]=d; UI.led(k); if(k==='n') Core.calc(); let st = {'r':'l-r','n':'l-n','v':'l-v','p':'l-p','tr':'l-tr'}[k]; if(st) { document.getElementById(st).innerText="✅ Local"; document.getElementById(st).style.color="#f59e0b"; } } 
+                if(d){ 
+                    Store[k]=d; 
+                    if(k==='ve'||k==='bb') document.getElementById(`led-${k}`).classList.add('opt'); else UI.led(k); 
+                    if(k==='n') Core.calc(); 
+                    let st = document.getElementById(`l-${k}`); if(st) { st.innerText="✅ En Memoria Local"; st.style.color="#f59e0b"; } 
+                } 
             },
-            calc: ()=>{ let c=0; Store.n.forEach(r=>{if(Util.get(r,'Ubicación')==='DIGI1')c++}); Store.tot=c; UI.kpi(0,c); },
+            calc: ()=>{ let c=0; Store.n.forEach(r=>{if(String(Util.get(r,'Ubicación', 'Ubicacion')).trim().toUpperCase()==='DIGI1')c++}); Store.tot=c; UI.kpi(0,c); },
 
+            // ====== LÓGICA FORENSE TRASLADOS ======
+            tras: {
+                openPendientes: () => {
+                    if(!Store.tr.length) return UI.toast("No hay base de traslados cargada",0);
+                    let pends = Store.tr.filter(r => Util.get(r, 'Nº Ped', 'Pedido', 'N Ped') && !Util.get(r, 'Nº Nota Recep', 'Nota Recep'));
+                    let ids = Core.tras.getDistinct(pends, ['Nº Ped', 'Pedido', 'N Ped']);
+                    let html = `
+                        <i class="fas fa-arrow-left" onclick="UI.modal('m-tras-dyn',false); UI.modal('m-traslados-main',true)" style="position:absolute; top:20px; left:20px; cursor:pointer; color:#aaa; font-size:1.2rem;"></i>
+                        <h3 style="margin-top:0; text-align:center; color:#d97706;"><i class="fas fa-clock"></i> Traslados Pendientes</h3>
+                        <div class="in-box"><input type="text" id="tras-in-pend" placeholder="Escribe el ID del Traslado (Nº Ped)..." onkeypress="if(event.key==='Enter') Core.tras.searchPendiente()"><button class="btn b-blue" style="width:auto;" onclick="Core.tras.searchPendiente()"><i class="fas fa-search"></i> Buscar</button></div>
+                        <div class="list-box">${ids.length ? ids.map(id => `<div class="list-item" onclick="document.getElementById('tras-in-pend').value='${id}'; Core.tras.searchPendiente();"><i class="fas fa-hashtag" style="color:#cbd5e1;"></i> ${id}</div>`).join('') : '<div style="padding:15px; text-align:center; color:#94a3b8;">No hay traslados pendientes.</div>'}</div>
+                    `;
+                    document.getElementById('tras-dyn-content').innerHTML = html; UI.modal('m-tras-dyn', true);
+                },
+                searchPendiente: () => {
+                    let val = document.getElementById('tras-in-pend').value.trim().toUpperCase(); if(!val) return;
+                    let pends = Store.tr.filter(r => Util.get(r, 'Nº Ped', 'Pedido', 'N Ped') && !Util.get(r, 'Nº Nota Recep', 'Nota Recep'));
+                    let matches = pends.filter(r => String(Util.get(r, 'Nº Ped', 'Pedido', 'N Ped')).toUpperCase().trim() === val);
+                    if(matches.length > 0) Core.tras.renderResult(matches, `Pendiente: ${val}`); else UI.toast("No se encuentra en traslados pendientes", 0);
+                },
+                openIngresadosMenu: () => {
+                    if(!Store.tr.length) return UI.toast("No hay base de traslados cargada",0);
+                    let html = `
+                        <i class="fas fa-arrow-left" onclick="UI.modal('m-tras-dyn',false); UI.modal('m-traslados-main',true)" style="position:absolute; top:20px; left:20px; cursor:pointer; color:#aaa; font-size:1.2rem;"></i>
+                        <h3 style="margin-top:0; text-align:center; color:#16a34a;"><i class="fas fa-check-double"></i> Traslados Ingresados</h3>
+                        <p style="text-align:center; font-size:0.85rem; color:#64748b;">¿Cómo quieres validar tu traslado?</p>
+                        <div class="grid-3" style="grid-template-columns: 1fr 1fr 1fr; margin-top:20px;">
+                            <div class="opt" onclick="Core.tras.openIngresadosSearch('ped')"><b style="text-align:center; color:#0f172a;">Por Nº Ped</b></div>
+                            <div class="opt" onclick="Core.tras.openIngresadosSearch('nota')"><b style="text-align:center; color:#0f172a;">Por Nº Nota Recep</b></div>
+                            <div class="opt" onclick="Core.tras.openIngresadosSearch('intuni')"><b style="text-align:center; color:#0f172a;">Por ID IntUni</b></div>
+                        </div>
+                    `;
+                    document.getElementById('tras-dyn-content').innerHTML = html; UI.modal('m-tras-dyn', true);
+                },
+                openIngresadosSearch: (tipo) => {
+                    let keySearch = []; let label = "";
+                    if(tipo === 'ped') { keySearch = ['Nº Ped', 'Pedido', 'N Ped']; label = "Nº Ped"; }
+                    if(tipo === 'nota') { keySearch = ['Nº Nota Recep', 'Nota Recep']; label = "Nº Nota Recep"; }
+                    if(tipo === 'intuni') { keySearch = ['ID IntUni', 'IntUni']; label = "ID IntUni"; }
+
+                    let ings = Store.tr.filter(r => Util.get(r, 'Nº Ped', 'Pedido', 'N Ped') && Util.get(r, 'Nº Nota Recep', 'Nota Recep') && Util.get(r, 'ID IntUni', 'IntUni'));
+                    let ids = Core.tras.getDistinct(ings, keySearch);
+
+                    let html = `
+                        <i class="fas fa-arrow-left" onclick="Core.tras.openIngresadosMenu()" style="position:absolute; top:20px; left:20px; cursor:pointer; color:#aaa; font-size:1.2rem;"></i>
+                        <h3 style="margin-top:0; text-align:center; color:#16a34a;"><i class="fas fa-search"></i> Ingresados: ${label}</h3>
+                        <div class="in-box"><input type="text" id="tras-in-ing" placeholder="Escribe el ${label}..." onkeypress="if(event.key==='Enter') Core.tras.searchIngresado('${tipo}')"><button class="btn b-green" style="width:auto;" onclick="Core.tras.searchIngresado('${tipo}')"><i class="fas fa-search"></i> Buscar</button></div>
+                        <div class="list-box">${ids.length ? ids.map(id => `<div class="list-item" onclick="document.getElementById('tras-in-ing').value='${id}'; Core.tras.searchIngresado('${tipo}');"><i class="fas fa-hashtag" style="color:#cbd5e1;"></i> ${id}</div>`).join('') : '<div style="padding:15px; text-align:center; color:#94a3b8;">No hay traslados ingresados válidos.</div>'}</div>
+                    `;
+                    document.getElementById('tras-dyn-content').innerHTML = html;
+                },
+                searchIngresado: (tipo) => {
+                    let val = document.getElementById('tras-in-ing').value.trim().toUpperCase(); if(!val) return;
+                    let keySearch = [];
+                    if(tipo === 'ped') keySearch = ['Nº Ped', 'Pedido', 'N Ped'];
+                    if(tipo === 'nota') keySearch = ['Nº Nota Recep', 'Nota Recep'];
+                    if(tipo === 'intuni') keySearch = ['ID IntUni', 'IntUni'];
+
+                    let ings = Store.tr.filter(r => Util.get(r, 'Nº Ped', 'Pedido', 'N Ped') && Util.get(r, 'Nº Nota Recep', 'Nota Recep') && Util.get(r, 'ID IntUni', 'IntUni'));
+                    let matches = ings.filter(r => String(Util.get(r, ...keySearch)).toUpperCase().trim() === val);
+                    if(matches.length > 0) Core.tras.renderResult(matches, `Ingresado (${tipo}): ${val}`); else UI.toast("No se encuentra en traslados ingresados", 0);
+                },
+                openGeneral: () => {
+                    if(!Store.tr.length) return UI.toast("No hay base de traslados cargada",0);
+                    let html = `
+                        <i class="fas fa-arrow-left" onclick="UI.modal('m-tras-dyn',false); UI.modal('m-traslados-main',true)" style="position:absolute; top:20px; left:20px; cursor:pointer; color:#aaa; font-size:1.2rem;"></i>
+                        <h3 style="margin-top:0; text-align:center; color:#2563eb;"><i class="fas fa-search"></i> Buscar tu traslado</h3>
+                        <p style="text-align:center; font-size:0.85rem; color:#64748b;">Escribe ID IntUni, Nº Ped o Nº Nota Recep.</p>
+                        <div class="in-box"><input type="text" id="tras-in-gen" placeholder="Ingresa cualquier ID..." onkeypress="if(event.key==='Enter') Core.tras.searchGeneral()"><button class="btn b-blue" style="width:auto;" onclick="Core.tras.searchGeneral()"><i class="fas fa-search"></i> Buscar</button></div>
+                    `;
+                    document.getElementById('tras-dyn-content').innerHTML = html; UI.modal('m-tras-dyn', true);
+                },
+                searchGeneral: () => {
+                    let val = document.getElementById('tras-in-gen').value.trim().toUpperCase(); if(!val) return;
+                    let matches = Store.tr.filter(r => {
+                        let p = String(Util.get(r, 'Nº Ped', 'Pedido', 'N Ped')||'').toUpperCase().trim();
+                        let n = String(Util.get(r, 'Nº Nota Recep', 'Nota Recep')||'').toUpperCase().trim();
+                        let i = String(Util.get(r, 'ID IntUni', 'IntUni')||'').toUpperCase().trim();
+                        return p === val || n === val || i === val;
+                    });
+                    if(matches.length > 0) Core.tras.renderResult(matches, `Búsqueda General: ${val}`); else UI.toast("No se encontró ningún traslado con ese ID", 0);
+                },
+                getDistinct: (arr, colKeys) => {
+                    let s = new Set(); arr.forEach(r => { let v = Util.get(r, ...colKeys); if(v) s.add(String(v).trim()); }); return Array.from(s);
+                },
+                renderResult: (matches, ctxTitle) => {
+                    document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText="PROCESANDO TRASLADO...";
+                    setTimeout(() => {
+                        let res = matches.map(r => {
+                            let rawEan = Util.get(r, 'Artículo', 'Articulo', 'EAN', 'Item', 'Producto');
+                            let ean = rawEan ? String(rawEan).trim() : 'SIN_EAN';
+                            let qtyTras = Math.abs(parseFloat(Util.get(r, 'Cant Base', 'Cantidad', 'Cant', 'Recibido')) || 0);
+                            
+                            // Lógica para validar si ese traslado ya se ingresó a DIGI1 leyendo el Bin a Bin del mismo código
+                            let ingresoBin = "NO"; let docBin = "";
+                            if(Store.bb.length > 0) {
+                                let matchBin = Store.bb.find(b => {
+                                    let bEan = String(Util.get(b, 'Artículo','Articulo','EAN','Item')).trim();
+                                    let bQty = Math.abs(parseFloat(Util.get(b, 'Cant', 'Cantidad')) || 0);
+                                    let bDest = String(Util.get(b, 'Destino', 'Ubicación Destino', 'Hacia')).trim().toUpperCase();
+                                    return bEan === ean && bQty === qtyTras && bDest.includes('DIGI1');
+                                });
+                                if(matchBin) {
+                                    ingresoBin = "SÍ (DIGI1)"; docBin = Util.get(matchBin, 'Bin', 'Documento', 'Doc', 'Nro') || "S/D";
+                                }
+                            }
+
+                            return {
+                                'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Traslado': qtyTras,
+                                'Nº Ped': Util.get(r, 'Nº Ped', 'Pedido', 'N Ped') || 'N/A',
+                                'Estado JDA': Util.get(r, 'Nº Nota Recep', 'Nota Recep') ? 'INGRESADO' : 'PENDIENTE',
+                                'Subido a DIGI1 (IA)': ingresoBin,
+                                'Nº BIN': docBin
+                            };
+                        });
+                        Store.view = res; Store.full = res; UI.draw(res); UI.kpi(res.length, Store.tot, 0);
+                        document.getElementById('card-confi-ref').innerText = "---"; document.getElementById('card-confi-inv').innerText = "---";
+                        document.getElementById('ai-manager-report').innerHTML = `Analizando traslado <b style='color:var(--primary)'>${ctxTitle}</b>. La IA ha cruzado el traslado con el archivo Historial_Bin_Bin para verificar subidas a DIGI1. Haga clic en el EAN para ver el reporte forense 360.`;
+                        
+                        UI.modal('m-tras-dyn', false); document.getElementById('loader').style.display='none'; UI.toast("Auditoría Traslado Cargada", 1);
+                    }, 100);
+                }
+            },
+            // ======================================================
+
+            // REPORTE FORENSE IA AVANZADO (Cruce Ventas, Traslados y Bin_Bin)
             generarReporteIA: (ean, descrip) => {
                 let r = Store.view.find(x => String(x.EAN) === String(ean));
-                let sysRows = Store.n.filter(x => String(Util.get(x,'Artículo')) === ean);
-                let physRows = Store.v.filter(x => String(Util.get(x,'Producto')) === ean);
-                let restrRows = Store.r.filter(x => String(Util.get(x,'Artículo')) === ean);
-                let traslados = Store.tr.filter(x => String(Util.get(x,'Artículo')).trim() === ean);
-                let portafolio = Store.p.find(x => String(Util.get(x,'Artículo','EAN')) === ean);
-
-                // Variables de estado dinámicas
-                let cantDigi = 0, cantAlmac = 0, cantToma = null, dif = 0;
                 
-                if (r) {
-                    cantDigi = parseFloat(r['Cant DIGI1']) || 0;
-                    if(r['Cant Toma'] !== undefined) cantToma = parseFloat(r['Cant Toma']);
-                    if(r['Cant ALMAC'] !== undefined) cantAlmac = parseFloat(r['Cant ALMAC']);
-                    if(r['Diferencia'] !== undefined) dif = parseFloat(r['Diferencia']);
-                    else if(r['Stock ALMAC'] !== undefined) dif = parseFloat(r['Stock ALMAC']) * -1;
+                let sysRows = Store.n.filter(x => String(Util.get(x,'Artículo','Articulo','EAN')).trim() === ean);
+                let restrRows = Store.r.filter(x => String(Util.get(x,'Artículo','Articulo','EAN')).trim() === ean);
+                let trasladosMatch = Store.tr.filter(x => String(Util.get(x,'Artículo','Articulo','EAN','Item','Producto')).trim() === ean);
+                let ventasMatch = Store.ve.filter(x => String(Util.get(x,'Artículo','Articulo','EAN','EAN13','Item')).trim() === ean);
+                let binMatch = Store.bb.filter(x => String(Util.get(x,'Artículo','Articulo','EAN','Item')).trim() === ean);
+                let portafolio = Store.p.find(x => String(Util.get(x,'Artículo','Articulo','EAN')).trim() === ean);
+                
+                let cantDigi = 0, cantAlmac = 0, cantToma = null, dif = 0;
+                if (r && r['Cant Toma'] !== undefined) {
+                    cantDigi = parseFloat(r['Cant DIGI1']) || 0; cantToma = parseFloat(r['Cant Toma']); dif = parseFloat(r['Diferencia']);
                 } else {
                     sysRows.forEach(row => {
-                        let u = String(Util.get(row, 'Ubicación')).trim().toUpperCase();
-                        let q = parseFloat(Util.get(row, 'Cant Base')) || 0;
-                        if(u === 'DIGI1') cantDigi += q;
-                        if(u === 'ALMAC') cantAlmac += q;
+                        let u = String(Util.get(row, 'Ubicación','Ubicacion')).trim().toUpperCase(); let q = parseFloat(Util.get(row, 'Cant Base','Cantidad','Cant')) || 0;
+                        if(u === 'DIGI1') cantDigi += q; if(u === 'ALMAC') cantAlmac += q;
                     });
                 }
 
-                // Validación de Flag Exhibición
-                let flagExhibicion = false;
-                if (portafolio) {
-                    let rawFlag = Util.get(portafolio, 'Flag Exhibicion', 'Flag_Exhibicion', 'FLAG EXHIBICION');
-                    if (rawFlag !== undefined) {
-                        let val = String(rawFlag).trim().toUpperCase();
-                        if (val === 'Y' || val === 'S' || val.startsWith('Y') || val.startsWith('S')) flagExhibicion = true;
-                    }
+                // ================= LÓGICA IA FORENSE =================
+                let tLlegadas = 0, tVentas = 0, vFecha = "No registra", docIngreso = false, docSalida = false;
+                
+                // 1. Analizar Traslados (Llegadas)
+                if (trasladosMatch.length > 0) {
+                    tLlegadas = trasladosMatch.reduce((acc, t) => acc + Math.abs(parseFloat(Util.get(t, 'Cant Base', 'Cantidad', 'Cant')) || 0), 0);
+                    // Buscar si esas llegadas se subieron a DIGI1
+                    let matchIn = binMatch.find(b => Math.abs(parseFloat(Util.get(b, 'Cant', 'Cantidad'))||0) === tLlegadas && String(Util.get(b, 'Destino', 'Ubicación Destino', 'Hacia')).toUpperCase().includes('DIGI1'));
+                    if(matchIn) docIngreso = Util.get(matchIn, 'Bin', 'Documento', 'Doc');
                 }
 
-                let cantExhibicion = 0;
-                sysRows.forEach(row => {
-                    let u = String(Util.get(row, 'Ubicación')).trim().toUpperCase();
-                    if (u === 'EXHIB' || u === 'EXDIS') cantExhibicion += (parseFloat(Util.get(row, 'Cant Base')) || 0);
-                });
-                restrRows.forEach(row => {
-                    let u = String(Util.get(row, 'Ubicación')).trim().toUpperCase();
-                    if (u === 'EXHIB' || u === 'EXDIS') cantExhibicion += (parseFloat(Util.get(row, 'Cant Base')) || 0);
-                });
+                // 2. Analizar Ventas (Salidas)
+                if (ventasMatch.length > 0) {
+                    tVentas = ventasMatch.reduce((acc, v) => acc + Math.abs(parseFloat(Util.get(v, 'Cant', 'Cantidad')) || 0), 0);
+                    let fechas = ventasMatch.map(v => Util.get(v, 'Fecha', 'Date', 'Fecha Venta')).filter(f=>f).sort();
+                    if(fechas.length > 0) vFecha = fechas[fechas.length - 1]; // Última fecha
+                    // Buscar si esas ventas generaron un descargo Bin a Bin de DIGI1 a ALMAC
+                    let matchOut = binMatch.find(b => String(Util.get(b, 'Origen', 'Ubicación Origen', 'Desde')).toUpperCase().includes('DIGI1'));
+                    if(matchOut) docSalida = Util.get(matchOut, 'Bin', 'Documento', 'Doc');
+                }
 
-                let alertaExhibicionFalta = (flagExhibicion && cantExhibicion <= 0);
+                // 3. Sintetizar el Informe
+                let titulo = "ESTADO: INVENTARIO ESTABLE"; let hipotesis = "Saldos coherentes con la rotación histórica."; let accion = "Sin acción requerida.";
+                let colorTema = "#10b981"; let iconTema = "fa-check-circle";
 
-                let isNegativo = cantDigi < 0;
-                let isFaltante = (cantToma !== null && cantToma < cantDigi);
-                let isSobrante = (cantToma !== null && cantToma > cantDigi);
-
-                // Construcción del reporte estructurado
-                let titulo = "Diagnóstico Integral";
-                let hipotesis = "";
-                let accion = "";
-
-                // Análisis predictivo de variables
-                let qtyNovedad = Math.abs(dif !== 0 ? dif : (cantDigi < 0 ? cantDigi : 0));
-                let trasladoMatch = traslados.find(t => Math.abs(parseFloat(Util.get(t, 'Cantidad', 'Cant', 'Recibido')) || 0) === qtyNovedad);
-                let cantRestringida = restrRows.reduce((acc, row) => acc + (parseFloat(Util.get(row, 'Cant Base')) || 0), 0);
-
-                if (isNegativo) {
-                    titulo = "ALERTA: INVENTARIO NEGATIVO";
-                    if (trasladoMatch) {
-                        hipotesis = `El saldo negativo de ${cantDigi} en JDA coincide exactamente con un traslado pendiente (Nota: ${Util.get(trasladoMatch, 'Nº Nota Recep') || 'N/A'}, Fecha: ${Util.get(trasladoMatch, 'F Trns') || 'N/A'}). Esto ocurre por ventas de mercancía que ingresó físicamente pero sin entrada en el sistema.`;
-                        accion = "Confirmar la recepción del traslado en el ERP. El negativo se nivelará automáticamente a 0.";
-                    } else if (cantAlmac > 0) {
-                        hipotesis = `Existe un saldo negativo en JDA (DIGI1) de ${cantDigi}, pero la base reporta un saldo a favor de ${cantAlmac} en el Almacén principal. Falla de movimiento interno.`;
-                        accion = `Ejecutar movimiento Bin a Bin trasladando ${Math.abs(cantDigi)} unidades desde ALMAC hacia DIGI1.`;
+                if (cantDigi < 0) {
+                    titulo = "ALERTA: INVENTARIO NEGATIVO"; colorTema = "#e30613"; iconTema = "fa-exclamation-triangle";
+                    if (tVentas > 0 && !docSalida && !docIngreso) {
+                        hipotesis = `El negativo (-${Math.abs(cantDigi)}) se generó porque se registraron ventas recientes (${tVentas} unds el ${vFecha}), pero la mercancía fue entregada desde el camión/bodega sin hacer el traslado a JDA ni el ingreso Bin a Bin a DIGI1.`;
+                        accion = "El cajero vendió 'en rojo'. Ingresa la Nota de Recepción pendiente y el negativo se nivelará.";
+                    } else if (tVentas > 0 && docSalida) {
+                        hipotesis = `Se facturaron ${tVentas} unds. Se hizo el descargo manual a ALMAC (BIN: ${docSalida}), pero DIGI1 no tenía saldo inicial suficiente, generando negativo.`;
+                        accion = `Verificar si sobró mercancía física equivalente. Cruce de código probable.`;
                     } else {
-                        hipotesis = `No se detectan traslados por recibir ni saldos de respaldo en Almacén para este negativo. Sugiere fuertemente un error de facturación por cruce de códigos en caja o avería no descargada.`;
-                        accion = "Auditar el kárdex del día anterior e investigar posibles cruces de referencias con productos similares de la misma sublínea.";
+                        hipotesis = `Saldo negativo (-${Math.abs(cantDigi)}) sin ventas registradas ni traslados. Falla en facturación (cruce) o avería.`;
+                        accion = "Auditoría de kárdex requerida. Nivelar desde ALMAC si hay saldo disponible.";
                     }
                 } 
-                else if (isFaltante) {
-                    titulo = "INVESTIGACIÓN: FALTANTE FÍSICO";
+                else if (cantToma !== null && cantToma < cantDigi) {
+                    titulo = "NOVEDAD: FALTANTE FÍSICO"; colorTema = "#d97706"; iconTema = "fa-search";
                     let faltan = cantDigi - cantToma;
-                    if (cantRestringida >= faltan) {
-                        hipotesis = `Faltan ${faltan} unidades en JDA, pero el sistema localiza ${cantRestringida} unidades en zonas restringidas. La mercancía no está perdida, falta bajarla para nivelar.`;
-                        accion = "Ubicar la mercancía físicamente en las posiciones de JDA y realizar el movimiento de bajada a DIGI1.";
-                    } else if (portafolio && String(Util.get(portafolio, 'Flag Exhibicion')).toUpperCase().startsWith('N')) {
-                        hipotesis = `Faltan ${faltan} unidades. Atención: El portafolio indica que este producto NO debería tener presencia en exhibición.`;
-                        accion = "Retirar cualquier saldo restante de DIGI1 en el sistema y reubicarlo lógicamente en el inventario de ALMAC.";
+                    if (tVentas > 0 && !docSalida) {
+                        hipotesis = `Faltan ${faltan} unds físicamente. El sistema detecta ventas recientes (${tVentas} unds), pero NO hay registro Bin de descarga desde DIGI1 a ALMAC. La venta descontó lógica central, pero tu DIGI1 quedó inflado.`;
+                        accion = `Ejecuta movimiento Bin a Bin de DIGI1 a ALMAC por ${faltan} unidades para limpiar el fantasma.`;
+                    } else if (tLlegadas >= faltan && docIngreso) {
+                        hipotesis = `Faltan ${faltan} unds en piso. Se hizo el ingreso en sistema a DIGI1 (BIN: ${docIngreso}), pero físicamente alguien lo guardó en bodega.`;
+                        accion = "Buscar mercancía en áreas restringidas y sacarla al piso de ventas.";
                     } else {
-                        hipotesis = `Déficit de ${faltan} unidades en JDA sin respaldo lógico en bodega ni en traslados recientes. Existe un alto riesgo de novedad real (pérdida o robo).`;
-                        accion = "Generar reporte de novedad inmediata y ejecutar conteo cíclico al 100% de la referencia y sus agregados físicos.";
+                        hipotesis = `Déficit de ${faltan} unidades sin rastro en Ventas ni Traslados. Probable pérdida física.`;
+                        accion = "Generar reporte de novedad y ejecutar conteo cíclico.";
                     }
                 }
-                else if (isSobrante) {
-                    titulo = "INVESTIGACIÓN: SOBRANTE FÍSICO";
+                else if (cantToma !== null && cantToma > cantDigi) {
+                    titulo = "NOVEDAD: SOBRANTE FÍSICO"; colorTema = "#2563eb"; iconTema = "fa-plus-circle";
                     let sobran = cantToma - cantDigi;
-                    if (trasladoMatch) {
-                         hipotesis = `Exceso físico de ${sobran} unidades en JDA. Existe un traslado por la misma cantidad que probablemente ya fue surtido físicamente por el personal, pero sigue en tránsito lógico.`;
-                         accion = "Confirmar recepción del traslado pendiente en el JDA/ERP para que el saldo del sistema alcance al físico.";
+                    if (tLlegadas >= sobran && !docIngreso) {
+                        hipotesis = `Sobran ${sobran} unds en el conteo. El archivo de Traslados confirma que llegaron ${tLlegadas} unds, pero NO hay registro de ingreso Bin a Bin a DIGI1. La mercancía se surtió en piso antes de dar entrada lógica.`;
+                        accion = `Ejecuta el movimiento de ALMAC a DIGI1 por ${sobran} unds.`;
                     } else {
-                         hipotesis = `Se identificaron ${sobran} unidades de más. Posible mercancía de ALMAC mezclada indebidamente en JDA o una devolución de cliente no ingresada correctamente al sistema.`;
-                         accion = "Verificar bitácora de devoluciones del día o ejecutar traslado correctivo de DIGI1 hacia ALMAC si la mercancía no pertenece a exhibición.";
+                        hipotesis = `Exceso de ${sobran} unds. Probable mercancía de ALMAC mezclada o devolución/avería reintegrada sin proceso JDA.`;
+                        accion = `Verificar devoluciones en cajas y ajustar desde ALMAC.`;
                     }
-                } else {
-                    titulo = "NIVELACIÓN CONFIRMADA";
-                    hipotesis = "Los saldos lógicos y físicos de la toma concuerdan perfectamente. No se detectan anomalías de ubicaciones cruzadas ni inventarios negativos ocultos en JDA.";
-                    accion = "Ninguna acción técnica requerida. Continuar con el monitoreo estándar.";
                 }
 
-                // Inyección de alerta de exhibición
-                if (alertaExhibicionFalta) {
-                    hipotesis += `<br><br><strong style="color:#e30613;"><i class="fas fa-exclamation-triangle"></i> REGLA DE PORTAFOLIO INCUMPLIDA:</strong> El producto debe estar exhibido (Flag Y), pero no registra saldo en EXHIB ni EXDIS.`;
-                    accion += ` <strong style="color:#10b981;">Además, se debe SURTIR o enviar a EXDIS inmediatamente.</strong>`;
-                }
-
-                // Generación de la vista y la voz
-                let msgText = `<strong style="color:var(--primary); font-size:1.05rem; letter-spacing:0.5px;"><i class="fas fa-microchip"></i> ${titulo}</strong><br><br>
-                               <span style="color:#334155; font-size:0.9rem;"><strong>Hipótesis Fundamental:</strong> ${hipotesis}</span><br><br>
-                               <span style="color:var(--ai-color); font-size:0.9rem;"><strong><i class="fas fa-check-circle"></i> Acción Recomendada:</strong> ${accion}</span>`;
+                // Generar HTML Forense
+                let msgText = `
+                    <div class="timeline-box">
+                        <div class="tl-item"><span class="tl-lbl"><i class="fas fa-truck-loading" style="color:#0ea5e9"></i> Llegadas (Traslados)</span><span class="tl-val">${tLlegadas > 0 ? tLlegadas + ' unds' : '0'}</span></div>
+                        <div class="tl-item"><span class="tl-lbl"><i class="fas fa-sign-in-alt" style="color:#10b981"></i> Ingreso a DIGI1 (Bin)</span><span class="tl-val" style="color:${docIngreso?'#10b981':'#ef4444'}">${docIngreso ? 'SÍ (Bin: '+docIngreso+')' : 'NO REGISTRA'}</span></div>
+                        <div class="tl-item"><span class="tl-lbl"><i class="fas fa-shopping-cart" style="color:#f59e0b"></i> Ventas Recientes</span><span class="tl-val">${tVentas > 0 ? tVentas + ' unds ('+vFecha+')' : '0'}</span></div>
+                        <div class="tl-item"><span class="tl-lbl"><i class="fas fa-sign-out-alt" style="color:#8b5cf6"></i> Salida DIGI1 x Venta</span><span class="tl-val" style="color:${docSalida?'#10b981':'#ef4444'}">${docSalida ? 'SÍ (Bin: '+docSalida+')' : 'NO REGISTRA'}</span></div>
+                    </div>
+                    <strong style="color:${colorTema}; font-size:1.05rem;"><i class="fas ${iconTema}"></i> ${titulo}</strong><br><br>
+                    <span style="color:#334155; font-size:0.9rem;"><strong>Análisis Forense:</strong> ${hipotesis}</span><br><br>
+                    <span style="color:var(--ai-color); font-size:0.9rem;"><strong><i class="fas fa-arrow-right"></i> Acción Inmediata:</strong> ${accion}</span>
+                `;
                 
-                let msgVoz = `${titulo}. ${hipotesis.replace(/<[^>]*>?/gm, '')} Acción recomendada: ${accion.replace(/<[^>]*>?/gm, '')}`;
-
+                let msgVoz = `${titulo}. ${hipotesis.replace(/<[^>]*>?/gm, '')} Acción: ${accion.replace(/<[^>]*>?/gm, '')}`;
                 return { text: msgText, voz: msgVoz };
             },
 
@@ -647,70 +924,43 @@
                 document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText="PROCESANDO...";
                 setTimeout(() => {
                     try {
-                        let res=[], h=Util.get, sysMap = {};
+                        let res=[], h=Util.get, sysMap = {}, otrasUbicMap = {};
                         
-                        // Mapear el sistema (DIGI1)
                         Store.n.forEach(r => { 
-                            if(h(r,'Ubicación')==='DIGI1') { 
-                                let e = String(h(r,'Artículo')); 
-                                sysMap[e] = (sysMap[e]||0) + parseFloat(h(r,'Cant Base')||0); 
-                            } 
+                            let u = String(h(r,'Ubicación', 'Ubicacion')).trim().toUpperCase(); let e = String(h(r,'Artículo', 'Articulo', 'EAN')).trim(); 
+                            let q = parseFloat(h(r,'Cant Base', 'Cantidad', 'Cant'))||0;
+                            if(u === 'DIGI1') { sysMap[e] = (sysMap[e]||0) + q; } 
+                            else if (q > 0) { if(!otrasUbicMap[e]) otrasUbicMap[e] = {}; otrasUbicMap[e][u] = (otrasUbicMap[e][u]||0) + q; }
                         });
                         
-                        // Mapear la toma física (CSV)
-                        let csvMap = {}; 
-                        Store.t.forEach(r => { 
-                            let e = String(r.EAN); 
-                            csvMap[e] = (csvMap[e]||0) + r.Cant; 
-                        });
-                        
+                        let csvMap = {}; Store.t.forEach(r => { let e = String(r.EAN); csvMap[e] = (csvMap[e]||0) + r.Cant; });
                         let allEans = (type === 'Selectivo') ? Object.keys(csvMap) : [...new Set([...Object.keys(sysMap), ...Object.keys(csvMap)])];
                         
-                        // Cálculo Individual
                         res = allEans.map(ean => {
-                            let sys = sysMap[ean] || 0; 
-                            let csv = csvMap[ean] || 0; 
-                            let diff = csv - sys;
-                            
-                            // Confiabilidad de Referencia (100% si exacto, 0% si hay diferencia)
+                            let sys = sysMap[ean] || 0; let csv = csvMap[ean] || 0; let diff = csv - sys;
                             let confRef = (sys === csv) ? "100%" : "0%";
-                            
-                            // NUEVA FÓRMULA: Confiabilidad de Inventario Individual (Penaliza sobrantes y faltantes)
                             let confInvCalc = sys === 0 ? (csv === 0 ? 100 : 0) : Math.max(0, (1 - (Math.abs(diff) / sys)) * 100);
-                            let confInv = confInvCalc.toFixed(1) + "%";
-
-                            return { 
-                                'EAN': ean, 
-                                'Descripción': Core.desc(ean), 
-                                'Cant Toma': csv, 
-                                'Cant DIGI1': sys, 
-                                'Diferencia': diff, 
-                                'Conf. Ref': confRef, 
-                                'Conf. Inv': confInv, 
-                                'Estado': diff === 0 ? 'OK' : 'NOVEDAD' 
-                            };
+                            
+                            let strOtras = "";
+                            if (diff !== 0 && otrasUbicMap[ean]) {
+                                let locs = []; for (let [loc, qty] of Object.entries(otrasUbicMap[ean])) { if(qty > 0) locs.push(`${loc}: ${qty}`); }
+                                strOtras = locs.join(' | ');
+                            }
+                            return { 'EAN': ean, 'Descripción': Core.desc(ean), 'Cant Toma': csv, 'Cant DIGI1': sys, 'Diferencia': diff, 'En Otras Ubic': strOtras, 'Conf. Ref': confRef, 'Conf. Inv': confInvCalc.toFixed(1) + "%", 'Estado': diff === 0 ? 'OK' : 'NOVEDAD' };
                         });
                         
                         Store.view = res; Store.full = res; UI.draw(res);
-                        let errCount = res.filter(x => x.Diferencia !== 0).length;
-                        
-                        // Cálculo Global para KPIs
-                        let exactMatches = res.filter(x => x.Diferencia === 0).length;
+                        let errCount = res.filter(x => x.Diferencia !== 0).length; let exactMatches = res.filter(x => x.Diferencia === 0).length;
                         let globalConfRef = res.length > 0 ? ((exactMatches / res.length) * 100).toFixed(1) : 0;
-                        
-                        // NUEVA FÓRMULA: Confiabilidad de Inventario Global
-                        let sumSys = res.reduce((sum, x) => sum + Math.max(0, x['Cant DIGI1']), 0);
-                        let sumAbsDiff = res.reduce((sum, x) => sum + Math.abs(x['Diferencia']), 0);
+                        let sumSys = res.reduce((sum, x) => sum + Math.max(0, x['Cant DIGI1']), 0); let sumAbsDiff = res.reduce((sum, x) => sum + Math.abs(x['Diferencia']), 0);
                         let globalConfInv = sumSys === 0 ? (sumAbsDiff === 0 ? 100 : 0) : Math.max(0, ((sumSys - sumAbsDiff) / sumSys) * 100).toFixed(1);
 
-                        UI.kpi(res.length, Store.tot, errCount, globalConfRef, globalConfInv);
-                        UI.chart(Store.tot, errCount);
-                        document.getElementById('loader').style.display='none'; 
-                        UI.toast(`Análisis ${type} finalizado`, 1);
-                    } catch(e) { 
-                        document.getElementById('loader').style.display='none'; 
-                        alert("Error: " + e); 
-                    }
+                        document.getElementById('card-confi-ref').innerText = globalConfRef + '%'; document.getElementById('card-confi-ref').style.color = globalConfRef >= 96 ? '#16a34a' : '#ef4444';
+                        document.getElementById('card-confi-inv').innerText = globalConfInv + '%'; document.getElementById('card-confi-inv').style.color = globalConfInv >= 98 ? '#16a34a' : '#ef4444';
+
+                        document.getElementById('ai-manager-report').innerHTML = `<div style="font-weight: 800; color: #0f172a;"><i class="fas fa-check-double"></i> RESULTADOS DE TOMA FÍSICA</div><p style="margin-top:5px; font-size:0.85rem;">Se han detectado ${errCount} novedades. Para usar la <b>Auditoría Forense IA</b> y saber <i>por qué</i> ocurrieron estas novedades, haz clic en el EAN de cualquier producto marcado en rojo en la tabla.</p>`;
+                        UI.kpi(res.length, Store.tot, errCount); document.getElementById('loader').style.display='none'; UI.toast(`Análisis ${type} finalizado`, 1);
+                    } catch(e) { document.getElementById('loader').style.display='none'; alert("Error: " + e); }
                 }, 100);
             },
 
@@ -719,90 +969,86 @@
                 document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText="EJECUTANDO ANÁLISIS...";
                 setTimeout(()=>{
                     try {
+                        document.getElementById('card-confi-ref').innerText = "---"; document.getElementById('card-confi-inv').innerText = "---";
+                        document.getElementById('ai-manager-report').innerHTML = "Ejecute el cruce de <b style='color:var(--primary)'>TOMA FÍSICA vs DIGI</b> para generar el diagnóstico automatizado.";
+
                         let res=[], h=Util.get;
                         if(op === 'riesgo') {
-                            let physMap = {}; Store.v.forEach(r => { let e=String(h(r,'Producto')); if(!physMap[e]) physMap[e]=[]; physMap[e].push(h(r,'Ubicacion')); });
+                            let physMap = {}; 
+                            Store.v.forEach(r => { let e=String(h(r,'Producto', 'Artículo', 'EAN')).trim(); if(!physMap[e]) physMap[e]=[]; physMap[e].push(String(h(r,'Ubicacion', 'Ubicación'))); });
                             Store.n.forEach(r => {
-                                if(h(r,'Ubicación') === 'DIGI1') {
-                                    let ean = String(h(r,'Artículo')), qty = parseFloat(h(r,'Cant Base')) || 0, locs = physMap[ean] || [];
+                                let u = String(h(r,'Ubicación', 'Ubicacion')).trim().toUpperCase();
+                                if(u === 'DIGI1') {
+                                    let ean = String(h(r,'Artículo', 'Articulo', 'EAN')).trim(); let qty = parseFloat(h(r,'Cant Base', 'Cantidad')) || 0; let locs = physMap[ean] || [];
                                     if(locs.length > 0) {
-                                        let isNegative = qty < 0; let hasExcludedLoc = locs.some(l => { let u = l.trim().toUpperCase(); return u.startsWith('E') || Cfg.despa.includes(u); });
+                                        let isNegative = qty < 0; let hasExcludedLoc = locs.some(l => { let uv = l.trim().toUpperCase(); return uv.startsWith('E') || Cfg.despa.includes(uv); });
                                         if(!hasExcludedLoc) {
-                                            let hasValidPiso = locs.some(l => !l.includes('BODEGA') && !l.includes('ALTOS'));
-                                            if(isNegative || !hasValidPiso) { res.push({ 'EAN': ean, 'Descripción': h(r,'Descr'), 'Cant DIGI1': qty, 'Ubic Físicas': locs.join(', '), 'Problema': isNegative ? "NEGATIVO REAL" : "FÍSICO EN JDA" }); }
+                                            let hasValidPiso = locs.some(l => !l.toUpperCase().includes('BODEGA') && !l.toUpperCase().includes('ALTOS'));
+                                            if(isNegative || !hasValidPiso) { res.push({ 'EAN': ean, 'Descripción': h(r,'Descr', 'Descripcion'), 'Cant DIGI1': qty, 'Ubic Físicas': locs.join(', '), 'Problema': isNegative ? "NEGATIVO REAL" : "FÍSICO EN JDA" }); }
                                         }
                                     }
                                 }
                             });
                         }
                         else if(op==='negativos'){
-                            let am={}; Store.n.forEach(r=>{ let u=h(r,'Ubicación'), e=String(h(r,'Artículo')), c=parseFloat(h(r,'Cant Base'))||0; if(u==='ALMAC') am[e]=c; });
-                            res = Store.n.filter(r => h(r,'Ubicación')==='DIGI1' && parseFloat(h(r,'Cant Base'))<0).map(r => {
-                                let e=String(h(r,'Artículo')), di=parseFloat(h(r,'Cant Base'))||0, al=am[e]||0;
-                                let cantMover = Math.abs(di);
-                                return { EAN: e, Descripción: h(r,'Descr'), 'Cant DIGI1': di, 'Cant ALMAC': al, 'Acción': al>0 ? `MOVER DE ALMAC A DIGI1: ${cantMover}`:'NOVEDAD' };
+                            let am={}; 
+                            Store.n.forEach(r=>{ let u=String(h(r,'Ubicación', 'Ubicacion')).trim().toUpperCase(); let e=String(h(r,'Artículo', 'Articulo', 'EAN')).trim(); let c=parseFloat(h(r,'Cant Base', 'Cantidad'))||0; if(u==='ALMAC') am[e]=c; });
+                            res = Store.n.filter(r => String(h(r,'Ubicación', 'Ubicacion')).trim().toUpperCase()==='DIGI1' && (parseFloat(h(r,'Cant Base', 'Cantidad'))||0)<0).map(r => {
+                                let e=String(h(r,'Artículo', 'Articulo', 'EAN')).trim(); let di=parseFloat(h(r,'Cant Base', 'Cantidad'))||0; let al=am[e]||0; let cantMover = Math.abs(di);
+                                return { EAN: e, Descripción: h(r,'Descr', 'Descripcion'), 'Cant DIGI1': di, 'Cant ALMAC': al, 'Acción': al>0 ? `MOVER A DIGI1: ${cantMover}`:'NOVEDAD' };
                             });
                         }
                         else if(op.startsWith('almac')){
                             let m={}; 
                             Store.n.forEach(r=>{ 
-                                let e=String(h(r,'Artículo')).trim(); if(!m[e]) m[e]={e, d:h(r,'Descr'), s:h(r,'Sublinea')||"", di:0, al:0, exh:0, exdis:0, hd:false};
-                                let u=String(h(r,'Ubicación')).trim().toUpperCase(), q=parseFloat(h(r,'Cant Base'))||0; 
+                                let e=String(h(r,'Artículo', 'Articulo', 'EAN')).trim(); if(!m[e]) m[e]={e, d:h(r,'Descr', 'Descripcion')||"", s:h(r,'Sublinea', 'Sublínea')||"", di:0, al:0, exh:0, exdis:0, hd:false};
+                                let u=String(h(r,'Ubicación', 'Ubicacion')).trim().toUpperCase(); let q=parseFloat(h(r,'Cant Base', 'Cantidad'))||0; 
                                 if(u==='DIGI1'){ m[e].di+=q; m[e].hd=true; } if(u==='ALMAC') m[e].al+=q; if(u==='EXDIS') m[e].exdis+=q; if(u==='EXHIB') m[e].exh+=q; 
                             });
                             Store.r.forEach(r=>{
-                                let e=String(h(r,'Artículo')).trim(), u=String(h(r,'Ubicación')).trim().toUpperCase(), q=parseFloat(h(r,'Cant Base'))||0;
-                                if(u==='EXHIB'||u==='EXDIS') { if(!m[e]) m[e]={e, d:h(r,'Descr')||"", s:h(r,'Sublinea')||"", di:0, al:0, exh:0, exdis:0, hd:false}; if(u==='EXHIB') m[e].exh+=q; if(u==='EXDIS') m[e].exdis+=q; }
+                                let e=String(h(r,'Artículo', 'Articulo', 'EAN')).trim(); let u=String(h(r,'Ubicación', 'Ubicacion')).trim().toUpperCase(); let q=parseFloat(h(r,'Cant Base', 'Cantidad'))||0;
+                                if(u==='EXHIB'||u==='EXDIS') { if(!m[e]) m[e]={e, d:h(r,'Descr', 'Descripcion')||"", s:h(r,'Sublinea', 'Sublínea')||"", di:0, al:0, exh:0, exdis:0, hd:false}; if(u==='EXHIB') m[e].exh+=q; if(u==='EXDIS') m[e].exdis+=q; }
                             });
                             
-                            let arr=Object.values(m), norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase(), exc=Cfg.exc.map(norm);
+                            let arr=Object.values(m), norm=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim(), exc=Cfg.exc.map(norm);
                             if(op==='almac_digi0') res=arr.filter(i=>i.hd && i.di===0 && i.al>0).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':0,'Cant ALMAC':i.al,Acción:'SURTIR'}));
                             else if(op==='almac_almac0') {
                                 res=arr.filter(i=>{
                                     if(i.al !== 0 || i.di <= 0) return false; 
-                                    let cat = norm(i.s); let pi = Store.p.find(p => String(h(p,'Artículo','EAN')).trim() === i.e); 
+                                    let cat = norm(i.s); let pi = Store.p.find(p => String(h(p,'Artículo','Articulo','EAN')).trim() === i.e); 
                                     if(!cat && pi) cat = norm(h(pi,'Sublinea','Categoria')||"");
                                     let flag = ""; 
-                                    if(pi) {
-                                        let rawFlag = h(pi, 'Flag Exhibicion', 'Flag_Exhibicion', 'FLAG EXHIBICION');
-                                        if (rawFlag !== undefined) {
-                                            let val = String(rawFlag).trim().toUpperCase();
-                                            if (val==='Y'||val==='S'||val.startsWith('Y')||val.startsWith('S')) flag='Y';
-                                            else if (val==='N'||val==='NO'||val.startsWith('N')) flag='N';
-                                        }
-                                    }
+                                    if(pi) { let rawFlag = h(pi, 'Flag Exhibicion', 'Flag_Exhibicion', 'FLAG EXHIBICION'); if (rawFlag !== undefined) { let val = String(rawFlag).trim().toUpperCase(); if (val==='Y'||val==='S'||val.startsWith('Y')||val.startsWith('S')) flag='Y'; else if (val==='N'||val==='NO'||val.startsWith('N')) flag='N'; } }
                                     let tieneExhibicion = (i.exh > 0 || i.exdis > 0);
-                                    if (flag === 'Y' && tieneExhibicion) return false; 
-                                    if (flag === 'N' && !tieneExhibicion) return false; 
-                                    
+                                    if (flag === 'Y' && tieneExhibicion) return false; if (flag === 'N' && !tieneExhibicion) return false; 
                                     let catFiltro = ["DRONES", "CELULAR", "PORTATIL", "TABLET", "DEPORTES", "PROYECTORES", "CONSOLAS"].map(norm);
-                                    if (catFiltro.some(c => cat.includes(c))) return true;
-                                    return !exc.some(e=>cat.includes(e));
+                                    if (catFiltro.some(c => cat.includes(c))) return true; return !exc.some(e=>cat.includes(e));
                                 }).map(i=>({EAN:i.e, Descripción:i.d, 'Cant DIGI1':i.di, 'Cant ALMAC':0, Estado:'SOLO JDA'}));
                             }
-                            else if(op==='almac_neg') res=arr.filter(i=>i.di>0 && i.al<0).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Acción:`MOVER DE DIGI1 A ALMAC: ${Math.abs(i.al)}`}));
+                            else if(op==='almac_neg') res=arr.filter(i=>i.di>0 && i.al<0).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Acción:`MOVER A ALMAC: ${Math.abs(i.al)}`}));
                             else if(op==='almac_sum0') res=arr.filter(i=>(i.di+i.al)===0 && !(i.di===0&&i.al===0)).map(i=>({EAN:i.e,Descripción:i.d,'Cant DIGI1':i.di,'Cant ALMAC':i.al,Suma:0}));
                         }
                         else if(op==='prohibido'){
-                            let norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim(), ok=Cfg.ok.map(norm);
-                            res=Store.n.filter(r=>{ if(h(r,'Ubicación')!=='DIGI1')return false; return !ok.includes(norm(h(r,'Sublinea')||"")); }).map(r=>({EAN:h(r,'Artículo'),Descripción:h(r,'Descr'),Sublínea:h(r,'Sublinea'),'Cant DIGI1':h(r,'Cant Base'),Estado:'SACAR'}));
+                            let norm=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim(), ok=Cfg.ok.map(norm);
+                            res=Store.n.filter(r=>{ if(String(h(r,'Ubicación', 'Ubicacion')).trim().toUpperCase()!=='DIGI1') return false; return !ok.includes(norm(h(r,'Sublinea', 'Sublínea')||"")); 
+                            }).map(r=>({EAN:String(h(r,'Artículo', 'Articulo', 'EAN')).trim(),Descripción:h(r,'Descr', 'Descripcion'),Sublínea:h(r,'Sublinea', 'Sublínea'),'Cant DIGI1':parseFloat(h(r,'Cant Base', 'Cantidad'))||0,Estado:'SACAR'}));
                         }
                         else if(op==='nivelar'){
-                            let ds=new Set(); Store.v.forEach(r=>{if(Cfg.despa.includes(h(r,'Ubicacion'))) ds.add(String(h(r,'Producto')))});
-                            let m={}; Store.n.forEach(r=>{ let e=String(h(r,'Artículo')); if(!m[e])m[e]={e,d:h(r,'Descr')||"",s:h(r,'Sublinea')||"",f:0,b:0}; let u=h(r,'Ubicación'),q=parseFloat(h(r,'Cant Base'))||0; if(u==='DIGI1'||u==='EXHIB')m[e].f+=q; if(u==='ALMAC')m[e].b+=q; });
-                            res=Object.values(m).filter(i=>{ if(ds.has(i.e)||i.b<=0||(i.f===0&&i.b===0))return false; let ok=Cfg.niv.some(c=>i.s.includes(c)), na=!i.s.toLowerCase().includes("accesorio"), no=!i.d.toUpperCase().includes("AIO"); return ok&&na&&no; }).map(i=>({EAN:i.e,Descripción:i.d,'Suma JDA':i.f,'Stock ALMAC':i.b,Acción:'MOVER DE ALMAC A DIGI1'}));
+                            let ds=new Set(); Store.v.forEach(r=>{if(Cfg.despa.includes(String(h(r,'Ubicacion', 'Ubicación')).trim().toUpperCase())) ds.add(String(h(r,'Producto', 'Artículo', 'Articulo', 'EAN')).trim())});
+                            let m={}; Store.n.forEach(r=>{ let e=String(h(r,'Artículo', 'Articulo', 'EAN')).trim(); if(!m[e])m[e]={e,d:h(r,'Descr', 'Descripcion')||"",s:h(r,'Sublinea', 'Sublínea')||"",f:0,b:0}; let u=String(h(r,'Ubicación', 'Ubicacion')).trim().toUpperCase(); let q=parseFloat(h(r,'Cant Base', 'Cantidad'))||0; if(u==='DIGI1'||u==='EXHIB') m[e].f+=q; if(u==='ALMAC') m[e].b+=q; });
+                            res=Object.values(m).filter(i=>{ if(ds.has(i.e)||i.b<=0||(i.f===0&&i.b===0))return false; let ok=Cfg.niv.some(c=>i.s.includes(c)), na=!i.s.toLowerCase().includes("accesorio"), no=!i.d.toUpperCase().includes("aio"); return ok&&na&&no; 
+                            }).map(i=>({EAN:i.e,Descripción:i.d,'Suma JDA':i.f,'Stock ALMAC':i.b,Acción:'MOVER A DIGI1'}));
                         }
                         
                         Store.view=res; Store.full=res; UI.draw(res);
-                        let err = res.filter(x=>x.Estado==='NOVEDAD' || x.Diferencia!==0).length || res.length;
-                        UI.kpi(res.length, Store.tot, err); UI.chart(Store.tot, err);
-                        document.getElementById('loader').style.display='none'; UI.toast("Análisis finalizado",1);
+                        let err = res.filter(x=>x.Estado==='NOVEDAD' || x.Diferencia!==0 || String(x['Acción']).includes('MOVER')).length || res.length;
+                        UI.kpi(res.length, Store.tot, err); document.getElementById('loader').style.display='none'; UI.toast("Análisis finalizado",1);
                     } catch(e) { document.getElementById('loader').style.display='none'; alert(e); }
                 }, 100);
             },
 
             search: ()=>{ let t=document.getElementById('search').value.toLowerCase(); UI.draw(Store.full.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(t)))); },
-            desc: (e)=>{ let i=Store.n.find(r=>String(Util.get(r,'Artículo'))===e); return i?Util.get(i,'Descr'):"Producto Desconocido"; },
+            desc: (e)=>{ let i=Store.n.find(r=>String(Util.get(r,'Artículo','Articulo','EAN','Producto')).trim()===e); return i?Util.get(i,'Descr','Descripcion'):"Producto Desconocido"; },
             openERP: (ean) => { navigator.clipboard.writeText(ean).then(() => { UI.toast("EAN copiado", 1); window.open('https://erp.colcomercio.com/psp/PROD_1/EMPLOYEE/ERP/c/MAINTAIN_INVENTORY.MATERIAL_TRANSFER.GBL?&skipcnav=1', '_blank'); }); }
         };
 
@@ -827,25 +1073,7 @@
             led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
             modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
             
-            kpi: (v,t,e, confiRef, confiInv)=>{ 
-                document.getElementById('k-view').innerText=v; document.getElementById('k-tot').innerText=t; document.getElementById('k-err').innerText=e || 0;
-                let bar=document.getElementById('c-bar'), val=document.getElementById('c-val'), txt=document.getElementById('c-txt'), headCump=document.getElementById('k-cump-head');
-                let ok=t-(e||0), acc=t>0?((ok/t)*100).toFixed(1):0;
-                val.innerText=`${acc}%`; bar.style.width=`${acc}%`; headCump.innerText=`${acc}%`;
-                let col='', statusTxt='';
-                if(acc>=98){ col='#10b981'; statusTxt='Excelente'; } else if(acc>=90){ col='#f59e0b'; statusTxt='Aceptable'; } else { col='#ef4444'; statusTxt='Crítico'; }
-                val.style.color=col; bar.style.background=col; txt.innerText=statusTxt; headCump.style.color=col;
-                
-                let boxRef = document.getElementById('box-confi-ref');
-                let boxInv = document.getElementById('box-confi-inv');
-                if (confiRef !== undefined && confiInv !== undefined) {
-                    if(boxRef) { boxRef.style.display = 'flex'; document.getElementById('k-confi-ref').innerText = confiRef + '%'; }
-                    if(boxInv) { boxInv.style.display = 'flex'; document.getElementById('k-confi-inv').innerText = confiInv + '%'; }
-                } else {
-                    if(boxRef) boxRef.style.display = 'none';
-                    if(boxInv) boxInv.style.display = 'none';
-                }
-            },
+            kpi: (v,t,e)=>{ document.getElementById('k-view').innerText=v; document.getElementById('k-tot').innerText=t; document.getElementById('k-err').innerText=e || 0; },
             draw: (d)=>{
                 let th=document.getElementById('th'), tb=document.getElementById('tb'), em=document.getElementById('empty'), cnt=document.getElementById('lbl-count');
                 th.innerHTML=""; tb.innerHTML="";
@@ -854,17 +1082,15 @@
                 let cols=Object.keys(d[0]); th.innerHTML=`<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
                 tb.innerHTML=d.map(r=>`<tr>${cols.map(c=>{
                     let v=r[c];
-                    if(c==='EAN'||c==='Artículo') return `<td><span class="lnk" onclick="UI.s360('${v}')">${v}</span></td>`;
-                    if(c==='Acción' || c==='Acción Sugerida' || c==='Tipo Novedad') return `<td class="nowrap-col"><span class="tg tg-crit" style="background:var(--ai-color); border:none; box-shadow:none;">${v}</span></td>`;
+                    if(c==='EAN'||c==='Artículo'||c==='Articulo') return `<td><span class="lnk" onclick="UI.s360('${v}')">${v}</span></td>`;
+                    if(String(c).includes('Acción') || c==='Tipo Novedad') return `<td class="nowrap-col"><span class="tg tg-crit" style="background:var(--ai-color); border:none; box-shadow:none;">${v}</span></td>`;
+                    if(c==='Estado' && (v==='PENDIENTE' || v==='INGRESADO')) return `<td class="nowrap-col"><span class="tg" style="background:${v==='INGRESADO'?'#dcfce7':'#fef3c7'}; color:${v==='INGRESADO'?'#166534':'#92400e'}; border:1px solid ${v==='INGRESADO'?'#86efac':'#fcd34d'};">${v}</span></td>`;
                     if(c==='Estado') return `<td class="nowrap-col"><span class="tg ${v==='OK'?'tg-ok':(v==='NOVEDAD'?'tg-err':'tg-war')}">${v}</span></td>`;
+                    if(c==='En Otras Ubic' && v) return `<td class="nowrap-col"><span style="background-color: #fee2e2; color: #b91c1c; padding: 4px 8px; border-radius: 4px; font-weight: 800; border: 1px solid #fca5a5; font-size: 0.7rem;"><i class="fas fa-map-marker-alt"></i> ${v}</span></td>`;
+                    if(c==='Subido a DIGI1 (IA)' && String(v).includes('SÍ')) return `<td class="nowrap-col"><span class="tg tg-ok">${v}</span></td>`;
+                    if(c==='Subido a DIGI1 (IA)') return `<td class="nowrap-col"><span class="tg tg-err">${v}</span></td>`;
                     return `<td>${v}</td>`;
                 }).join('')}</tr>`).join('');
-            },
-            chart: (tot,err)=>{
-                if(typeof Chart === 'undefined') return;
-                let ctx=document.getElementById('chart').getContext('2d'); if(Store.chart)Store.chart.destroy();
-                let ok=tot-err; if(ok<0)ok=0;
-                Store.chart=new Chart(ctx,{type:'doughnut',data:{labels:['OK','Error'],datasets:[{data:[ok,err],backgroundColor:['#10b981','#ef4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
             },
             s360: (ean)=>{
                 ean=String(ean).trim(); UI.modal('m-360',true);
@@ -873,8 +1099,8 @@
                 let dataIA = Core.generarReporteIA(ean, nombreProd);
                 document.getElementById('d360-ai-text').innerHTML = dataIA.text; AsistenteVoz.hablar(dataIA.voz);
 
-                let physRows = Store.v.filter(r => String(Util.get(r,'Producto')) === ean); let locMap = {};
-                physRows.forEach(r => { let loc = Util.get(r,'Ubicacion'); let q = parseFloat(Util.get(r,'Cantidad','Cant','Unidades')) || 1; if(locMap[loc]) locMap[loc] += q; else locMap[loc] = q; });
+                let physRows = Store.v.filter(r => String(Util.get(r,'Producto','Artículo','Articulo','EAN')).trim() === ean); let locMap = {};
+                physRows.forEach(r => { let loc = Util.get(r,'Ubicacion','Ubicación'); let q = parseFloat(Util.get(r,'Cantidad','Cant','Unidades')) || 1; if(locMap[loc]) locMap[loc] += q; else locMap[loc] = q; });
                 let physHtml = ""; let hasDespa = false;
                 if (Object.keys(locMap).length > 0) {
                     for (const [loc, qty] of Object.entries(locMap)) {
@@ -885,19 +1111,28 @@
                 } else physHtml = '<span style="padding:10px; color:#9ca3af;">Sin ubicación física</span>';
                 document.getElementById('d360-phys').innerHTML = physHtml;
 
-                let f= (arr,id,totId)=>{ let h="", t=0; arr.filter(r=>String(Util.get(r,'Artículo'))===ean).forEach(r=>{ let u=Util.get(r,'Ubicación'), q=parseFloat(Util.get(r,'Cant Base'))||0; t+=q; h+=`<div class="itm"><span>${u}</span><span class="qty ${q>0?'ok':'bad'}">${q}</span></div>`; }); document.getElementById(id).innerHTML=h||'<span style="padding:10px; color:#aaa;">Sin stock</span>'; document.getElementById(totId).innerText=t; return t; };
+                let f= (arr,id,totId)=>{ 
+                    let h="", t=0; 
+                    arr.filter(r=>String(Util.get(r,'Artículo','Articulo','Producto','EAN')).trim()===ean).forEach(r=>{ 
+                        let u=Util.get(r,'Ubicación','Ubicacion'); let q=parseFloat(Util.get(r,'Cant Base','Cantidad','Cant'))||0; 
+                        t+=q; h+=`<div class="itm"><span>${u}</span><span class="qty ${q>0?'ok':'bad'}">${q}</span></div>`; 
+                    }); 
+                    document.getElementById(id).innerHTML=h||'<span style="padding:10px; color:#aaa;">Sin stock</span>'; document.getElementById(totId).innerText=t; return t; 
+                };
                 let totalDigi = f(Store.n, 'd360-nr', 'd360-nr-t'); f(Store.r, 'd360-r', 'd360-r-t');
-                let p=Store.p.find(r=>String(Util.get(r,'Artículo','EAN'))===ean);
+                
+                let p=Store.p.find(r=>String(Util.get(r,'Artículo','Articulo','EAN')).trim()===ean);
                 document.getElementById('d360-st').innerText=p?"ACTIVO":"NO LISTADO"; document.getElementById('d360-bk').innerText=p?Util.get(p,'Total Libros'):"---";
+                
                 let badge = document.getElementById('d360-badge');
                 if (totalDigi > 0 && !hasDespa) { badge.innerText = "DISPONIBLE PARA VENTA"; badge.style.background = "#16a34a"; badge.style.color = "#fff"; } 
                 else if (hasDespa) { badge.innerText = "EN DESPACHO (NO VENDER)"; badge.style.background = "#dc2626"; badge.style.color = "#fff"; } 
-                else { badge.innerText = "NO DISPONIBLE"; badge.style.background = "#64748b"; badge.style.color = "#fff"; border: "none"; }
+                else { badge.innerText = "NO DISPONIBLE"; badge.style.background = "#64748b"; badge.style.color = "#fff"; badge.style.border = "none"; }
+                
                 document.getElementById('erp-action-area').innerHTML = `<button class="btn-erp" onclick="Core.openERP('${ean}')"><i class="fas fa-external-link-alt"></i> REALIZAR MOVIMIENTO</button>`;
             }
         };
 
-        const Util = { get: (r,...k)=>{let ks=Object.keys(r); for(let x of k){let f=ks.find(y=>y.toUpperCase().trim()===x.toUpperCase().trim()); if(f)return r[f]} return undefined} };
         const Exp = { excel:()=>{ let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Store.view),"Data"); XLSX.writeFile(wb,"Reporte.xlsx")}, pdf:()=>{ let d=new jspdf.jsPDF(); d.autoTable({head:[Object.keys(Store.view[0])],body:Store.view.map(Object.values)}); d.save("Reporte.pdf")} };
 
         window.onload=Core.init;
