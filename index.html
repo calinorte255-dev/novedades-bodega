@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jefferson Alberto Carvajal Rios">
-    <title>Novedades de Bodega Digital | v27.0 Forense AI</title>
+    <title>Novedades de Bodega Digital | v27.1 Forense AI Automático</title>
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3043/3043218.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -50,7 +50,6 @@
         .f-status { font-size: 0.6rem; color: #64748b; font-weight: 700; }
         .led { width: 8px; height: 8px; border-radius: 50%; background: #475569; box-shadow: 0 0 0 1px rgba(255,255,255,0.1); transition: 0.3s; }
         .led.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; border-color: #fff; }
-        .led.opt { background: #06b6d4; box-shadow: 0 0 8px #06b6d4; border-color: #fff; }
         input[type="file"] { display: none; }
 
         .btn { width: 100%; padding: 8px 12px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; transition: 0.2s; text-align: left; text-transform: uppercase; }
@@ -121,7 +120,6 @@
         .m-tag { background: rgba(16,185,129,0.2); border: 1px solid #10b981; padding: 5px 15px; border-radius: 20px; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-left: 20px; color: #34d399; }
         .m-body { padding:25px; overflow-y:auto; flex:1; background:#f1f5f9; display: flex; flex-direction: column; gap: 20px; }
         
-        /* Modificado diseño del reporte IA forense */
         .ai-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .ai-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 15px; }
         .ai-icon { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(16,185,129,0.3); }
@@ -241,13 +239,12 @@
                 <div style="width:90%"><div class="f-name">CK_IN_PORTAFOLIO</div><div class="f-status" id="l-p">Pendiente</div></div>
                 <div class="led" id="led-p"></div>
             </div>
-            <!-- Archivos Secundarios Vitales para Auditoría -->
             <div class="file-row" style="border-color:#38bdf8;">
-                <div style="width:90%"><div class="f-name" style="color:#38bdf8;">VENTAS (Diario)</div><div class="f-status" id="l-ve">Opcional</div></div>
+                <div style="width:90%"><div class="f-name" style="color:#38bdf8;">VENTAS.xlsx</div><div class="f-status" id="l-ve">Pendiente</div></div>
                 <div class="led" id="led-ve"></div>
             </div>
             <div class="file-row" style="border-color:#a78bfa;">
-                <div style="width:90%"><div class="f-name" style="color:#a78bfa;">HISTORIAL_BIN_BIN</div><div class="f-status" id="l-bb">Opcional</div></div>
+                <div style="width:90%"><div class="f-name" style="color:#a78bfa;">HISTORIAL_BIN_BIN.xlsx</div><div class="f-status" id="l-bb">Pendiente</div></div>
                 <div class="led" id="led-bb"></div>
             </div>
 
@@ -282,7 +279,7 @@
         <header class="header">
             <div class="header-title">
                 <h2>AUDITORÍA FORENSE INVENTARIO</h2>
-                <span>Version 27.0 | Alkosto Cali Norte JACR</span>
+                <span>Version 27.1 | Alkosto Cali Norte JACR</span>
             </div>
             <div class="kpi">
                 <div id="last-update-badge"><i class="fas fa-clock"></i> Última Sincronización: Pendiente</div>
@@ -372,38 +369,6 @@
                     <b style="color:#059669">SUMA 0</b><small>Nivelación exacta.</small>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Modals Archivos Secundarios -->
-    <div id="m-sec-prompt" class="overlay">
-        <div class="m-std" style="text-align:center;">
-            <h3 style="margin-top:0; color:#0f172a;"><i class="fas fa-folder-plus" style="color:var(--primary);"></i> CARGA OPCIONAL</h3>
-            <p style="color:#475569; font-weight:600;">¿Quieres cargar los archivos secundarios para habilitar la <b style="color:#2563eb">Auditoría Forense IA</b> de inventario?</p>
-            <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
-                <button class="btn b-green" onclick="UI.modal('m-sec-prompt',false); UI.modal('m-sec-upload',true);" style="width:auto; padding:10px 20px;"><i class="fas fa-check"></i> SÍ, CARGAR</button>
-                <button class="btn b-dark" onclick="UI.modal('m-sec-prompt',false);" style="width:auto; padding:10px 20px;"><i class="fas fa-times"></i> NO, CONTINUAR</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="m-sec-upload" class="overlay">
-        <div class="m-std">
-            <i class="fas fa-times" onclick="UI.modal('m-sec-upload',false)" style="position:absolute; top:20px; right:20px; cursor:pointer; color:#aaa;"></i>
-            <h3 style="margin-top:0;"><i class="fas fa-file-excel"></i> Archivos Secundarios</h3>
-            <p style="font-size:0.8rem; color:#64748b; margin-top:-5px;">Selecciona los archivos correspondientes para auditoría completa.</p>
-            
-            <label class="b-massive" for="f-ventas" style="background: linear-gradient(to right, #0ea5e9, #0284c7); border-color:#38bdf8; margin-top:15px;">
-                <i class="fas fa-shopping-cart" style="font-size: 1.1rem; margin-right: 5px;"></i> CARGAR VENTAS.XLSX
-            </label>
-            <input type="file" id="f-ventas" accept=".xlsx">
-
-            <label class="b-massive" for="f-bin" style="background: linear-gradient(to right, #8b5cf6, #6d28d9); border-color:#a78bfa;">
-                <i class="fas fa-exchange-alt" style="font-size: 1.1rem; margin-right: 5px;"></i> CARGAR HISTORIAL_BIN_BIN.XLSX
-            </label>
-            <input type="file" id="f-bin" accept=".xlsx">
-
-            <button class="btn b-dark" onclick="UI.modal('m-sec-upload',false);" style="margin-top:10px; justify-content:center;">FINALIZAR</button>
         </div>
     </div>
 
@@ -558,9 +523,6 @@
                     const elToma = document.getElementById('f-toma');
                     if(elToma) elToma.addEventListener('change', e => Core.file(e,'t'));
 
-                    document.getElementById('f-ventas').addEventListener('change', e => Core.processSecFile(e, 've'));
-                    document.getElementById('f-bin').addEventListener('change', e => Core.processSecFile(e, 'bb'));
-
                     document.getElementById('f-massive').addEventListener('change', async (e) => {
                         let files = e.target.files;
                         if(files.length === 0) return;
@@ -579,6 +541,8 @@
                             else if(name.includes('VER_INVENTARIO')) k = 'v';
                             else if(name.includes('TRASLADOS')) k = 'tr';
                             else if(name.includes('PORTAFOLIO')) k = 'p';
+                            else if(name.includes('VENTAS')) k = 've';
+                            else if(name.includes('BIN_BIN') || name.includes('BIN')) k = 'bb';
 
                             if(k) { await Core.processExcelFile(file, k); loadedCount++; }
                         }
@@ -591,7 +555,6 @@
                             Core.checkLastUpdate();
                             if(Store.n.length > 0) Core.calc();
                             UI.toast(`Sincronización Manual: ${loadedCount} bases actualizadas.`, 1);
-                            setTimeout(() => UI.modal('m-sec-prompt', true), 1000);
                         } else {
                             UI.toast("Error: Nombres de archivo no reconocidos.", 0);
                         }
@@ -601,11 +564,17 @@
             },
 
             fetchServerData: async () => {
+                // Ahora carga los 7 archivos al mismo tiempo
                 const filesMap = {
-                    'r': './CK_IN_UBICAC_RESTRINGIDAS.xlsx', 'n': './CK_IN_UBICAC_NO_RESTRINGIDAS.xlsx',
-                    'v': './VER_INVENTARIO.xlsx', 'tr': './CK_GL_IN_TRASLADOS_POR_RECIBIR.xlsx', 'p': './CK_IN_PORTAFOLIO.xlsx'
+                    'r': './CK_IN_UBICAC_RESTRINGIDAS.xlsx', 
+                    'n': './CK_IN_UBICAC_NO_RESTRINGIDAS.xlsx',
+                    'v': './VER_INVENTARIO.xlsx', 
+                    'tr': './CK_GL_IN_TRASLADOS_POR_RECIBIR.xlsx', 
+                    'p': './CK_IN_PORTAFOLIO.xlsx',
+                    've': './VENTAS.xlsx',
+                    'bb': './HISTORIAL_BIN_BIN.xlsx'
                 };
-                document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText = "CONECTANDO CON SERVIDOR...";
+                document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText = "CONECTANDO CON SERVIDOR Y LEYENDO LAS 7 BASES...";
                 let successCount = 0;
                 for (let k of Object.keys(filesMap)) {
                     try {
@@ -625,8 +594,7 @@
                 
                 if(successCount > 0) {
                     localStorage.setItem('siga_last_update', new Date().getTime()); Core.checkLastUpdate();
-                    UI.toast(`Sincronización Exitosa: ${successCount} bases descargadas.`, 1);
-                    setTimeout(() => UI.modal('m-sec-prompt', true), 1000);
+                    UI.toast(`Sincronización Total Exitosa: ${successCount} bases descargadas.`, 1);
                 } else UI.toast("Servidor no accesible. Usa CARGA MANUAL (EXCEL).", 0);
             },
             
@@ -642,15 +610,6 @@
                             resolve(true);
                         } catch(e) { resolve(false); }
                     }; r.readAsArrayBuffer(file);
-                });
-            },
-
-            processSecFile: (e, k) => {
-                let file = e.target.files[0]; if(!file) return;
-                document.getElementById('loader').style.display='flex'; document.getElementById('loader-txt').innerText = "PROCESANDO ARCHIVO SECUNDARIO...";
-                Core.processExcelFile(file, k).then(res => {
-                    document.getElementById('loader').style.display='none';
-                    if(res) { UI.toast(`Archivo ${k==='ve'?'Ventas':'Bin a Bin'} cargado.`, 1); document.getElementById(`led-${k}`).classList.add('opt'); }
                 });
             },
 
@@ -684,7 +643,7 @@
                 let d=await DB.get(k); 
                 if(d){ 
                     Store[k]=d; 
-                    if(k==='ve'||k==='bb') document.getElementById(`led-${k}`).classList.add('opt'); else UI.led(k); 
+                    UI.led(k); 
                     if(k==='n') Core.calc(); 
                     let st = document.getElementById(`l-${k}`); if(st) { st.innerText="✅ En Memoria Local"; st.style.color="#f59e0b"; } 
                 } 
@@ -784,17 +743,17 @@
                             let ean = rawEan ? String(rawEan).trim() : 'SIN_EAN';
                             let qtyTras = Math.abs(parseFloat(Util.get(r, 'Cant Base', 'Cantidad', 'Cant', 'Recibido')) || 0);
                             
-                            // Lógica para validar si ese traslado ya se ingresó a DIGI1 leyendo el Bin a Bin del mismo código
+                            // Lógica de validación Bin
                             let ingresoBin = "NO"; let docBin = "";
                             if(Store.bb.length > 0) {
                                 let matchBin = Store.bb.find(b => {
-                                    let bEan = String(Util.get(b, 'Artículo','Articulo','EAN','Item')).trim();
-                                    let bQty = Math.abs(parseFloat(Util.get(b, 'Cant', 'Cantidad')) || 0);
-                                    let bDest = String(Util.get(b, 'Destino', 'Ubicación Destino', 'Hacia')).trim().toUpperCase();
+                                    let bEan = String(Util.get(b, 'Artículo','Articulo','EAN','Item','Producto')).trim();
+                                    let bQty = Math.abs(parseFloat(Util.get(b, 'Cant', 'Cantidad', 'Cant.')) || 0);
+                                    let bDest = String(Util.get(b, 'Destino', 'Ubicación Destino', 'Ubicacion Destino', 'Hacia', 'Hacia Ubic.', 'Hacia Ubic', 'Hacia Ubicacion')).trim().toUpperCase();
                                     return bEan === ean && bQty === qtyTras && bDest.includes('DIGI1');
                                 });
                                 if(matchBin) {
-                                    ingresoBin = "SÍ (DIGI1)"; docBin = Util.get(matchBin, 'Bin', 'Documento', 'Doc', 'Nro') || "S/D";
+                                    ingresoBin = "SÍ (DIGI1)"; docBin = Util.get(matchBin, 'Bin', 'Documento', 'Doc', 'Nro', 'Nro Doc', 'Nro.', 'Transaccion', 'Referencia') || "S/D";
                                 }
                             }
 
@@ -824,7 +783,7 @@
                 let restrRows = Store.r.filter(x => String(Util.get(x,'Artículo','Articulo','EAN')).trim() === ean);
                 let trasladosMatch = Store.tr.filter(x => String(Util.get(x,'Artículo','Articulo','EAN','Item','Producto')).trim() === ean);
                 let ventasMatch = Store.ve.filter(x => String(Util.get(x,'Artículo','Articulo','EAN','EAN13','Item')).trim() === ean);
-                let binMatch = Store.bb.filter(x => String(Util.get(x,'Artículo','Articulo','EAN','Item')).trim() === ean);
+                let binMatch = Store.bb.filter(x => String(Util.get(x,'Artículo','Articulo','EAN','Item','Producto')).trim() === ean);
                 let portafolio = Store.p.find(x => String(Util.get(x,'Artículo','Articulo','EAN')).trim() === ean);
                 
                 let cantDigi = 0, cantAlmac = 0, cantToma = null, dif = 0;
@@ -843,19 +802,19 @@
                 // 1. Analizar Traslados (Llegadas)
                 if (trasladosMatch.length > 0) {
                     tLlegadas = trasladosMatch.reduce((acc, t) => acc + Math.abs(parseFloat(Util.get(t, 'Cant Base', 'Cantidad', 'Cant')) || 0), 0);
-                    // Buscar si esas llegadas se subieron a DIGI1
-                    let matchIn = binMatch.find(b => Math.abs(parseFloat(Util.get(b, 'Cant', 'Cantidad'))||0) === tLlegadas && String(Util.get(b, 'Destino', 'Ubicación Destino', 'Hacia')).toUpperCase().includes('DIGI1'));
-                    if(matchIn) docIngreso = Util.get(matchIn, 'Bin', 'Documento', 'Doc');
+                    // Buscar si esas llegadas se subieron a DIGI1 en el archivo Bin
+                    let matchIn = binMatch.find(b => Math.abs(parseFloat(Util.get(b, 'Cant', 'Cantidad', 'Cant.'))||0) === tLlegadas && String(Util.get(b, 'Destino', 'Ubicación Destino', 'Ubicacion Destino', 'Hacia', 'Hacia Ubic.', 'Hacia Ubic', 'Hacia Ubicacion')).toUpperCase().includes('DIGI1'));
+                    if(matchIn) docIngreso = Util.get(matchIn, 'Bin', 'Documento', 'Doc', 'Nro', 'Nro Doc', 'Transaccion', 'Referencia');
                 }
 
                 // 2. Analizar Ventas (Salidas)
                 if (ventasMatch.length > 0) {
-                    tVentas = ventasMatch.reduce((acc, v) => acc + Math.abs(parseFloat(Util.get(v, 'Cant', 'Cantidad')) || 0), 0);
+                    tVentas = ventasMatch.reduce((acc, v) => acc + Math.abs(parseFloat(Util.get(v, 'Cant', 'Cantidad', 'Cant.')) || 0), 0);
                     let fechas = ventasMatch.map(v => Util.get(v, 'Fecha', 'Date', 'Fecha Venta')).filter(f=>f).sort();
-                    if(fechas.length > 0) vFecha = fechas[fechas.length - 1]; // Última fecha
+                    if(fechas.length > 0) vFecha = fechas[fechas.length - 1]; 
                     // Buscar si esas ventas generaron un descargo Bin a Bin de DIGI1 a ALMAC
-                    let matchOut = binMatch.find(b => String(Util.get(b, 'Origen', 'Ubicación Origen', 'Desde')).toUpperCase().includes('DIGI1'));
-                    if(matchOut) docSalida = Util.get(matchOut, 'Bin', 'Documento', 'Doc');
+                    let matchOut = binMatch.find(b => String(Util.get(b, 'Origen', 'Ubicación Origen', 'Ubicacion Origen', 'Desde', 'Desde Ubic.', 'Desde Ubic', 'Desde Ubicacion')).toUpperCase().includes('DIGI1'));
+                    if(matchOut) docSalida = Util.get(matchOut, 'Bin', 'Documento', 'Doc', 'Nro', 'Nro Doc', 'Transaccion', 'Referencia');
                 }
 
                 // 3. Sintetizar el Informe
@@ -1070,7 +1029,7 @@
 
         const UI = {
             toast: (m,t)=>{ let b=document.getElementById('toast'); b.innerHTML=`<i class="fas fa-${t?'check':'exclamation'}-circle"></i> ${m}`; b.style.display='flex'; setTimeout(()=>b.style.display='none',3000); },
-            led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
+            led: (k)=>{ let m={'r':'led-r','n':'led-n','v':'led-v','p':'led-p','t':'led-t','tr':'led-tr','ve':'led-ve','bb':'led-bb'}; if(m[k])document.getElementById(m[k]).classList.add('active'); },
             modal: (id,s)=>{ document.getElementById(id).style.display=s?'flex':'none'; },
             
             kpi: (v,t,e)=>{ document.getElementById('k-view').innerText=v; document.getElementById('k-tot').innerText=t; document.getElementById('k-err').innerText=e || 0; },
